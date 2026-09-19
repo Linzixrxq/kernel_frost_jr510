@@ -7,36 +7,35 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+    # 1. Скачиваем исходники твоего ядра
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
+      with:
+        path: kernel
 
+    # 2. Скачиваем официальный Clang от Google напрямую из репозитория AOSP
+    - name: Download Clang Toolchain (AOSP)
+      uses: actions/checkout@v4
+      with:
+        repository: AOSP-Modules/prebuilts_clang_host_linux-x86_clang-r416183b
+        path: clang
+        depth: 1
+
+    # 3. Устанавливаем необходимые пакеты Linux
     - name: Install Compiling Tools
       run: |
         sudo apt-get update
         sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzma lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
 
-    - name: Download Clang Toolchain
-      run: |
-        mkdir -p $GITHUB_WORKSPACE/clang
-        cd $GITHUB_WORKSPACE/clang
-        # Скачиваем стабильное зеркало официального Clang r416183b (Android R)
-        curl -LO "https://githubusercontent.com"
-        CLANG_URL=$(cat Clang-main-link.txt | grep -E "clang-r416183b" | head -n 1)
-        # Если зеркало недоступно, скачиваем стабильный автономный релиз Clang 12
-        if [ -z "$CLANG_URL" ]; then
-          CLANG_URL="https://github.com"
-        fi
-        echo "Downloading Clang from: $CLANG_URL"
-        curl -L "$CLANG_URL" -o clang_bin.tar.xz
-        tar -xf clang_bin.tar.xz --strip-components=1
-
+    # 4. Запускаем компиляцию внутри папки ядра
     - name: Compile Kernel via build.config
       run: |
+        cd $GITHUB_WORKSPACE/kernel
         export ARCH=arm64
         export SUBARCH=arm64
         export HEADER_ARCH=arm64
         
-        # Задаем явные пути к компилятору для скрипта Xiaomi
+        # Направляем оригинальный скрипт Xiaomi на скачанный Clang
         export CLANG_PREBUILT_BIN_DIR=$GITHUB_WORKSPACE/clang/bin
         export PATH=$CLANG_PREBUILT_BIN_DIR:$PATH
         
@@ -45,16 +44,14 @@ jobs:
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
-        # Создаем пустую папку out, если скрипт Xiaomi ее потребует
-        mkdir -p out/android-kernel/dist
-        
         # Запуск официального сборщика Xiaomi
         BUILD_CONFIG=build.config.frost ./build/build.sh
 
+    # 5. Выгружаем готовый результат сборки
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: POCO-C40-Kernel
         path: |
-          out/android-kernel/dist/Image.gz
-          out/android-kernel/dist/jlq_jr510.dtb
+          kernel/out/android-kernel/dist/Image.gz
+          kernel/out/android-kernel/dist/jlq_jr510.dtb
