@@ -31,30 +31,31 @@ jobs:
         
         export KCONFIG_NOTIMESTAMP=1
         
-        # Создаем папку для вывода
         mkdir -p out
         
-        # Поиск правильного defconfig файла
-        DEFCONFIG=""
-        if [ -f "arch/arm64/configs/frost_defconfig" ]; then
-          DEFCONFIG="frost_defconfig"
-        elif [ -f "arch/arm64/configs/jr510_defconfig" ]; then
-          DEFCONFIG="jr510_defconfig"
-        elif [ -f "arch/arm64/configs/vendor/frost_defconfig" ]; then
-          DEFCONFIG="vendor/frost_defconfig"
+        # 1. Поиск основного базового defconfig
+        BASE_DEFCONFIG=""
+        if [ -f "arch/arm64/configs/gki_defconfig" ]; then
+          BASE_DEFCONFIG="gki_defconfig"
+        elif [ -f "arch/arm64/configs/vendor/jr510_defconfig" ]; then
+          BASE_DEFCONFIG="vendor/jr510_defconfig"
+        elif [ -f "arch/arm64/configs/frost_defconfig" ]; then
+          BASE_DEFCONFIG="frost_defconfig"
+        else
+          BASE_DEFCONFIG=$(find arch/arm64/configs/ -name "*defconfig" | head -n 1 | sed 's|arch/arm64/configs/||')
         fi
 
-        if [ -z "$DEFCONFIG" ]; then
-          echo "Ищем подходящий defconfig..."
-          DEFCONFIG=$(find arch/arm64/configs/ -name "*frost*" -o -name "*jr510*" | head -n 1 | sed 's|arch/arm64/configs/||')
+        echo "Базовый defconfig: $BASE_DEFCONFIG"
+        make O=out $BASE_DEFCONFIG
+
+        # 2. Поиск и объединение вендорных конфигов (jr510 / frost)
+        FRAGMENT=$(find arch/arm64/configs/ -name "*jr510*.config" -o -name "*frost*.config" | head -n 1)
+        if [ -n "$FRAGMENT" ]; then
+          echo "Применяем фрагмент конфигурации: $FRAGMENT"
+          ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config $FRAGMENT
         fi
 
-        echo "Используем конфигурацию: $DEFCONFIG"
-        
-        # Генерируем .config
-        make O=out $DEFCONFIG
-        
-        # Запускаем сборку ядра и DTB на всех ядрах процессора
+        # 3. Компиляция ядра и DTB
         make -j$(nproc --all) O=out Image.gz dtbs modules
 
     - name: Upload Compiled Kernel Artifacts
