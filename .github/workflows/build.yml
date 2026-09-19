@@ -1,0 +1,41 @@
+name: Build POCO C40 Kernel
+
+on:
+  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout Kernel Source
+      uses: actions/checkout@v4
+
+    - name: Install Compiling Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y bc bison build-essential cc_wrapper ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzma lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+
+    - name: Download Clang Toolchain
+      run: |
+        mkdir -p clang
+        cd clang
+        curl -LO https://googlesource.com
+        tar -xf clang-r416183b.tar.gz
+
+    - name: Compile Kernel via build.config
+      run: |
+        export PATH=$GITHUB_WORKSPACE/clang/bin:$PATH
+        export ARCH=arm64
+        export SUBARCH=arm64
+        export HEADER_ARCH=arm64
+        # Запуск сборки через официальный скрипт Xiaomi
+        BUILD_CONFIG=build.config.frost ./build/build.sh
+
+    - name: Upload Compiled Kernel Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: POCO-C40-Kernel
+        path: |
+          out/android-kernel/dist/Image.gz
+          out/android-kernel/dist/jlq_jr510.dtb
+
