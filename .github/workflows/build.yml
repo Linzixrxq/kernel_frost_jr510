@@ -69,11 +69,10 @@ jobs:
 
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
 
-        # --- ВСТАВЛЯЕМ СУДА ---
         # Игнорируем ошибки Section Mismatch на этапе MODPOST
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-make -j$(nproc --all) O=out Image dtbs-jlq modules || make -j$(nproc --all) O=out Image modules
+        make -j$(nproc --all) O=out Image dtbs-jlq modules || make -j$(nproc --all) O=out Image modules
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
@@ -81,6 +80,7 @@ make -j$(nproc --all) O=out Image dtbs-jlq modules || make -j$(nproc --all) O=ou
         name: POCO-C40-Kernel-Image
         path: |
           out/arch/arm64/boot/Image.gz
+          out/arch/arm64/boot/Image
           out/arch/arm64/boot/dtb.img
           out/arch/arm64/boot/dts/jlq/*.dtb
         if-no-files-found: warn
