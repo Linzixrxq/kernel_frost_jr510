@@ -72,7 +72,13 @@ jobs:
         # Игнорируем ошибки Section Mismatch на этапе MODPOST
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        make -j$(nproc --all) O=out Image dtbs-jlq modules || make -j$(nproc --all) O=out Image modules
+        # Добавили Image.gz и автосклейку dtb.img
+        make -j$(nproc --all) O=out Image Image.gz dtbs-jlq modules || make -j$(nproc --all) O=out Image Image.gz modules
+
+        # Склеиваем скомпилированные dtb в один файл dtb.img (если они есть)
+        if [ -d "out/arch/arm64/boot/dts/jlq" ]; then
+          cat out/arch/arm64/boot/dts/jlq/*.dtb > out/arch/arm64/boot/dtb.img 2>/dev/null || true
+        fi
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
