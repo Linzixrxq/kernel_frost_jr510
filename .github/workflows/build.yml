@@ -1,57 +1,57 @@
 name: Build POCO C40 Kernel
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
-    # 1. Скачиваем исходники твоего ядра
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
 
-    # 2. Устанавливаем правильные инструменты без конфликтов зависимостей
-    - name: Install Compiling Tools & Clang/GCC
+    - name: Install Compiling Tools & Cross-Compilers
       run: |
         sudo apt-get update
-        sudo apt-get install -y bc bison build-essential ccache curl flex git gnupg gperf libelf-dev liblz4-tool libssl-dev libxml2 libxml2-utils lzma lzop rsync schedtool xsltproc zip zlib1g-dev \
-        clang clang-format gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+        sudo apt-get install -y bc bison build-essential ccache curl flex git gnupg gperf \
+        libelf-dev liblz4-tool libssl-dev libxml2 libxml2-utils lzma lzop rsync schedtool \
+        xsltproc zip zlib1g-dev clang gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+        gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
-    # 3. Запускаем компиляцию ядра
-    - name: Compile Kernel via build.config
+    - name: Compile Kernel via build.sh
       run: |
         export ARCH=arm64
         export SUBARCH=arm64
         export HEADER_ARCH=arm64
         
-        # Перенаправляем пути компилятора на встроенный системный Clang Ubuntu
-        export CLANG_PREBUILT_BIN_DIR=/usr/bin
-        export PATH=$CLANG_PREBUILT_BIN_DIR:$PATH
-        
-        # Указываем кросс-компиляторы для чипсета JLQ JR510
         export CROSS_COMPILE=aarch64-linux-gnu-
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
-        # Восстанавливаем оригинальную символическую ссылку, которую требует Xiaomi
+        # Исправляем симлинки и права для скриптов Xiaomi
         rm -rf build 2>/dev/null
-        ln -s build_kernel build
+        if [ -d "build_kernel" ]; then
+          ln -s build_kernel build
+          chmod -R +x build_kernel/
+        fi
         
-        # Выдаем права на исполнение всем скриптам сборщика
-        chmod -R +x build_kernel/
-        
-        # Создаем пустую папку out для результатов сборки
-        mkdir -p out/android-kernel/dist
-        
-        # Запуск официального сборщика через оригинальную конфигурацию frost
-        BUILD_CONFIG=build.config.frost ./build/build.sh
+        # Задаем путь к build.config (проверяем корень и подпапки)
+        if [ -f "build.config.frost" ]; then
+          export BUILD_CONFIG=build.config.frost
+        elif [ -f "build_kernel/build.config.frost" ]; then
+          export BUILD_CONFIG=build_kernel/build.config.frost
+        fi
 
-    # 4. Выгружаем готовый результат сборки
+        chmod +x build/build.sh
+        
+        # Запускаем официальный сборщик
+        ./build/build.sh
+
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: POCO-C40-Kernel
+        name: POCO-C40-Kernel-Artifacts
         path: |
-          out/android-kernel/dist/Image.gz
-          out/android-kernel/dist/jlq_jr510.dtb
+          out/
+          out/*/dist/
+        if-no-files-found: warn
