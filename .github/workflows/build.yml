@@ -25,21 +25,27 @@ jobs:
         export SUBARCH=arm64
         export HEADER_ARCH=arm64
         
-        # Перенаправляем пути компилятора на встроенный системный Clang
+        # Перенаправляем пути компилятора на встроенный системный Clang Ubuntu
         export CLANG_PREBUILT_BIN_DIR=/usr/bin
         export PATH=$CLANG_PREBUILT_BIN_DIR:$PATH
         
-        # Указываем кросс-компиляторы
+        # Указываем кросс-компиляторы для чипсета JLQ JR510
         export CROSS_COMPILE=aarch64-linux-gnu-
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
+        # Восстанавливаем оригинальную символическую ссылку, которую требует Xiaomi
+        rm -rf build 2>/dev/null
+        ln -s build_kernel build
+        
+        # Выдаем права на исполнение всем скриптам сборщика
+        chmod -R +x build_kernel/
+        
         # Создаем пустую папку out для результатов сборки
         mkdir -p out/android-kernel/dist
         
-        # Исправляем путь: запускаем сборщик напрямую из оригинальной папки build_kernel
-        chmod +x build_kernel/build.sh
-        BUILD_CONFIG=build.config.frost ./build_kernel/build.sh
+        # Запуск официального сборщика через оригинальную конфигурацию frost
+        BUILD_CONFIG=build.config.frost ./build/build.sh
 
     # 4. Выгружаем готовый результат сборки
     - name: Upload Compiled Kernel Artifacts
