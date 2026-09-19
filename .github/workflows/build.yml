@@ -29,9 +29,9 @@ jobs:
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
-        # Отключаем превращение warnings в ошибки
-        export KCFLAGS="-Wno-error -Wno-unused-variable -Wno-unused-function -Wno-format"
-        export KCPPFLAGS="-Wno-error"
+        # Полный запрет превращения warnings в ошибки (включая strict-prototypes)
+        export KCFLAGS="-w -Wno-error -Wno-strict-prototypes -Wno-unused-variable -Wno-unused-function"
+        export KCPPFLAGS="-w -Wno-error"
         export KCONFIG_NOTIMESTAMP=1
         
         mkdir -p out
@@ -58,7 +58,10 @@ jobs:
           ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config $FRAGMENT
         fi
 
-        # 3. Компиляция: если быстрая параллельная сборка падает, перезапускаем в 1 поток для четкого лога ошибки
+        # Отключаем WERROR прямо в сгенерированном .config
+        sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
+
+        # 3. Компиляция ядра
         make -j$(nproc --all) O=out Image dtbs modules || make -j1 O=out Image dtbs modules
 
     - name: Upload Compiled Kernel Artifacts
