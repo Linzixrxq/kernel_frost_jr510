@@ -1,3 +1,23 @@
+name: Build POCO C40 Kernel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout Kernel Source
+      uses: actions/checkout@v4
+
+    - name: Install Compiling Tools & Cross-Compilers
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y bc bison build-essential ccache curl flex git gnupg gperf \
+        libelf-dev liblz4-tool libssl-dev libxml2 libxml2-utils lzma lzop rsync schedtool \
+        xsltproc zip zlib1g-dev clang gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+        gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
+
     - name: Compile Kernel via build.sh
       timeout-minutes: 45
       run: |
@@ -12,7 +32,7 @@
         export NON_INTERACTIVE=1
         export KCONFIG_NOTIMESTAMP=1
         
-        # Находим правильный скрипт build.sh
+        # Автоматический поиск build.sh
         BUILD_SCRIPT=""
         if [ -f "build.sh" ]; then
           BUILD_SCRIPT="./build.sh"
@@ -24,14 +44,13 @@
 
         if [ -z "$BUILD_SCRIPT" ]; then
           echo "ERROR: build.sh не найден!"
-          echo "Содержимое каталога:"
+          echo "Содержимое корневого каталога:"
           ls -la
           exit 1
         fi
 
         chmod +x "$BUILD_SCRIPT"
         
-        # Поиск конфигурационного файла
         if [ -f "build.config.frost" ]; then
           export BUILD_CONFIG=build.config.frost
         elif [ -f "build_kernel/build.config.frost" ]; then
@@ -39,3 +58,12 @@
         fi
 
         yes "" | $BUILD_SCRIPT
+
+    - name: Upload Compiled Kernel Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: POCO-C40-Kernel-Artifacts
+        path: |
+          out/
+          out/*/dist/
+        if-no-files-found: warn
