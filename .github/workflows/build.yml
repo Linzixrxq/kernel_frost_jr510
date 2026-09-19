@@ -33,9 +33,9 @@ jobs:
         export KCPPFLAGS="-w -Wno-error"
         export KCONFIG_NOTIMESTAMP=1
 
-        # ПАТЧ: Исправление ошибки VLA инициализации в аудио-драйвере SIA8152
-        sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/sia8152_regs.c
-        
+        # ПАТЧ: Исправление ошибки VLA инициализации во ВСЕХ файлах аудио-драйвера sia81xx
+        sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c
+
         mkdir -p out
         
         BASE_DEFCONFIG=""
