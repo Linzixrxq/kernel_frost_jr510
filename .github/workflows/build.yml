@@ -33,7 +33,10 @@ jobs:
         export KCPPFLAGS="-w -Wno-error"
         export KCONFIG_NOTIMESTAMP=1
 
-        # ПАТЧ: Исправление ошибки VLA инициализации во ВСЕХ файлах аудио-драйвера sia81xx
+        # ПАТЧ 1: Замена static const VLA массивов на обычные массивы без static
+        sed -i 's/static const char defaults\[reg_num\] = {0x76, 0x66, 0x70};/const char defaults[] = {0x76, 0x66, 0x70};/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c
+
+        # ПАТЧ 2: Исправление VLA инициализаций нулями
         sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c
 
         mkdir -p out
