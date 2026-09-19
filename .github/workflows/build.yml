@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
@@ -19,6 +19,7 @@ jobs:
         gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
     - name: Compile Kernel via build.sh
+      timeout-minutes: 45
       run: |
         export ARCH=arm64
         export SUBARCH=arm64
@@ -28,14 +29,16 @@ jobs:
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
-        # Исправляем симлинки и права для скриптов Xiaomi
+        export NON_INTERACTIVE=1
+        export KCONFIG_NOTIMESTAMP=1
+        
+        # Восстанавливаем симлинк build -> build_kernel
         rm -rf build 2>/dev/null
         if [ -d "build_kernel" ]; then
           ln -s build_kernel build
           chmod -R +x build_kernel/
         fi
         
-        # Задаем путь к build.config (проверяем корень и подпапки)
         if [ -f "build.config.frost" ]; then
           export BUILD_CONFIG=build.config.frost
         elif [ -f "build_kernel/build.config.frost" ]; then
@@ -44,8 +47,7 @@ jobs:
 
         chmod +x build/build.sh
         
-        # Запускаем официальный сборщик
-        ./build/build.sh
+        yes "" | ./build/build.sh
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
