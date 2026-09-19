@@ -29,14 +29,15 @@ jobs:
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
-        # Полный запрет превращения warnings в ошибки (включая strict-prototypes)
         export KCFLAGS="-w -Wno-error -Wno-strict-prototypes -Wno-unused-variable -Wno-unused-function"
         export KCPPFLAGS="-w -Wno-error"
         export KCONFIG_NOTIMESTAMP=1
+
+        # ПАТЧ: Исправление ошибки VLA инициализации в аудио-драйвере SIA8152
+        sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/sia8152_regs.c
         
         mkdir -p out
         
-        # 1. Поиск базового defconfig
         BASE_DEFCONFIG=""
         if [ -f "arch/arm64/configs/gki_defconfig" ]; then
           BASE_DEFCONFIG="gki_defconfig"
@@ -48,20 +49,15 @@ jobs:
           BASE_DEFCONFIG=$(find arch/arm64/configs/ -name "*defconfig" | head -n 1 | sed 's|arch/arm64/configs/||')
         fi
 
-        echo "Базовый defconfig: $BASE_DEFCONFIG"
         make O=out $BASE_DEFCONFIG
 
-        # 2. Объединение вендорного фрагмента
         FRAGMENT=$(find arch/arm64/configs/ -name "*jr510*.config" -o -name "*frost*.config" | head -n 1)
         if [ -n "$FRAGMENT" ]; then
-          echo "Применяем фрагмент: $FRAGMENT"
           ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config $FRAGMENT
         fi
 
-        # Отключаем WERROR прямо в сгенерированном .config
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
 
-        # 3. Компиляция ядра
         make -j$(nproc --all) O=out Image dtbs modules || make -j1 O=out Image dtbs modules
 
     - name: Upload Compiled Kernel Artifacts
