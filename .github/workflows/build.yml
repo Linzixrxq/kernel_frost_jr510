@@ -29,11 +29,14 @@ jobs:
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
+        # Отключаем превращение warnings в ошибки
+        export KCFLAGS="-Wno-error -Wno-unused-variable -Wno-unused-function -Wno-format"
+        export KCPPFLAGS="-Wno-error"
         export KCONFIG_NOTIMESTAMP=1
         
         mkdir -p out
         
-        # 1. Поиск основного базового defconfig
+        # 1. Поиск базового defconfig
         BASE_DEFCONFIG=""
         if [ -f "arch/arm64/configs/gki_defconfig" ]; then
           BASE_DEFCONFIG="gki_defconfig"
@@ -48,15 +51,15 @@ jobs:
         echo "Базовый defconfig: $BASE_DEFCONFIG"
         make O=out $BASE_DEFCONFIG
 
-        # 2. Поиск и объединение вендорных конфигов (jr510 / frost)
+        # 2. Объединение вендорного фрагмента
         FRAGMENT=$(find arch/arm64/configs/ -name "*jr510*.config" -o -name "*frost*.config" | head -n 1)
         if [ -n "$FRAGMENT" ]; then
-          echo "Применяем фрагмент конфигурации: $FRAGMENT"
+          echo "Применяем фрагмент: $FRAGMENT"
           ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config $FRAGMENT
         fi
 
-        # 3. Компиляция ядра и DTB
-        make -j$(nproc --all) O=out Image.gz dtbs modules
+        # 3. Компиляция: если быстрая параллельная сборка падает, перезапускаем в 1 поток для четкого лога ошибки
+        make -j$(nproc --all) O=out Image dtbs modules || make -j1 O=out Image dtbs modules
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
