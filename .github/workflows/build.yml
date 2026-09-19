@@ -19,8 +19,8 @@ jobs:
       run: |
         mkdir -p clang
         cd clang
-        curl -LO https://googlesource.com
-        tar -xf clang-r416183b.tar.gz
+        curl -L "https://googlesource.com" -o clang.tar.gz
+        tar -xf clang.tar.gz
 
     - name: Compile Kernel via build.config
       run: |
