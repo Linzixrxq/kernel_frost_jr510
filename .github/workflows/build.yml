@@ -11,28 +11,21 @@ jobs:
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
 
-    # 2. Устанавливаем официальный и стабильный Clang через инструмент GitHub
-    - name: Install Clang Compiler
-      uses: egor-tensin/setup-clang@v2
-      with:
-        version: 12
-        platform: x64
-
-    # 3. Устанавливаем необходимые пакеты Linux и кросс-компиляторы GNU (GCC) для Android
-    - name: Install Compiling Tools & GCC Cross-Compilers
+    # 2. Устанавливаем ВСЕ инструменты из официальных, вечных зеркал Ubuntu
+    - name: Install Compiling Tools & Clang/GCC
       run: |
         sudo apt-get update
         sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzma lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev \
-        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
+        clang clang-format gcc-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
-    # 4. Запускаем компиляцию ядра
+    # 3. Запускаем компиляцию ядра
     - name: Compile Kernel via build.config
       run: |
         export ARCH=arm64
         export SUBARCH=arm64
         export HEADER_ARCH=arm64
         
-        # Настраиваем переменные путей компилятора под стандартную Ubuntu среду
+        # Перенаправляем пути компилятора на официальный встроенный системный Clang
         export CLANG_PREBUILT_BIN_DIR=/usr/bin
         export PATH=$CLANG_PREBUILT_BIN_DIR:$PATH
         
@@ -47,7 +40,7 @@ jobs:
         # Запуск официального сборщика Xiaomi
         BUILD_CONFIG=build.config.frost ./build/build.sh
 
-    # 5. Выгружаем готовый результат сборки
+    # 4. Выгружаем готовый результат сборки
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
