@@ -39,6 +39,10 @@ jobs:
         # ПАТЧ 2: Исправление VLA инициализаций нулями
         sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c
 
+        # ПАТЧ 3: Исправление VLA в драйвере отпечатка пальцев fpc1020
+        sed -i 's/const int ms\[len\] = {2, 2, 2, 3};/int ms[4] = {2, 2, 2, 3};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c
+        sed -i 's/const char ptl_name\[len\]\[16\] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/char ptl_name[4][16] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c
+
         mkdir -p out
         
         BASE_DEFCONFIG=""
