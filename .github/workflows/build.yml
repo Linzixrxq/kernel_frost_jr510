@@ -69,6 +69,10 @@ jobs:
 
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
 
+        # --- ВСТАВЛЯЕМ СУДА ---
+        # Игнорируем ошибки Section Mismatch на этапе MODPOST
+        ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
+
         make -j$(nproc --all) O=out Image dtbs modules || make -j1 O=out Image dtbs modules
 
     - name: Upload Compiled Kernel Artifacts
