@@ -1,0 +1,64 @@
+JLQ watchodg driver bindinngs
+
+This binding descirbes the watchdog driver binding for
+
+A force dump gpio is responsible for trigger an level interrupt to cpu and an
+trigger for starting sysdump
+
+
+- compatible:
+	Usage: required
+	Value type: <string>
+	Definition: must be "jlq,ap_wdt"
+
+- reg:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: the base address and watchdog device
+
+- reg-names:
+	Usage: optional
+	Value type: <string>
+
+- interrupts:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: bark irq number for watchodg
+
+- clocks:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: tclock for watchodg
+
+- clock-names:
+	Usage: optional
+	Value type: <string>
+	Definition: clock name
+
+- resets:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: reset config for watchdog
+
+- jlq,bark-time;
+	Usage: required
+	Value type: u32
+	Definition: bark interval for watchodg in millisecond
+
+= EXAMPLE
+
+The following example represents watchdog driver which will bark for every
+ten seconds and will bite irq will trigger if bark irq is not cleared after
+ten seconds
+
+	wdt0: watchdog@30707000 {
+		compatible = "jlq,ap_wdt";
+		reg = <0x30707000 0x1000>;
+		reg-names = "wdt0_base";
+		interrupts = <GIC_SPI INT_WDT0_BARK IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&wdt00_tclk>;
+		clock-names = "wdt0_clk";
+		resets = <&crg_rst 0x4c 10 RESET_LOW_ACTIVE>; /* bit10 */
+		reset-names = "wdt0-reset";
+		jlq,bark-time = <10000>;
+	};

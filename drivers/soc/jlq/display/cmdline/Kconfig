@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# JLQ display cmdline code
+#
+config JLQ_DISPLAY_CMDLINE
+	tristate "jlq display cmdline code"
+	help
+	 This selects support for the parsing of jlq
+	 display cmdline.If you want to parse panel_cfg
+	 from cmdline,you should selet this option.

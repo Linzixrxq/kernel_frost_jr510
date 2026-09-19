@@ -1,0 +1,35 @@
+JLQ Bridge Driver
+================================
+
+Bridge Device Node:
+====================
+
+Required properties:
+--------------------
+- compatible:		Shall be "jlq,bridge"
+- jlq,bridge-edge:	the coprocessor communicated with AP, eg. 0 is zsp0
+- jlq,bridge-name:	the name of bridge channel. Now there are PM and AUDIO
+- reg:			Three region for the share memory base address, the receive base address and the send base address
+- reg-names:		eg."baseaddr","rx_addr","tx_addr"
+- interrupt-parent:	top_mailbox_irq is the interrupt parent
+- interrupts:		interrupt for the receiver irq and receive flow irq
+- interrupt-names:	the names list of received interrupt
+- jlq,bridge-tx-irq:	the irq id for sending
+- jlq,bridge-txctl-irq:	the irq id for the sending flow control
+
+Example:
+--------
+	bridge_pm: bridge_pm {
+		compatible = "jlq,bridge";
+		jlq,bridge-edge = <0>;
+		jlq,bridge-name = "PM";
+		reg = <0xF9002000 0x0>,
+			<0x4000 0x400>,
+			<0x4400 0x400>;
+		reg-names = "baseaddr","rx_addr","tx_addr";
+		interrupt-parent = <&top_mailbox_irq>;
+		interrupts = <0 0>,<1 0>;
+		interrupt-names = "rx_irq","rx_ctl_id";
+		jlq,bridge-tx-irq = <0x0>;
+		jlq,bridge-txctl-irq = <0x1>;
+	};

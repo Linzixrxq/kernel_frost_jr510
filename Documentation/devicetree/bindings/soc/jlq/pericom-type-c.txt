@@ -1,0 +1,22 @@
+USB Type-C Detection Chip
+
+Required properties :
+- compatible : Must be "pericom,usb-type-c"
+- reg: 7bit I2C slave address
+
+Optional properties:
+- gpio-irq : config INTB pin
+- pinctrl-names : This should be defined if a target uses pinctrl framework
+  for INT_N and ENB pin. See "pinctrl" in
+  Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt.
+  It should specify the names of the configs that pinctrl can install in driver.
+  Following are the pinctrl config that can be installed:
+
+Example :
+        pericom_type_c: pericom_type_c@1d {
+                compatible = "pericom,usb-type-c";
+                reg = <0x1d>;
+                qpio-irq = <&gpio 9 GPIO_ACTIVE_LOW>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&pericom_irq_pin>;
+        };

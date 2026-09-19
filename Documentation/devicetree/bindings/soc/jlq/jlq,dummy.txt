@@ -1,0 +1,52 @@
+JLQ dummy driver bindinngs
+
+This binding descirbes the dummy driver responsible for detecting access
+display/ai/gpu/vpu/adsp register when these master is power donw.
+
+
+- compatible:
+	Usage: required
+	Value type: <string>
+	Definition: must be "jlq,dummy"
+
+- reg:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: the base address and size of dummy register
+
+- interrupts-names:
+	Usage: required
+	Value type: <string>
+	Definition: the irq name of dummy report
+
+- interrupts:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: irq type(SPI), irq number and trigger type
+
+- dummy-slaves:
+	Usage: required
+	Value type: <string array>
+	Definition: dummy slave name sorted by the order in PD_RD_WR_INT_EN_CFG
+
+- dummy-rpt-id:
+	Usage" required
+	Value type: <prop-encoded-array>
+	Definition: dummy slave report id sorted by the order of PD_ARADDR_RPTx
+
+
+= EXAMPLE
+
+The following example represents jlq dummy device
+
+disabled.
+
+	dummy:dummy@0x3450e0c4 {
+		reg = <0x3450e0c4 0xc0>;
+		compatible = "jlq,dummy";
+		interrupt-names = "top_sysctl_irq";
+		interrupts = <GIC_SPI INT_TOP_SYS_CTL IRQ_TYPE_LEVEL_HIGH>;
+		dummy-slaves = "ai", "gpu", "vpu", "display", "vdsp";
+		dummy-rpt-id = <0 1 4 2 3>;
+	};
+

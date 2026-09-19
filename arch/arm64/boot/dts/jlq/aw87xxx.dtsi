@@ -1,0 +1,13 @@
+/*mono dtsi config*/
+&i2c_4 {
+/* AWINIC AW87XXX Smart K PA */
+	aw87xxx_pa@58 {
+		compatible = "awinic,aw87xxx_pa";
+		reg = <0x58>;
+		//reset-gpio = <&tlmm 106 0>;
+		dev_index = < 0 >;
+		//status = "disabled";
+	};
+
+/* AWINIC AW87XXX Smart K PA End */
+};

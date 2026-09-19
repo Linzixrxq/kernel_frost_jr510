@@ -1,0 +1,35 @@
+&soc {
+	i2c_3: i2c@34502000 {
+		compatible = "snps,designware-i2c";
+		#address-cells=<1>;
+		#size-cells=<0>;
+		reg = <0x34502000 0x1000>;
+		interrupts = <GIC_SPI INT_I2C3 IRQ_TYPE_LEVEL_HIGH>;
+		clock-frequency = <400000>;
+		clocks = <&i2c3_ic_clk>, <&i2c3_pclk>;
+		clock-names = "i2c_mclk", "i2c_pclkgt";
+	};
+
+	i2c_4: i2c@34503000 {
+		compatible = "snps,designware-i2c";
+		#address-cells=<1>;
+		#size-cells=<0>;
+		reg = <0x34503000 0x1000>;
+		interrupts = <GIC_SPI INT_I2C4 IRQ_TYPE_LEVEL_HIGH>;
+		clock-frequency = <400000>;
+		clocks = <&i2c4_ic_clk>, <&i2c4_pclk>;
+		clock-names = "i2c_mclk", "i2c_pclkgt";
+	};
+
+	i2c_6: i2c@30706000 {
+		compatible = "snps,designware-i2c";
+		#address-cells=<1>;
+		#size-cells=<0>;
+		reg = <0x30706000 0x1000>;
+		interrupts = <GIC_SPI INT_I2C6 IRQ_TYPE_LEVEL_HIGH>;
+		clock-frequency = <400000>;
+		clocks = <&i2c6_ic_clk>, <&i2c6_pclk>;
+		clock-names = "i2c_mclk", "i2c_pclkgt";
+	};
+};
+

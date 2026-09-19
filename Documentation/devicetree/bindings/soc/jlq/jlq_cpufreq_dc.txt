@@ -1,0 +1,17 @@
+cpu frequency duty cycle device
+
+jlq-cpufreq-dcstat is a device that trace the use information of cpu frequency.
+it can provide data for optimizing the power consumption of system.
+
+Required properties:
+- compatible:		Must be "jlq,cpufreq-dcstat"
+
+Optional properties:
+
+
+Example:
+
+        jlq-cpufreq-dcstat {
+                compatible = "jlq,cpufreq-dcstat";
+        };
+

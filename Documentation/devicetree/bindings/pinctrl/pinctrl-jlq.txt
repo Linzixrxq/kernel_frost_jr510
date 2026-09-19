@@ -1,0 +1,138 @@
+JLQ muxpin controller.
+
+Required properties:
+- compatible:
+	Usage: required
+	Value type: <string>
+	should be "jlq,<name>-pinctrl"
+	   "jlq,ja310-gpio": found on ja310 SoCs
+	   "jlq,jr510-gpio": found on JR510 SoCs
+
+- reg:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: the base address and size of the TLMM register space.
+
+- interrupts:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: should specify the TLMM summary IRQ.
+
+- interrupt-controller:
+	Usage: required
+	Value type: <none>
+	Definition: identifies this node as an interrupt controller
+
+- #interrupt-cells:
+	Usage: required
+	Value type: <u32>
+	Definition: must be 2. Specifying the pin number and flags, as defined
+		    in <dt-bindings/interrupt-controller/irq.h>
+
+- gpio-controller:
+	Usage: required
+	Value type: <none>
+	Definition: identifies this node as a gpio controller
+
+- #gpio-cells:
+	Usage: required
+	Value type: <u32>
+	Definition: must be 2. Specifying the pin number and flags, as defined
+	in <dt-bindings/gpio/gpio.h>
+
+Please refer to ../gpio/gpio.txt and ../interrupt-controller/interrupts.txt for
+a general description of GPIO and interrupt bindings.
+
+Please refer to pinctrl-bindings.txt in this directory for details of the
+common pinctrl bindings used by client devices, including the meaning of the
+phrase "pin configuration node".
+
+The pin configuration nodes act as a container for an arbitrary number of
+subnodes. Each of these subnodes represents some desired configuration for a
+pin, a group, or a list of pins or groups. This configuration can include the
+mux function to select on those pin(s)/group(s), and various pin configuration
+parameters, such as pull-up, drive strength, etc.
+
+
+PIN CONFIGURATION NODES:
+
+The name of each subnode is not important; all subnodes should be enumerated
+and processed purely based on their content.
+
+Each subnode only affects those parameters that are explicitly listed. In
+other words, a subnode that lists a mux function but no pin configuration
+parameters implies no information about any pin configuration parameters.
+Similarly, a pin subnode that describes a pullup parameter implies no
+information about e.g. the mux function.
+
+
+The following generic properties as defined in pinctrl-bindings.txt are valid
+to specify in a pin configuration subnode:
+
+- pins:
+	Usage: required
+	Value type: <string-array>
+	Definition: List of gpio pins affected by the properties specified in
+	            this subnode.  Valid pins are:
+	            gpio0-gpio102
+
+- function:
+	Usage: required
+	Value type: <string>
+	Definition: Specify the alternative function to be configured for the
+	            specified pins.
+	            Valid values are:
+	            boot_ctl,clk_out,emmc,eth,gpio,i2c,i2s,isp,jtag,osc_en,
+	            pwen,pwm,rstout,sd,spi_flash,ssi,test_pin,tmode,trace,
+	            uart,usbdrv,wmprst_n
+
+- bias-disable:
+	Usage: optional
+	Value type: <MUXPIN_PULL_DISABLE>
+	Definition: The specified pins should be configured as no pull.
+
+- bias-pull-down:
+	Usage: optional
+	Value type: <MUXPIN_PULL_DOWN>
+	Definition: The specified pins should be configured as pull down.
+
+- bias-pull-up:
+	Usage: optional
+	Value type: <MUXPIN_PULL_UP>
+	Definition: The specified pins should be configured as pull up.
+
+- drive-strength:
+	Usage: optional
+	Value type: <u32>
+	Definition: Selects the drive strength for the specified pins, in mA.
+	            Valid values are: MUXPIN_DRIVE_2mA,MUXPIN_DRIVE_4mA,MUXPIN_DRIVE_6mA,
+	            MUXPIN_DRIVE_8mA,MUXPIN_DRIVE_10mA,MUXPIN_DRIVE_12mA
+
+- schmitt enable:
+	Usage: optional
+	Value type: <SCHMITT_TRIGGER_ENABLE/SCHMITT_TRIGGER_DISABLE>
+	Definition: enable schmitt trigger function;
+
+Example:
+	pinctrl: pinctrl@F9034000 {
+		compatible = "jlq,ja310-pinctrl", "jlq,jr510-pinctrl";
+		reg = <0xF9034000 0x1000>;
+
+		ethphy_pins {
+		       eth_phy:eth_phy {
+		              jlq,pins = "GPIO11", "GPIO13",
+		                     "GPIO14", "GPIO15",
+		                     "GPIO16", "GPIO17",
+		                     "GPIO19", "GPIO20",
+		                     "GPIO21", "GPIO22",
+		                     "SSI2_TX", "SSI2_CLK",
+		                     "SSI3_TX", "SSI3_RX";
+		              jlq,function = "eth";
+		       };
+
+		       eth_int:eth_int {
+		              jlq,pins = "SSI3_SSn";
+		              jlq,function = "eth";
+		       };
+		};
+	}

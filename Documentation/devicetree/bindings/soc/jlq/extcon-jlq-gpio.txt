@@ -1,0 +1,18 @@
+USB GPIO Extcon device
+
+This is a virtual device used to generate USB cable states from the USB ID pin
+connected to a GPIO pin.
+
+Required properties:
+- compatible: Should be "jlq,extcon-usb-gpio"
+
+Either one of id-gpio must be present. Both can be present as well.
+- id-gpio: gpio for USB ID pin. See gpio binding.
+
+Example: Examples of extcon-usb-gpio node as listed below:
+	usb_id: usb_id {
+		compatible = "jlq,extcon-usb-gpio";
+		id-gpio = <&gpio 61 0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_phy_id_pin>;
+	};

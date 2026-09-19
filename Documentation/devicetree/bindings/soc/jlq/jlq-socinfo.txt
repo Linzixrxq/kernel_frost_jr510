@@ -1,0 +1,7 @@
+JLQ socinfo driver bindinngs
+
+This binding descirbes the socinfo driver, only compatible property is need
+
+	jlq-socinfo {
+		compatible = "jlq,socinfo";
+	};

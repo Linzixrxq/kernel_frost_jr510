@@ -1,0 +1,406 @@
+menu "JLQ SoC Audio support"
+
+config SND_SOC_JLQ_HOSTLESS_PCM
+	tristate
+
+config SND_SOC_JLQ_ADSP_INTF
+	bool "SoC Q6 audio driver for jlq"
+	help
+	 To add support for SoC audio on JLQ.
+	 This will enable all the platform specific
+	 interactions towards DSP. It includes asm,
+	 and afe interfaces on the DSP.
+	
+config SND_SOC_ADSP
+	tristate "SoC ALSA audio driver for ADSP"
+	select SND_SOC_JLQ_ADSP_INTF
+	help
+    To add support for JLQ ADSP Soc Audio.
+    This will enable sound soc platform specific
+    audio drivers. This includes asm, afe
+    interfaces to DSP using apr.
+
+config SND_SOC_ADSP_DEBUG
+	bool "QDSP Audio Driver Debug Feature"
+	help
+	 Configuration to enable debugging utilities for
+	 QDSP6 based audio drivers. One debugging utility
+	 is inducing kernel panic upon encountering critical
+	 errors from DSP audio modules
+
+config DOLBY_DAP
+	bool "Enable Dolby DAP"
+	depends on SND_SOC_JLQ_ADSP_INTF
+	help
+	 To add support for dolby DAP post processing.
+	 This support is to configure the post processing parameters
+	 to DSP. The configuration includes sending the end point
+	 device, end point dependent post processing parameters and
+	 the various posrt processing parameters
+
+config DOLBY_DS2
+	bool "Enable Dolby DS2"
+	depends on SND_SOC_JLQ_ADSP_INTF
+	help
+	 To add support for dolby DAP post processing.
+	 This support is to configure the post processing parameters
+	 to DSP. The configuration includes sending the end point
+	 device, end point dependent post processing parameters and
+	 the various posrt processing parameters
+
+config DTS_EAGLE
+	bool "Enable DTS Eagle Support"
+	depends on SND_SOC_JLQ_ADSP_INTF
+	select SND_HWDEP
+	help
+	 To add DTS Eagle support on QDSP6 targets.
+	 Eagle is a DTS pre/post processing
+	 package that includes HeadphoneX. The configuration
+	 includes sending tuning parameters of various modules.
+
+config DTS_SRS_TM
+	bool "Enable DTS SRS"
+	depends on SND_SOC_JLQ_ADSP_INTF
+	help
+	 To add support for DTS SRS post processing.
+	 This support is to configure the post processing
+	 parameters to DSP. The configuration includes sending
+	 tuning parameters of various modules.
+
+config SND_SOC_CPE
+	tristate "CPE drivers"
+	depends on SND_SOC_WCD_CPE
+	help
+	 To add support for Codec Processing Engine. This support
+	 is to enable CPE block on the codec and this config needs
+	 to be added to codecs that contain the CPE hardware block.
+	 The configuration includes the cpe lsm driver to enable
+	 listen on codec.
+
+config PINCTRL_LPI
+	tristate "JR510 ALSA PINCTRL_LPI"
+	help
+	 To add support for SoC audio on JLQ.
+
+config AUDIO_EXT_CLK
+	tristate "JR510 AUDIO_EXT_CLK"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_WCD9XXX_V2
+	tristate "JR510 ALSA SND_SOC_WCD9XXX_V2"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config SND_SOC_WCD_MBHC
+	tristate "JR510 SND_SOC_WCD_MBHC"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config SND_SOC_WSA881X_ANALOG
+	tristate "JR510 ALSA SND_SOC_WSA881X_ANALOG"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_AW87XXX
+	tristate "JR510 ALSA SND_SOC_AW87XXX"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_SIA81XX
+	tristate "JR510 ALSA SND_SOC_SIA81XX"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config WCD9XXX_CODEC_CORE_V2
+	tristate "JR510 ALSA WCD9XXX_CODEC_CORE_V2"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_CDC_PINCTRL
+	tristate "JR510 ALSA MSM_CDC_PINCTRL"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_QDSP6V2_CODECS
+	tristate "JR510 ALSA MSM_QDSP6V2_CODECS"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_ULTRASOUND
+	tristate "JR510 ALSA MSM_ULTRASOUND"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_QDSP6_APRV2_RPMSG
+	tristate "JR510 ALSA MSM_QDSP6_APRV2_RPMSG"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config SND_SOC_MSM_QDSP6V2_INTF
+	tristate "JR510 ALSA SND_SOC_MSM_QDSP6V2_INTF"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_ADSP_LOADER
+	tristate "JR510 ALSA MSM_ADSP_LOADER"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config REGMAP_SWR
+	tristate "JR510 ALSA REGMAP_SWR"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_QDSP6_SSR
+	tristate "JR510 ALSA MSM_QDSP6_SSR"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_QDSP6_PDR
+	tristate "JR510 ALSA MSM_QDSP6_PDR"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config MSM_QDSP6_NOTIFIER
+	tristate "JR510 ALSA MSM_QDSP6_NOTIFIER"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config SND_SOC_MSM_HOSTLESS_PCM
+	tristate "JR510 ALSA SND_SOC_MSM_HOSTLESS_PCM"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config SOUNDWIRE_MSTR_CTRL
+	tristate "JR510 ALSA SOUNDWIRE_MSTR_CTRL"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_WCD_MBHC_ADC
+	tristate "JR510 ALSA SND_SOC_WCD_MBHC_ADC"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_QDSP6V2
+	tristate "JR510 ALSA SND_SOC_QDSP6V2"
+	help
+	 To add support for SoC audio on JLQ.
+
+config QTI_PP
+	tristate "JR510 ALSA QTI_PP"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_HWDEP_ROUTING
+	tristate "JR510 ALSA SND_HWDEP_ROUTING"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_MSM_STUB
+	tristate "JR510 ALSA SND_SOC_MSM_STUB"
+	help
+	 To add support for SoC audio on JLQ.
+config MSM_AVTIMER
+	tristate "JR510 ALSA MSM_AVTIMER"
+	help
+	 To add support for SoC audio on JLQ.
+
+config VA_MACRO
+	tristate "JR510 ALSA VA_MACRO"
+	help
+	 To add support for SoC audio on JLQ.
+
+config RX_MACRO
+	tristate "JR510 ALSA RX_MACRO"
+	help
+	 To add support for SoC audio on JLQ.
+
+config TX_MACRO
+	tristate "JR510 ALSA TX_MACRO"
+	help
+	 To add support for SoC audio on JLQ.
+
+config DIGITAL_CDC_RSC_MGR
+    tristate "JR510 ALSA DIGITAL_CDC_RSC_MGR"
+    help
+     To add support for SoC audio on JLQ.
+
+config SND_SOC_WCD_IRQ
+	tristate "JR510 ALSA SND_SOC_WCD_IRQ"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_WCD937X
+	tristate "JR510 ALSA SND_SOC_WCD937X"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_WCD937X_SLAVE
+	tristate "JR510 ALSA SND_SOC_WCD937X_SLAVE"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_SOC_BOLERO
+	tristate "JR510 ALSA SND_SOC_BOLERO"
+	help
+	 To add support for SoC audio on JLQ.
+
+config SND_EVENT
+	tristate "JR510 ALSA SND_EVENT"
+	help
+	 To add support for SoC audio on JLQ.
+
+config TDM_DISABLE
+	tristate "JR510 ALSA TDM_DISABLE"
+	help
+	 To add support for SoC audio on JLQ.
+
+config MI2S_DISABLE
+	tristate "JR510 ALSA MI2S_DISABLE"
+	help
+	 To add support for SoC audio on JLQ.
+
+config AUXPCM_DISABLE
+	tristate "JR510 ALSA AUXPCM_DISABLE"
+	help
+	 To add support for SoC audio on JLQ.
+	 
+config SND_SOC_JA310
+	tristate "SoC Machine driver for JA310"
+	select SND_SOC_ADSP
+	#select SND_SOC_MSM_STUB
+	select SND_SOC_JLQ_HOSTLESS_PCM
+	#select SND_DYNAMIC_MINORS
+	select ADSP_APR
+	#select MSM_QDSP6V2_CODECS
+	#select SND_SOC_WCD9330
+	#select SND_SOC_WCD9335
+	select SND_SOC_PM310_CODEC
+	#select SND_SOC_WSA881X_ANALOG
+	#select SND_SOC_WSA881X
+	#select MFD_CORE
+	#select QTI_PP
+	#select DTS_SRS_TM
+	#select DOLBY_DAP
+	#select DOLBY_DS2
+	#select SND_SOC_CPE
+	#select SND_SOC_WCD_CPE
+	#select SND_SOC_MSM_HDMI_DBA_CODEC_RX
+	#select SND_HWDEP
+       # select DTS_EAGLE
+	help
+	 To add support for SoC audio on MSM8996.
+	 This will enable sound soc drivers which
+	 interfaces with DSP, also it will enable
+	 the machine driver and the corresponding
+	 DAI-links
+
+config SND_SOC_SM6150
+	tristate "SoC Machine driver for JR510"
+	select PINCTRL_WCD
+	select PINCTRL_LPI
+	select AUDIO_EXT_CLK
+	select SND_SOC_WCD9XXX_V2
+	select SND_SOC_WCD_MBHC
+	select SND_SOC_WSA881X
+	select SND_SOC_WCD_DSP_MGR
+	select SND_SOC_WCD_SPI
+	select SND_SOC_WCD934X
+	select SND_SOC_WCD934X_MBHC
+	select SND_SOC_WCD934X_DSD
+	select SND_SOC_WCD_CPE
+	select WCD9XXX_CODEC_CORE
+	select MSM_CDC_PINCTRL
+	select MSM_QDSP6V2_CODECS
+	select MSM_ULTRASOUND
+	select MSM_QDSP6_APRV2_RPMSG
+	select SND_SOC_MSM_QDSP6V2_INTF
+	select MSM_ADSP_LOADER
+	select REGMAP_SWR
+	select MSM_QDSP6_SSR
+	select MSM_QDSP6_PDR
+	select MSM_QDSP6_NOTIFIER
+	select SND_SOC_MSM_HOSTLESS_PCM
+	select MSM_GLINK_SPI_XPRT
+	select WCD_DSP_GLINK
+	select SOUNDWIRE
+	select SOUNDWIRE_MSTR_CTRL
+	select SND_SOC_WCD_MBHC_ADC
+	select SND_SOC_QDSP6V2
+	select QTI_PP
+	select SND_HWDEP_ROUTING
+	select DOLBY_LICENSE
+	select SND_SOC_MSM_STUB
+	select MSM_AVTIMER
+	select SND_SOC_MSM_HDMI_CODEC_RX
+	select SND_SOC_BOLERO
+	select WSA_MACRO
+	select VA_MACRO
+	select RX_MACRO
+	select TX_MACRO
+	select SND_SOC_WCD_IRQ
+	select SND_SOC_WCD937X
+	select SND_SOC_WCD937X_SLAVE
+	select SND_EVENT
+
+	help
+	 To add support for SoC audio on MSM8996.
+	 This will enable sound soc drivers which
+	 interfaces with DSP, also it will enable
+	 the machine driver and the corresponding
+	 DAI-links
+
+config SND_SOC_JR510
+	tristate "SoC Machine driver for JR510"
+	#select PINCTRL_LPI
+	#select AUDIO_EXT_CLK
+	#select SND_SOC_WCD9XXX_V2
+	#select SND_SOC_WCD_MBHC
+	#select SND_SOC_WSA881X_ANALOG
+	#select WCD9XXX_CODEC_CORE_V2
+	#select MSM_CDC_PINCTRL
+	#select MSM_QDSP6V2_CODECS
+	#select MSM_ULTRASOUND
+	#select MSM_QDSP6_APRV2_RPMSG
+	#select SND_SOC_MSM_QDSP6V2_INTF
+	#select MSM_ADSP_LOADER
+	#select REGMAP_SWR
+	#select MSM_QDSP6_SSR
+	#select MSM_QDSP6_PDR
+	#select MSM_QDSP6_NOTIFIER
+	#select SND_SOC_MSM_HOSTLESS_PCM
+	#select SOUNDWIRE
+	#select SOUNDWIRE_MSTR_CTRL
+	#select SND_SOC_WCD_MBHC_ADC
+	#select SND_SOC_QDSP6V2
+	#select QTI_PP
+	#select SND_HWDEP_ROUTING
+	#select SND_SOC_MSM_STUB
+	#select MSM_AVTIMER
+	#select SND_SOC_BOLERO
+	#select VA_MACRO
+	#select RX_MACRO
+	#select TX_MACRO
+	#select DIGITAL_CDC_RSC_MGR
+	#select SND_SOC_WCD_IRQ
+	#select SND_SOC_WCD937X
+	#select SND_SOC_WCD937X_SLAVE
+	#select SND_EVENT
+	#select TDM_DISABLE
+	#select MI2S_DISABLE
+	#select AUXPCM_DISABLE
+
+	help
+	 To add support for SoC audio on JR510.
+	 This will enable sound soc drivers which
+	 interfaces with DSP, also it will enable
+	 the machine driver and the corresponding
+	 DAI-links
+	 
+config JLQ_ADSPLOAD
+    tristate "adsp load"
+    default m
+    ---help---
+        load adsp bin.
+endmenu

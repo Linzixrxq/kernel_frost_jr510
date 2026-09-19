@@ -1,0 +1,152 @@
+/ {
+	aliases {
+		malidp0 = &dp0;
+	};
+};
+
+&soc {
+	dp0: display@30600000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "arm,mali-d32";
+		reg = <0x30600000 0x20000>;
+		interrupts = <GIC_SPI INT_CETI_INTR IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "DPU";
+		clocks = <&ceti_aclk>;
+		clock-names = "aclk";
+		aclk_rate = <400000000>;
+		iommus = <&smmu 0>, <&smmu 1>, <&smmu 2>, <&smmu 3>,
+		 <&smmu 8>;
+
+		pl0: pipeline@0 {
+			reg = <0>;
+			clocks = <&ceti_pxlclk>;
+			clock-names = "pxclk";
+			lpu_raxi_aoutstdcapb = <32>;
+			lpu_raxi_boutstdcapb = <32>;
+			lpu_raxi_ben = <0>;
+			lpu_raxi_burstlen = <16>;
+			lpu_raxi_arqos = <15>;
+			lpu_raxi_ord = <0>;
+			lpu_waxi_outstdcapb = <16>;
+			lpu_waxi_burstlen = <16>;
+			lpu_waxi_awqos = <15>;
+			lpu_waxi_ord = <0>;
+			lpu_l0_arcache = <3>;
+			lpu_l1_arcache = <3>;
+			lpu_l2_arcache = <3>;
+			lpu_l3_arcache = <3>;
+			lpu_lw_arcache = <3>;
+			lpu_tbu_doutstdcapb = <8>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				dp_pl0_out_dsi: endpoint@0 {
+					reg = <0>;
+					remote-endpoint = <&dsi_in_dp>;
+				};
+
+				dp_pl0_out_virtual: endpoint@1 {
+					reg = <1>;
+					remote-endpoint = <&virtual_in_dp>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+				dp_pl0_out_coprocessor: endpoint@0 {
+					remote-endpoint = <&camille_in_dp>;
+				};
+			};
+
+		};
+	};
+
+	dsi: dsi@30620000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "jlq,dw-mipi-dsi";
+		reg = <0x30620000 0x1000>;
+		clocks = <&dsi_pclk >, <&dsi_dpiclk>, <&dis_dphy_pllclk>;
+		clock-names = "pclk", "dpipclk", "pllref_clk";
+		port {
+			dsi_in_dp: endpoint {
+				remote-endpoint = <&dp_pl0_out_dsi>;
+			};
+		};
+	};
+
+	virtualencoder: virtualencoder {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "drm,virtual-encoder";
+		status = "disabled";
+
+		port {
+			virtual_in_dp: endpoint {
+				remote-endpoint = <&dp_pl0_out_virtual>;
+			};
+		};
+
+		disp_timings: display-timings {
+			native-mode = <&timing0>;
+			timing0: timing0 {
+				clock-frequency = <35000000>;
+				hactive = <800>;
+				vactive = <480>;
+				hfront-porch = <210>;
+				hsync-len = <2>;
+				hback-porch = <46>;
+				vfront-porch = <22>;
+				vsync-len = <2>;
+				vback-porch = <23>;
+				hsync-active = <1>;
+				vsync-active = <1>;
+			};
+		};
+	};
+
+	camille: camille@30622000 {
+		compatible = "jlq,jlq-camille";
+		status = "disabled";
+		reg = <0x30622000 0x1000>;
+		clocks = <&ad_clk>;
+		clock-names = "aclk";
+		interrupts = <GIC_SPI INT_CAMILLE IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "CAMILLE";
+		data_flow  = /bits/ 8 <6>;
+		cltm_hist_mode = /bits/ 16 <0>;
+		cltm_curve_transition = /bits/ 16 <4095>;
+		cltm_block_width = /bits/ 16 <256>;
+		cltm_block_height = /bits/ 16 <256>;
+		cltm_block_w_num =  /bits/ 16 <5>;
+		cltm_block_h_num =  /bits/ 16 <10>;
+		cltm_linear_adj_offset = /bits/ 16 <1023>;
+		cltm_linear_adj_ratio = /bits/ 16 <1023>;
+		cltm_adj_curve_index = /bits/ 8 <0>;
+		cltm_strength_interval = /bits/ 8 <0>;
+		cltm_strength_step = /bits/ 8 <1>;
+		cltm_strength_target = /bits/ 8 <128>;
+		cltm_strength_mode = /bits/ 8 <1>;
+		pwm_frequency = <3200000>;
+		port {
+			camille_in_dp: endpoint {
+				remote-endpoint = <&dp_pl0_out_coprocessor>;
+			};
+		};
+
+	};
+
+	display_sysctrl: display_sysctrl@30621000 {
+		compatible = "jlq,display_sysctrl";
+		reg = <0x30621000 0x1000>;
+		status = "disabled";
+	};
+};

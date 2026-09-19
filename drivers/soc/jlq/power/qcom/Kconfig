@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# JLQ POWER drivers
+
+config JLQ_QCOM_POWER_SUPPLY
+	tristate "QTI power supply support on jlq SOC"
+	depends on ARCH_JLQ
+	help
+	  Say Y here to enable qcom power supply  support.This allows
+	  Qcom power supply (batteries, qg, charger) monitoring by userspace
+	  via sysfs and uevent (if available) and/or APM kernel interface
+	  (if selected below).
+
+if JLQ_QCOM_POWER_SUPPLY
+config JLQ_QPNP_QG
+	tristate "QPNP Qgauge driver"
+	depends on MFD_SPMI_PMIC
+	depends on IIO
+	help
+	  Say Y here to enable the Qualcomm Technologies, Inc. QGauge driver
+	  which uses the periodic sampling of the battery voltage and current
+	  to determine the battery state-of-charge (SOC) and supports other
+	  battery management features.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called qcom-qpnp-qg.
+
+config JLQ_QPNP_SMB5
+	tristate "SMB5 Battery Charger"
+	depends on MFD_SPMI_PMIC && IIO && TYPEC
+	help
+	  Say Y to enables support for the SMB5 charging peripheral.
+	  The QPNP SMB5 charger driver supports the charger peripheral
+	  present in the chip.
+	  The power supply and iio frameworks are used to communicate battery
+	  and usb properties to userspace and other driver consumers such
+	  as fuel gauge, USB, and USB-PD.
+	  VBUS and VCONN regulators are registered for supporting OTG,
+	  and powered Type-C cables respectively.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called qpnp-smb5-main.
+
+config JLQ_SMB1355_SLAVE_CHARGER
+	tristate "SMB1355 Slave Battery Charger"
+	depends on JLQ_QCOM_MFD_I2C_PMIC && IIO
+	help
+	  Say Y to include support for SMB1355 Battery Charger.
+	  SMB1355 is a single phase 5A battery charger.
+	  The driver supports charger enable/disable.
+	  The driver reports the charger status via the power supply framework.
+	  A charger status change triggers an IRQ via the device STAT pin.
+
+endif # JLQ_QCOM_POWER_SUPPLY

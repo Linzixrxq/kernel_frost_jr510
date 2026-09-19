@@ -1,0 +1,9 @@
+#
+#  I2S drivers configuration
+#
+
+config JlQ_I2S
+	tristate "JLQ I2S Component"
+	default y
+	help
+	  Select driver for JLQ I2S Component.

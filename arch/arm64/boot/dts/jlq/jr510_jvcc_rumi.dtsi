@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/clock/qcom,gcc-bengal.h>
+
+&clocks {
+	/delete-node/ qcom,gcc@34500150;
+	/delete-node/ qcom,gcc@24b00000;
+	/delete-node/ qcom,rpmcc;
+	gcc: qcom,gcc@24b00000 {
+		compatible = "qcom,dummycc";
+		clock-output-names = "gcc";
+		reg = <0x24b00000 0x100000>;
+		reg-names = "cc_base";
+		//vdd_cx-supply = <&VDD_CX_LEVEL>;
+		//vdd_cx_ao-supply = <&VDD_CX_LEVEL_AO>;
+		//vdd_mx-supply = <&VDD_MX_LEVEL>;
+		#clock-cells = <1>;
+		#reset-cells = <1>;
+	};
+
+	rpmcc: qcom,rpmcc {
+		compatible = "qcom,dummycc";
+		clock-output-names = "rpmcc";
+		#clock-cells = <1>;
+	};
+};
+

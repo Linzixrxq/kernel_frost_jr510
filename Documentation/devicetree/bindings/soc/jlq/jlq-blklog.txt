@@ -1,0 +1,11 @@
+JLQ block log driver bindinngs
+
+Required properties :
+  - compatible :  "jlq,blk-log-loader",for "loader-log"
+
+This binding descirbes the block log driver
+
+	jlq-blk-log {
+		compatible = "jlq,blk-log-loader";
+		jlq,blk-dev = "/dev/block/platform/0.soc/34458000.sdhci/by-name/rawdump";
+	};

@@ -1,0 +1,20 @@
+config CPUFREQ_DT_JLQ
+	tristate "Generic DT based cpufreq driver"
+	depends on HAVE_CLK && OF
+	select CPUFREQ_DT_PLATDEV_JLQ
+	select PM_OPP
+	help
+	  This adds a generic DT based cpufreq driver for frequency management.
+	  It supports both uniprocessor (UP) and symmetric multiprocessor (SMP)
+	  systems.
+
+	  If in doubt, say N.
+
+config CPUFREQ_DT_JLQ_PLATDEV
+	tristate "Generic dt cpufreq device driver"
+	help
+	  This adds a generic DT based cpufreq platdev driver for frequency
+	  management.  This creates a 'cpufreq-dt-jlq' platform device, on the
+	  supported platforms.
+
+	  If in doubt, say N.

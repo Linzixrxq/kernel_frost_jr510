@@ -1,0 +1,18 @@
+
+JLQ,4000mAH_SD7601_SH366101_Jun15th2020 {
+    /*JLQ_4000mAH_SD7601_SH366101_Jun15th2020 */
+	term-current = <200>;
+	fullbatt-vchkdrop-ms = <5000>;
+	fullbatt-vchkdrop-volt = <200>;
+	fullbatt-voltage = <4400000>;
+	emptybatt-voltage = <3200000>;
+	fullbatt-capacity = <4010>;
+	fullbatt-energy = <16940>;
+    fastchg-volt-uv = <4390000>;
+    fastchg-current-ua = <3000000>;
+    batt-id-kohm = <100>;
+	battery-cold = <0>;
+	battery-hot = <600>;
+    qcom,battery-beta = <4250>;
+    battery-name = "JLQ_4000mAH_SD7601_SH366101_Jun15th2020";
+};

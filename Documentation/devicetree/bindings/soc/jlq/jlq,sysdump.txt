@@ -1,0 +1,64 @@
+JLQ sysdump driver bindinngs
+
+This binding descirbes the sysdump driver responsible for trigger sysdump which
+register with an notifier for panic and will trigger wdog bite and  scp will do
+soc register dump with wdog's bite signal
+
+A force dump gpio is responsible for trigger an level interrupt to cpu and an
+trigger for starting sysdump
+
+
+- compatible:
+	Usage: required
+	Value type: <string>
+	Definition: must be "jlq,sysdump"
+
+- reg:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: the base address and size of sysdump register, like
+	TOP_CHIP_RSTN_CTL0 ~ TOP_CHIP_RSTN_CTL5
+
+- reg-names:
+	Usage: optional
+	Value type: <string>
+
+- enable_sysdump:
+	Usage: optional
+	Value type: bool
+	Definition: enable sysdump, if not defined, sysdump won't be triggered.
+
+- force-dump-enable:
+	Usage: optional
+	Value type: bool
+	Definition: enable sysdump, if not defined, sysdump can't be  triggered
+		    toggle force dump gpio
+
+-force-dump-gpio:
+	Usage: optional
+	Value type: <prop-encoded-arrry>
+
+-pinctrl-names:
+	Usage: optional
+	Value type: "string";
+	Definition: pinctrl name of force dump
+
+-pinctrl-0:
+	Usage: optional
+
+= EXAMPLE
+
+The following example represents sysdump driver is enabled and force dump is
+disabled.
+
+sysdump: sysdump@0x34510300 {
+	compatible = "jlq,sysdump";
+	reg = <0x34510300 4>;
+	reg-names = "shutdown_reg";
+	enable_sysdump;
+
+	//force-dump-enable;
+	force-dump-gpio = <&gpio 43 GPIO_ACTIVE_HIGH>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&force_dump_pin>;
+};

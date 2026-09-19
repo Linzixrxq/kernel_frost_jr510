@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: GPL-2.0
+
+ccflags-y := \
+	-I$(srctree)/$(src)/../include \
+	-I$(srctree)/$(src)
+
+komeda-y := \
+	komeda_drv.o \
+	komeda_dev.o \
+	komeda_format_caps.o \
+	komeda_coeffs.o \
+	komeda_color_mgmt.o \
+	komeda_pipeline.o \
+	komeda_pipeline_state.o \
+	komeda_xr.o \
+	komeda_framebuffer.o \
+	komeda_kms.o \
+	komeda_crtc.o \
+	komeda_plane.o \
+	komeda_wb_connector.o \
+	komeda_private_obj.o \
+	komeda_math.o \
+	komeda_debugfs.o \
+	komeda_event.o
+
+komeda-y += \
+	d71/d71_dev.o \
+	d71/d71_component.o \
+	d71/d71_axi.o \
+	d71/d77_debugfs.o
+
+obj-$(CONFIG_DISPLAY_JLQ) += komeda.o

@@ -1,0 +1,16 @@
+config INPUT_QPNP_POWER_ON
+	tristate "QPNP PMIC Power-on support"
+	depends on SPMI
+	help
+	  This option enables device driver support for the power-on
+	  functionality of Qualcomm Technologies, Inc. PNP PMICs.  It supports
+	  reporting the change in status of the KPDPWR_N line (connected to the
+	  power-key) as well as reset features.
+
+config JLQ_POWEROFF
+	tristate "JLQ PowerOff"
+	depends on SPMI
+	help
+	  This option enables device driver support for the power-on
+	  functionality of JLQ PMICs.  It supports
+	  "adb reboot bootloader" or "adb reboot edl" command

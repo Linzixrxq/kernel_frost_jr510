@@ -1,0 +1,33 @@
+JR510 bus interconnect driver binding
+-----------------------------------------------------------
+
+JR510 interconnect providers support system bandwidth requirements
+
+Required properties :
+- compatible : shall contain only one of the following:
+			"jlq,bus_sw0"
+			"jlq,top_bus"
+			"jlq,qtang_xm1_bus"
+			"jlq,hblk_bus"
+			"jlq,fbe_bus"
+			"jlq,bus_sw1"
+			"jlq,bus_sw2"
+			"jlq,bus_p0"
+			"jlq,bus_p3"
+			"jlq,qt_sys_noc"
+			"jlq,qt_sys_noc_rt"
+			"jlq,qt_sys_noc_nrt"
+			"jlq,qt_snoc"
+			"jlq,qt_cnoc"
+
+- #interconnect-cells : should contain 1
+
+Examples:
+
+apps_rsc: rsc {
+	bus_sw0: interconnect {
+		compatible = "jlq,bus_sw0";
+		#interconnect-cells = <1>;
+	};
+};
+

@@ -1,0 +1,88 @@
+#include <dt-bindings/thermal/thermal.h>
+
+&thermal_zones {
+	cpu_thermal: tsens_tz_sensor0 {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-sensors = <&tsens 3>;
+		wake-capable-sensor;
+
+		trips {
+			cpu_trip0: trip-point-0 {
+				temperature = <85000>;
+				hysteresis = <20000>;
+				type = "passive";
+			};
+			cpu_trip1: trip-point-1 {
+				temperature = <115000>;
+				hysteresis = <20000>;
+				type = "critical";
+			};
+		};
+
+		cooling-maps {
+			cpu-cdev0 {
+				trip = <&cpu_trip0>;
+				cooling-device = <&a55_cpu0
+					THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+			};
+			cpu-cdev1 {
+				trip = <&cpu_trip0>;
+				cooling-device = <&a55_cpu4
+					THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+			};
+		};
+	};
+
+	gpu_thermal: tsens_tz_sensor1 {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-sensors = <&tsens 1>;
+	};
+	ddr_thermal: tsens_tz_sensor2 {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-sensors = <&tsens 2>;
+	};
+	top_thermal: tsens_tz_sensor3 {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-sensors = <&tsens 0>;
+	};
+	quiet_therm_usr: quiet-therm-usr {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-governor = "user_space";
+		status = "disabled";
+	};
+	xo_therm_usr: xo-therm-usr {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-governor = "user_space";
+		status = "disabled";
+	};
+	backlight_therm_usr: backlight_therm {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-governor = "user_space";
+		status = "disabled";
+	};
+	emmc_therm_usr: emmc-therm-usr {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-governor = "user_space";
+		status = "disabled";
+	};
+	pa_therm1_usr: pa-therm1-usr {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-governor = "user_space";
+		status = "disabled";
+	};
+	cam_therm_usr: cam_therm {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-governor = "user_space";
+		status = "disabled";
+	};
+};

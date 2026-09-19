@@ -1,0 +1,10 @@
+config JLQ_LPM_IRQ_CTRL
+	tristate "lpm irq ctrl"
+	default y if ARCH_JR510
+	help
+	  Convert qtang's edge interrupts convert to level triggered type,
+	  in qtang's irq routine, we should clear and re-enable the relevant
+	  irq, when request irq, we should also enable it.
+
+	  If in doubt, say N here.
+

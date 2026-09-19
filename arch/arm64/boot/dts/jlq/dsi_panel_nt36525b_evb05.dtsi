@@ -1,0 +1,81 @@
+&dsi {
+	panel_nt36525b: nt36525b {
+		compatible = "jlq,dsi-panel";
+		reg = <0>;
+		panel_name = "xiaomi C3MN 45 02 0a hd+ video dsi panel";
+		status = "okay";
+		inited = "true";
+
+		pinctrl-names = "panel_active", "panel_suspend";
+		pinctrl-0 = <&lcd_reset_active &lcd_backlight_en_active
+			&lcd_bias_enp_active &lcd_bias_enn_active>;
+		pinctrl-1 = <&lcd_reset_suspend &lcd_backlight_en_suspend
+			&lcd_bias_enp_suspend &lcd_bias_enn_suspend>;
+
+		lcdio-supply = <&L9A>;
+		reset-gpio = <&gpio 68 0>;
+		reset-sequence = <1 10 0 20 1 10>;
+		reset-gpio-keep-high;
+		bias-enp-gpio = <&gpio 38 0>;
+		bias-enn-gpio = <&gpio 37 0>;
+		enable-backlight-gpio = <&gpio 6 0>;
+
+		dsi,lanes = <4>;
+		dsi,channel = <0>;
+		dsi,flags = <0x24400803>;
+		dsi,format = <0>;
+
+		init-delay-ms = <20>;
+		prepare-delay-ms = <0>;
+		enable-delay-ms = <2>;
+		unprepare-delay-ms = <0>;
+		disable-delay-ms = <2>;
+		reset-delay-ms = <10>;
+		width-mm = <68>;
+		height-mm = <151>;
+		pwm-names = "backlight";
+		pwms = <&pwm0 0 32000>;
+		ic-vendor = <1>;
+
+		panel-exit-sequence = [
+			05 05 01 28
+			05 78 01 10
+		];
+
+		panel-init-sequence = [
+			29 01 02 ff 10
+			29 00 02 fb 01
+			29 00 02 ba 03
+			05 0a 01 29
+			05 64 01 11
+		];
+
+		power-supply-entries {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			power-supply-entry@0 {
+				reg = <0>;
+				supply-name = "lcdio";
+				supply-min-voltage = <1800000>;
+				supply-max-voltage = <1800000>;
+			};
+		};
+		display-timings {
+			native-mode = <&nt36525b_timing>;
+			nt36525b_timing: timing0 {
+				clock-frequency = <80000000>;
+				hactive = <720>;
+				vactive = <1600>;
+				hfront-porch = <45>;
+				hsync-len = <16>;
+				hback-porch = <40>;
+				vfront-porch = <10>;
+				vsync-len = <5>;
+				vback-porch = <5>;
+				hsync-active = <1>;
+				vsync-active = <1>;
+			};
+		};
+	};
+};

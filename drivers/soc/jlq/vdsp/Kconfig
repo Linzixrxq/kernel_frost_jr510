@@ -1,0 +1,5 @@
+config JLQ_VDSP
+	tristate "config vdsp driver"
+	help
+	  enable it, if you need the communication between the host and
+	  the coprocessors, or use the VDSP module, etc.

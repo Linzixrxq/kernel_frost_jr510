@@ -1,0 +1,6 @@
+config JLQ_TZ_VERIFIER
+	tristate "JLQ trustzone verifier support"
+	default n
+	depends on TEE
+	help
+	  This driver supports trustzone verifier support

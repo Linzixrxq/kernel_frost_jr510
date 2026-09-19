@@ -1,0 +1,15 @@
+config LEDS_QPNP_VIBRATOR_LDO
+	tristate "Vibrator-LDO support for QPNP PMIC"
+	depends on LEDS_CLASS && MFD_SPMI_PMIC
+	help
+	  This option enables device driver support for the vibrator-ldo
+	  peripheral found on Qualcomm Technologies, Inc. QPNP PMICs.
+	  The vibrator-ldo peripheral is capable of driving ERM vibrators.
+
+config GPIO_VIBRATOR
+	tristate "Vibrator-gpio support"
+	depends on GPIOLIB
+	help
+	  This option enables device driver support for the vibrator-gpio
+	  peripheral found on JLQ.
+	  The vibrator-gpio peripheral is capable of driving ERM vibrators.

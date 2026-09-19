@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ camille drivers
+#
+config DISPLAY_CAMILLE
+	tristate "jlq camille display driver"
+	depends on DISPLAY_JLQ
+	help
+	  Choose this option if you want to compile the jlq camille display
+	  driver.
+
+	  If compiled as a module it will be called camille_drv.
+
+config CAMILLE_PWM
+	tristate "jlq camille pwm"
+	depends on DISPLAY_CAMILLE
+	help
+	  Choose this option if you want to use camille pwm to output pwm
+	  pulse.

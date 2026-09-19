@@ -1,0 +1,172 @@
+// SPDX-License-Identifier: GPL-2.0+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/jlq/jr510/irqs.h>
+#include <dt-bindings/gpio/gpio.h>
+
+#include "jr510_camera_sensor_evb04.dtsi"
+#include "jr510_pinctrl_evb.dtsi"
+#include "aw87xxx.dtsi"
+#include "jr510_evb_pmi632_cfg.dtsi"
+#include "pm8008.dtsi"
+#include "pm6125_adc_tz_evb.dtsi"
+
+/ {
+	jlq,msm-id     = <0x10510 1>;
+	jlq,pmic-id    = <0x10002 0 0 0>;
+	jlq,board-id   = <0x00004 0>;
+};
+
+&bridge_sensorhub {
+	reg = <0x33078000 0x1000>, <0x34500060 0x4>, <0x230 0x220>, <0x0 0x220>;
+	status = "okay";
+};
+
+&nanohub {
+	shpwr-supply = <&L6P>;
+};
+
+&camille {
+	status = "okay";
+};
+
+&backlight {
+	pwms = <&pwm0 0 32000>;
+};
+
+#include "dsi_panel_nt36525b.dtsi"
+
+&i2c_3 {
+	gsl1691@40 {
+		status = "disabled";
+		compatible = "gsl,gsl1691_ts";
+		reg = <0x40>;
+		gpio_irq = <&gpio 19 0>;
+		gpio_rst = <&gpio 18 0>;
+		gpio_enable = <&gpio 39 0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&tp_irq_pin &tp_reset_pin &tp_enable_pin>;
+		TP_MAX_X = <1080>;
+		TP_MAX_Y = <1920>;
+	};
+};
+
+&dsi {
+	vdd08-supply = <&L3A_LEVEL>;
+	vdd12-supply = <&L18A>;
+	vdd18-supply = <&L12A>;
+};
+
+&pwm0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm0_output_enable>;
+};
+
+&ufsphy_mem {
+	compatible = "qcom,ufs-phy-qmp-v3-660";
+
+	vdda-phy-supply = <&L4A>; /* 0.9v */
+	vdda-pll-supply = <&L12A>; /* 1.8v */
+	vdda-phy-max-microamp = <51400>;
+	vdda-pll-max-microamp = <14200>;
+
+	status = "okay";
+};
+
+&ufshc_mem {
+	vdd-hba-supply = <&gcc_ufs_phy_gdsc>;
+	vdd-hba-fixed-regulator;
+	vcc-supply = <&L24A>;
+	vcc-voltage-level = <2950000 2960000>;
+	vccq2-supply = <&L11A>;
+	vcc-max-microamp = <600000>;
+	vccq2-max-microamp = <600000>;
+
+	qcom,vddp-ref-clk-supply = <&L18A>;
+	qcom,vddp-ref-clk-max-microamp = <100>;
+	qcom,vddp-ref-clk-min-uV = <1232000>;
+	qcom,vddp-ref-clk-max-uV = <1232000>;
+
+	qcom,disable-lpm;
+};
+
+&sysdump {
+	force-dump-enable;
+	force-dump-gpio = <&gpio 7 GPIO_ACTIVE_HIGH>;
+};
+
+&jr510_snd {
+	jlq,hph-select-level = <1>;
+	jlq,hph-select-gpio = <&gpio 65 GPIO_ACTIVE_HIGH>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&cdc_dmic01_clk &cdc_dmic01_data &hph_select_pin>;
+};
+
+&usb_phy {
+	extcon = <&pmi632_charger>;
+	eyediagram-parm = <0x1ef66c3>;
+};
+
+&ssi0 {
+	status = "okay";
+	cs-gpios  = <&gpio 15 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_tx_rx_clk_pins &spi0_cs_pins>;
+
+	nvt36525b@0 {
+		reg = <0>;
+		status = "okay";
+		panel = <&panel_nt36525b>;
+		compatible = "novatek,NVT-ts-spi";
+		novatek,reset-gpio = <&gpio 18 0>;
+		novatek,irq-gpio = <&gpio 19 0>;
+		novatek,swrst-n8-addr = <0x03F0FE>;
+		novatek,spi-rd-fast-addr = <0x03F310>;
+		novatek,resolution-width = /bits/ 16 <720>;
+		novatek,resolution-height = /bits/ 16 <1600>;
+		spi-max-frequency = <10000000>;
+	};
+};
+
+&soc {
+	silead_fp: silead_fp@0x00 {
+		compatible = "sil,silead_fp";
+		spi-max-frequency = <10000000>;
+
+		pinctrl-names = "silfp_default","pmx_silfp_active","pmx_silfp_suspend";
+		pinctrl-0 = <&fp_rst_pin &fp_int_pin>;
+		pinctrl-1 = <&fp_rst_pin_active &fp_int_pin_active>;
+		pinctrl-2 = <&fp_rst_pin_suspend &fp_int_pin_suspend>;
+		rst-gpios = <&gpio 67 0>;
+		irq-gpios = <&gpio 66 0>;
+		status = "okay";
+	};
+};
+
+&gpio{
+	lcd_pins {
+		lcd_reset_active:lcd_reset_active {
+			pins = "SSI2SSN";
+			function = "gpio";
+		};
+
+		lcd_backlight_en_active:lcd_backlight_en_active {
+			pins = "UART0TX";
+			function = "gpio";
+		};
+
+		lcd_reset_suspend:lcd_reset_suspend {
+			pins = "SSI2SSN";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+
+		lcd_backlight_en_suspend:lcd_backlight_en_suspend {
+			pins = "UART0TX";
+			function = "gpio";
+		};
+	};
+};

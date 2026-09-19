@@ -1,0 +1,30 @@
+JLQ pll-power driver bindinngs
+
+This binding descirbes the pll power driver, this driver will set initial voltage for pll
+
+- compatible:
+	Usage: required
+	Value type: <string>
+	Definition: must be "jlq,pll-power"
+
+- *-supply:
+	Usage: required
+	Value type: <prop-encoded-array>
+	Definition: power for pll
+
+- jlq,supply-*:
+	Usage: required
+	Value type: u32
+	Definition: voltage value
+
+= EXAMPLE
+
+pll-power {
+	compatible = "jlq,pll-power";
+	supply_0-supply = <&L12A>;
+	jlq,supply_0 = <1800000 1800000>;
+	supply_1-supply = <&L2A>;
+	jlq,supply_1 = <800000 800000>;
+	supply_2-supply = <&L3A_LEVEL>;
+	jlq,supply_2 = <800000 800000>;
+};

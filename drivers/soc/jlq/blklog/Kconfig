@@ -1,0 +1,7 @@
+config JLQ_BLK_LOG
+	tristate "JLQ Block Log Driver"
+	depends on ARCH_JLQ
+	default n
+	help
+	  This enables the JLQ Block Log
+

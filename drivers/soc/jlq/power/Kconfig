@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ POWER drivers
+#
+
+menu "JLQ Power drivers"
+source "drivers/soc/jlq/power/qcom/Kconfig"
+endmenu
+source "drivers/soc/jlq/power/supply/Kconfig"

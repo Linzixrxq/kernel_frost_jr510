@@ -1,0 +1,33 @@
+Device tree bindings for novatek 36525b series touchscreen controller
+
+Required properties:
+
+ - compatible		: Should be "novatek,NVT-ts-spi"
+ - reg			: id of spi slave device.
+
+Optional properties:
+
+ - novatek,irq-gpio		: GPIO pin used for IRQ. The driver uses the
+			  interrupt gpio pin as output to reset the device.
+ - novatek,reset-gpio		: GPIO pin used for reset
+
+The touchscreen-* properties are documented in touchscreen.txt in this
+directory.
+
+Example:
+
+	nvt36525b@0 {
+		reg = <0>;
+		status = "okay";
+		panel = <&panel_nt36525b_lv>;
+		compatible = "novatek,NVT-ts-spi";
+		novatek,reset-gpio = <&gpio 8 0>;
+		novatek,irq-gpio = <&gpio 9 0>;
+		novatek,longv-mode = <0x1>;
+		novatek,swrst-n8-addr = <0x03F0FE>;
+		novatek,spi-rd-fast-addr = <0x03F310>;
+		novatek,resolution-width = /bits/ 16 <720>;
+		novatek,resolution-height = /bits/ 16 <1650>;
+		spi-max-frequency = <10000000>;
+		/* ... */
+	};

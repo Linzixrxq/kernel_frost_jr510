@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ regulator drivers
+#
+menu "JLQ regulator drivers"
+
+config REGULATOR_STUB
+	tristate "Stub Regulator"
+	help
+	  This driver adds stub regulator support. It allows for consumers to
+	  request their regulator devices and to use all of the standard
+	  regulator functions. It is useful for bringing up new platforms when
+	  the real hardware based regulator implementation is not yet available.
+	  Consumers can use stub regulator device with proper constraint
+	  checking while the real regulator driver is being developed.
+
+config JLQ_REGULATOR
+	tristate "JLQ Regulator"
+	help
+	  This driver adds jlq regulator support. It allows for consumers to
+	  request their regulator devices and to use all of the standard
+	  regulator functions. It is useful for bringing up on JR510.
+	  Consumers can use jlq regulator device with proper constraint
+	  checking on JR510.
+
+config REGULATOR_PROXY_CONSUMER
+	tristate "Boot time regulator proxy consumer support"
+	help
+	  This library provides support for boot time regulator proxy requests.
+	  It can enforce a specified voltage range, set a minimum current,
+	  and/or keep a regulator enabled.  It is needed in circumstances where
+	  reducing one or more of these three quantities will cause hardware to
+	  stop working if performed before the driver managing the hardware has
+	  probed.
+
+config REGULATOR_QCOM_PM8008
+	tristate "Qualcomm Technologies, Inc. PM8008 PMIC regulators"
+	depends on MFD_I2C_PMIC
+	help
+	  This driver provides support for the voltage regulators and top-level
+	  chip enablement of Qualcomm Technologies, Inc. PM8008 PMIC chips.
+	  When all seven of the PM8008 LDO regulators are disabled, the PM8008
+	  is put into a low power state.
+
+config REGULATOR_QPNP_LCDB
+        tristate "Qualcomm Technologies, Inc. QPNP LCDB support"
+        depends on SPMI
+        help
+          Supports the LCDB module in the Qualcomm Technologies, Inc.
+          QPNP PMICs. Exposes regulators to control the positive and
+          negative voltage bias for the LCD display panel. It also
+          allows configurability for the various bias-voltage parameters.
+
+
+config REGULATOR_RPM_SMD
+	tristate "RPM SMD regulator driver"
+	depends on OF
+	depends on MSM_RPM_SMD
+	help
+	  Compile in support for the RPM SMD regulator driver which is used for
+	  setting voltages and other parameters of the various power rails
+	  supplied by some Qualcomm Technologies Inc. PMICs. The RPM SMD regulator driver should
+	  be used on systems which contain an RPM which communicates with the
+	  application processor over SMD.
+
+config REGULATOR_JLQ_DVFS
+	tristate "JLQ dvfs feature"
+	depends on REGULATOR
+	help
+	  This driver can trace the use information of special regulator
+	  via regulator core. it can provide data for optimizing the power
+	  consumption of system.
+	  Say Y here to enable this feature.
+
+endmenu

@@ -1,0 +1,321 @@
+// SPDX-License-Identifier: GPL-2.0+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/jlq/jr510/irqs.h>
+#include <dt-bindings/jlq/iio/qcom,spmi-vadc.h>
+#include <dt-bindings/gpio/gpio.h>
+
+#include "jr510_pinctrl_c3mn.dtsi"
+#include "jr510_camera_sensor_c3mn.dtsi"
+#include "aw87xxx.dtsi"
+#include "pm6125_adc_tz_c3mn.dtsi"
+
+/ {
+	jlq,msm-id     = <0x10510 1>;
+	jlq,pmic-id    = <0x10002 0 0 0>;
+	jlq,board-id   = <0xa 0>;
+};
+
+&bridge_sensorhub {
+	reg = <0x33078000 0x1000>, <0x34500060 0x4>, <0x230 0x220>, <0x0 0x220>;
+	status = "okay";
+};
+
+&camille {
+	status = "okay";
+};
+
+#include "dsi_panel_ft8006saa.dtsi"
+
+&dsi {
+	vdd08-supply = <&L3A_LEVEL>;
+	vdd12-supply = <&L18A>;
+	vdd18-supply = <&L12A>;
+};
+
+&pwm0 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&pwm0_output_enable>;
+};
+
+&ufsphy_mem {
+        compatible = "qcom,ufs-phy-qmp-v3-660";
+
+        vdda-phy-supply = <&L4A>; /* 0.9v */
+        vdda-pll-supply = <&L12A>; /* 1.8v */
+        vdda-phy-max-microamp = <51400>;
+        vdda-pll-max-microamp = <14200>;
+
+        status = "okay";
+};
+
+&ufshc_mem {
+        vdd-hba-supply = <&gcc_ufs_phy_gdsc>;
+        vdd-hba-fixed-regulator;
+        vcc-supply = <&L24A>;
+        vcc-voltage-level = <2950000 2960000>;
+        vccq2-supply = <&L11A>;
+        vcc-max-microamp = <600000>;
+        vccq2-max-microamp = <600000>;
+
+        qcom,vddp-ref-clk-supply = <&L18A>;
+        qcom,vddp-ref-clk-max-microamp = <100>;
+        qcom,vddp-ref-clk-min-uV = <1232000>;
+        qcom,vddp-ref-clk-max-uV = <1232000>;
+
+        qcom,disable-lpm;
+};
+
+#include "wl2866d-regulator.dtsi"
+
+&ssi1 {
+	status = "okay";
+	cs-gpios  = <&gpio 65 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi1_tx_rx_clk_pins &spi1_cs_pins>;
+
+	nvt36525b@0 {
+		reg = <0>;
+		status = "disabled";
+		compatible = "novatek,NVT-ts-spi";
+		novatek,reset-gpio = <&gpio 8 0>;
+		novatek,irq-gpio = <&gpio 9 0>;
+		novatek,swrst-n8-addr = <0x03F0FE>;
+		novatek,spi-rd-fast-addr = <0x03F310>;
+		novatek,resolution-width = /bits/ 16 <720>;
+		novatek,resolution-height = /bits/ 16 <1600>;
+		spi-max-frequency = <10000000>;
+	};
+
+	focaltech@0 {
+		compatible = "focaltech,fts";
+		reg = <0x0>;
+		panel = <&panel_ft8006saa>;
+		spi-max-frequency = <6000000>;
+		interrupt-parent = <&gpio>;
+		interrupts = <9 2>;
+		focaltech,reset-gpio = <&gpio 8 0>;
+		focaltech,irq-gpio = <&gpio 9 0>;
+		focaltech,max-touch-number = <10>;
+		focaltech,display-coords =  <0 0 720 1600>;
+	};
+};
+
+&ssi0 {
+	cs-gpios  = <&gpio 59 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_tx_rx_clk_pins &spi0_cs_pins>;
+
+	status = "okay";
+	fpc1020@0 {
+		reg = <0>;
+		compatible = "fpc,fpc1020";
+		fpc_rst = <&gpio 67 0>;
+		fpc_irq = <&gpio 66 0>;
+		fpc_vdd = <&gpio 39 0>;
+		spi-max-frequency = <5000000>;
+	};
+};
+
+&gpio{
+	i2c6_pin {
+		i2c6_pins:i2c6_pins {
+			pins = "GPIO43", "CLKOUT4";
+			function = "i2c6";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+	sh36610x_pins:sh36610x_pins {
+		sh36610x_intr_pin:sh36610x_intr_pin {
+			pins = "GPIO80";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+	sd7601_pins:sd7601_pins {
+		sd7601_intr_pin:sd7601_intr_pin {
+			pins = "GPIO71";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_UP>;
+			jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+		};
+		sd7601_ce_pin:sd7601_ce_pin {
+			pins = "SD1DATA1";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DOWN>;
+			jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+		};
+	};
+	sd7601_pins_sleep:sd7601_pins_sleep {
+		sd7601_ce_pin_sleep {
+			pins = "SD1DATA1";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+	};
+};
+&i2c_4 {
+	sd7601ad:sd7601ad@6b {
+		reg = <0x6b>;
+		compatible = "jlq,sd7601ad";
+		bigm,irq_gpio = <&gpio 71 IRQ_TYPE_EDGE_FALLING>;
+		bigm,ce_gpio = <&gpio 41 0>;
+		bigm,ilimit_ma = <3000>;
+		bigm,vlimit_mv = <4500>;
+		psy-name = "charger";
+		chg-regulator = "SD7601_01-chg";
+		input-regulator = "SD7601_01-input";
+		otg-regulator = "SD7601_01-otg";
+		ch-extcon = "SD7601_01-chg-extcon";
+		battery-profile-psy = "jcmbattery";
+		interrupt-parent = <&gpio>;
+		interrupts = <71 IRQ_TYPE_EDGE_FALLING>;
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&sd7601_pins>;
+		pinctrl-1 = <&sd7601_pins_sleep>;
+		phy-supply = <&L15A>;
+	};
+};
+
+&i2c_6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c6_pins>;
+	clock-frequency = <100000>;
+	SH366101@55 {
+		reg = <0x55>;
+		compatible = "sh,sh366101";
+		battery-profile-psy = "jcmbattery";
+		fg-irq-gpio = <&gpio 80 GPIO_ACTIVE_HIGH>;
+		sm,en_temp_in;
+		sm,en_temp_ex;
+		sm,en_batt_det;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sh36610x_intr_pin>;
+		#include "sh366101_fg_data.dtsi"
+	};
+};
+
+&usb_phy {
+	extcon = <&sd7601ad>, <&usb_id>;
+	eyediagram-parm = <0x3ff66c6>;
+};
+
+&pm6125_vadc {
+	gpio3_400k {
+		reg = <0x72>; /* GPIO3 400K PU */
+		label = "gpio3_400k";
+		qcom,hw-settle-time = <200>;
+		qcom,avg-samples = <4>;
+		qcom,pre-scaling = <1875 1>;
+	};
+};
+
+&pm6125_gpios {
+	batid_adc_io {
+		batid_gpio3_default: batid_gpio3_default {
+			pins = "gpio3";
+			function = "normal";
+			bias-high-impedance; /* DISABLE GPIO3 for ADC*/
+			bias-disable;
+		};
+	};
+};
+
+&soc {
+	usb_id: usb_id {
+		compatible = "jlq,extcon-usb-gpio";
+		id-gpio = <&gpio 61 0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_phy_id_pin>;
+	};
+
+	jcm:jlq-charger-manager {
+		compatible = "jlq,charger-manager";
+		io-channels = <&pm6125_vadc 0x72>;
+		io-channel-names = "Bat-ID";
+		#io-channel-cells = <1>;
+		#cooling-cells = <2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&batid_gpio3_default>;
+
+		cm-debug-fake-soc;
+		cm-name = "jcmbattery";
+		cm-batid-pu = <400000>;
+		cm-poll-interval = <1000>;
+		cm-batt-id-iio = "pmj510-adc";
+		cm-fuel-gauge = "SH366101-0";
+		cm-thermal-zone = "NULL";
+		cm-battery-stat = <2>;
+		cm-input-regulator = "SD7601_01-input";
+		cm-steper-intv-ms = <500>;
+		cm-steper-current-ma = <400>;
+		cm-soft-recharge;
+		cm-recharge-hold-sec = <7200>;
+		cm-fullbatt-vchk-sec = <60>;
+		cm-soc-policy;
+		otg_regulator = "SD7601_01-otg";
+		otg-boost-current-ua = <1200000>;
+		otg-boost-volt-uv = <5150000>;
+		extcon = <&sd7601ad>, <&usb_id>;
+		jlq,thermal-mitigation = <	3000000  2500000 2200000
+									1800000  1600000 1400000 1000000>;
+		batterys {
+			batt-id-range-pct = <10>;
+			#include "JLQ_4000mAH_SD7601_SH366101_Jun15th2020_DTSI.dtsi"
+			#include "JLQ_SUNWODA_5000mAH_SD7601_SH366101_Jun15th2020_DTSI.dtsi"
+		};
+		chargers{
+			sd7601_01 {
+				chg-name = "charger";
+				power-supply = "charger";
+				cm-regulator-name = "SD7601_01-chg";
+				cm-chip-min = <0>;
+				cm-chip-max = <3000000>;
+			};
+		};
+	};
+	gpio-vibrator {
+		compatible = "gpio-vibrator";
+		enable-gpios = <&gpio 42 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vib_enable_pin>;
+	};
+};
+
+&quiet_therm_step {
+	status = "disable";
+	thermal-sensors = <&pm6125_adc_tm ADC5_AMUX_THM2_100K_PU>;
+	cooling-maps {
+		batt_cdev1 {
+			trip = <&skin_batt_trip0>;
+			cooling-device = <&jcm 2 2>;
+		};
+		batt_cdev2 {
+			trip = <&skin_batt_trip1>;
+			cooling-device = <&jcm 4 4>;
+		};
+		batt_cdev3 {
+			trip = <&skin_batt_trip2>;
+			cooling-device = <&jcm 6 6>;
+		};
+		batt_cdev4 {
+			trip = <&skin_batt_trip3>;
+			cooling-device = <&jcm 7 7>;
+		};
+	};
+};
+&nanohub {
+	pinctrl-names = "default";
+	pinctrl-0 = <&fp_pwr_en &cm4gpio_general &cm4gpio_pull
+			&sargpio_general &i2c5_pins>;
+};
+
+&sdhc_sd {
+	cd-gpio = <&gpio 35 GPIO_ACTIVE_HIGH>;
+};
+
+&i2c_3 {
+	status = "disabled";
+};

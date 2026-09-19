@@ -1,0 +1,15 @@
+config GPIO_JLQ
+	tristate "JLQ GPIO & pinctrl common support"
+	depends on OF
+	select PINMUX
+	select GENERIC_PINCONF
+	help
+	  Say Y or M here to support GPIO & pinctrl on JLQ SoCs.
+
+config GPIO_JLQ_QTANG
+	tristate "JLQ qtang GPIO & pinctrl common support"
+	depends on OF
+	select PINMUX
+	select GENERIC_PINCONF
+	help
+	  Say Y or M here to support GPIO & pinctrl on JLQ SoCs.

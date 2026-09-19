@@ -1,0 +1,342 @@
+
+&soc {
+	/*TBD*/
+	qt_sys_noc_rt_opp_table: qt_sys_noc_rt_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-150000000 {
+			opp-hz = /bits/ 64 <150000000>;
+		};
+		opp-240000000 {
+			opp-hz = /bits/ 64 <240000000>;
+		};
+		opp-300000000 {
+			opp-hz = /bits/ 64 <300000000>;
+		};
+		opp-355333333 {
+			opp-hz = /bits/ 64 <355333333>;
+		};
+		opp-426400000 {
+			opp-hz = /bits/ 64 <426400000>;
+		};
+	};
+
+	/*TBD*/
+	qt_sys_noc_nrt_opp_table: qt_sys_noc_nrt_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-150000000 {
+			opp-hz = /bits/ 64 <150000000>;
+		};
+		opp-240000000 {
+			opp-hz = /bits/ 64 <240000000>;
+		};
+		opp-300000000 {
+			opp-hz = /bits/ 64 <300000000>;
+		};
+		opp-355333333 {
+			opp-hz = /bits/ 64 <355333333>;
+		};
+		opp-426400000 {
+			opp-hz = /bits/ 64 <426400000>;
+		};
+	};
+
+	/*TBD*/
+	qt_sys_noc_opp_table: qt_sys_noc_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-75000000 {
+			opp-hz = /bits/ 64 <75000000>;
+		};
+		opp-120000000 {
+			opp-hz = /bits/ 64 <120000000>;
+		};
+		opp-150000000 {
+			opp-hz = /bits/ 64 <150000000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+		};
+		opp-240000000 {
+			opp-hz = /bits/ 64 <240000000>;
+		};
+	};
+
+	bus_sw0_opp_table: bus_sw0_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <700000 200000 800000>;
+					 //700000 200000 800000>;
+		};
+		opp-266666667 {
+			opp-hz = /bits/ 64 <266666667>;
+			opp-microvolt = <700000 266666 800000>;
+					 //700000 266666 800000>;
+		};
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <700000 400000 800000>;
+					 //700000 400000 800000>;
+		};
+		opp-519321600 {
+			opp-hz = /bits/ 64 <519321600>;
+			opp-microvolt = <800000 519321 900000>;
+					 //800000 519321 900000>;
+		};
+	};
+
+	bus_sw1_opp_table: bus_sw1_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <700000 200000 800000>;
+					 //700000 200000 800000>;
+		};
+		opp-266666667 {
+			opp-hz = /bits/ 64 <266666667>;
+			opp-microvolt = <700000 266666 800000>;
+					 //700000 266666 800000>;
+		};
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <800000 400000 900000>;
+					 //800000 400000 900000>;
+		};
+	};
+
+	bus_sw2_opp_table: bus_sw2_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <700000 200000 800000>;
+					 //700000 200000 800000>;
+		};
+		opp-266666667 {
+			opp-hz = /bits/ 64 <266666667>;
+			opp-microvolt = <700000 266666 800000>;
+					 //700000 266666 800000>;
+		};
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <800000 400000 900000>;
+					 //800000 400000 900000>;
+		};
+	};
+
+	top_bus_opp_table: top_bus_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-50000000 {
+			opp-hz = /bits/ 64 <50000000>;
+			opp-microvolt = <700000 500000 800000>;
+					 //700000 500000 800000>;
+		};
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-160000000 {
+			opp-hz = /bits/ 64 <160000000>;
+			opp-microvolt = <700000 160000 800000>;
+					 //700000 160000 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <800000 200000 900000>;
+					 //800000 200000 900000>;
+		};
+	};
+
+	hblk_bus_opp_table: hblk_bus_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-50000000 {
+			opp-hz = /bits/ 64 <50000000>;
+			opp-microvolt = <700000 500000 800000>;
+					 //700000 500000 800000>;
+		};
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-160000000 {
+			opp-hz = /bits/ 64 <160000000>;
+			opp-microvolt = <700000 160000 800000>;
+					 //700000 160000 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <800000 200000 900000>;
+					 //800000 200000 900000>;
+		};
+	};
+
+	/*TBD*/
+	qt_xm1_bus_opp_table: qt_xm1_bus_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <700000 200000 800000>;
+					 //700000 200000 800000>;
+		};
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <700000 400000 800000>;
+					 //700000 400000 800000>;
+		};
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <800000 700000 900000>;
+					 //800000 700000 900000>;
+		};
+	};
+
+	/*TBD*/
+	bus_p3_opp_table: bus_p3_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-266666667 {
+			opp-hz = /bits/ 64 <266666667>;
+			opp-microvolt = <700000 266666 800000>;
+					 //700000 266666 800000>;
+		};
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <700000 400000 800000>;
+					 //700000 400000 800000>;
+		};
+		opp-692333333 {
+			opp-hz = /bits/ 64 <692333333>;
+			opp-microvolt = <800000 692333 900000>;
+					 //800000 692333 900000>;
+		};
+	};
+
+	/*TBD*/
+	bus_p0_opp_table: bus_p0_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <700000 700000 800000>;
+					 //700000 700000 800000>;
+		};
+		opp-1125000000 {
+			opp-hz = /bits/ 64 <1125000000>;
+			opp-microvolt = <700000 112500 950000>;
+					 //700000 112500 800000>;
+		};
+		opp-1500000000 {
+			opp-hz = /bits/ 64 <1500000000>;
+			opp-microvolt = <700000 150000 1100000>;
+					 //700000 150000  800000>;
+		};
+	};
+
+	/*TBD*/
+	fbe_bus_opp_table: fbe_bus_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-160000000 {
+			opp-hz = /bits/ 64 <160000000>;
+			opp-microvolt = <700000 160000 800000>;
+					 //700000 160000 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <800000 200000 900000>;
+					 //800000 200000 900000>;
+		};
+	};
+
+	/*TBD*/
+	audio_bus_opp_table: audio_bus_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-50000000 {
+			opp-hz = /bits/ 64 <50000000>;
+			opp-microvolt = <700000 500000 800000>;
+					 //700000 500000 800000>;
+		};
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-133333333 {
+			opp-hz = /bits/ 64 <133333333>;
+			opp-microvolt = <700000 133333 800000>;
+					 //700000 133333 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <800000 200000 900000>;
+					 //800000 200000 900000>;
+		};
+	};
+
+	/*TBD*/
+	cm4_bus_opp_table: cm4_bus_opp_table {
+		compatible = "operating-points-v2";
+
+		opp-50000000 {
+			opp-hz = /bits/ 64 <50000000>;
+			opp-microvolt = <700000 500000 800000>;
+					 //700000 500000 800000>;
+		};
+		opp-100000000 {
+			opp-hz = /bits/ 64 <100000000>;
+			opp-microvolt = <700000 100000 800000>;
+					 //700000 100000 800000>;
+		};
+		opp-173107200 {
+			opp-hz = /bits/ 64 <173107200>;
+			opp-microvolt = <700000 173107 800000>;
+					 //700000 173107 800000>;
+		};
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <800000 200000 900000>;
+					 //800000 200000 900000>;
+		};
+	};
+
+};

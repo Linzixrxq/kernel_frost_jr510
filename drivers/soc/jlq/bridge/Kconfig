@@ -1,0 +1,5 @@
+config JLQ_BRIDGE
+	tristate "config bridge driver"
+	help
+	  enable it, if you need the communication between the host and
+	  the coprocessors, or use the Audio module, etc.

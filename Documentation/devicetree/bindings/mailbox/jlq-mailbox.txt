@@ -1,0 +1,33 @@
+JLQ Mailbox IRQ Driver
+================================
+
+Mailbox Device Node:
+====================
+
+Required properties:
+--------------------
+- compatible:		Shall be "jlq,top_mailbox-base"
+- reg:			Contains the top mailbox register base address
+- status:		Shall be "disabled" or "enabled".
+- interrupts:		Contains the interrupt information corresponding
+- interrupt-controller:	Normal
+- #interrupt-cells:	Normal
+- irq_num:		the number of irqs
+
+Example:
+--------
+
+	top_mailbox_irq: top_mailbox_irq {
+		compatible = "jlq,top_mailbox-irq-ja310";
+		interrupts = <GIC_SPI INT_TOP_MAILBOX 0>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		irq_num = <64>;
+	};
+
+	top_mailbox_base: top_mailbox_base@F9002000 {
+		compatible = "jlq,top_mailbox-base";
+		reg = <0xF9002000 0x400>;
+		status = "disabled";
+	};
+

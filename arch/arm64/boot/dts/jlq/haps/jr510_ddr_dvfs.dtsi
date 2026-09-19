@@ -1,0 +1,87 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/clock/qcom,gcc-bengal.h>
+#include <dt-bindings/interconnect/jr510.h>
+
+&soc {
+	busmon: jlq,busmon {
+		//status = "disabled;
+		compatible = "jlq,busmon";
+		reg = <0x34688000 0x8000>,<0x3450e000 0x1000>,<0x34459000 0x1000>,<0x34103000 0x1000>,<0x340EA000 0x1000>,<0x34200000 0x1000>;
+		reg-names = "bm_base","sysctrl_base","hblkctrl_base","cm4ctrl_base","audioctrl_base","smmuctrl_base";
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI INT_BUSMON IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		busmon_port_nums = <6>;
+		busmon_port0_target-dev = <&icc_ddr_port0>;
+		busmon_port1_target-dev = <&icc_ddr_port1>;
+		busmon_port2_target-dev = <&icc_ddr_port2>;
+		// busmon_port3_target-dev = <&icc_ddr_port3>;
+		// busmon_port4_target-dev = <&icc_ddr_port4>;
+		busmon_group_nums = <16>;
+		busmon_polling_ms = <50>;
+	};
+
+	icc_ddr_port0: jlq,ddr-devfreq-port0 {
+		compatible = "jlq,ddr-devfreq-port0";
+		governor = "gov-busmon-bw";
+		interconnects = <&bus_sw0 MASTER_VDSP_BUS &bus_sw0 SLAVE_DDR_PORT1>;
+		jlq,active-only;
+		operating-points-v2 = <&ddr_port_bw_table0>;
+	};
+
+	icc_ddr_port1: jlq,ddr-devfreq-port1 {
+		compatible = "jlq,ddr-devfreq-port1";
+		governor = "gov-busmon-bw";
+		//interconnects = <&gem_noc MASTER_APPSS_PROC &gem_noc SLAVE_LLCC>;
+		jlq,active-only;
+		operating-points-v2 = <&ddr_port_bw_table1>;
+	};
+
+	icc_ddr_port2: jlq,ddr-devfreq-port2 {
+		compatible = "jlq,ddr-devfreq-port2";
+		governor = "gov-busmon-bw";
+		//interconnects = <&gem_noc MASTER_APPSS_PROC &gem_noc SLAVE_LLCC>;
+		jlq,active-only;
+		operating-points-v2 = <&ddr_port_bw_table2>;
+	};
+
+	ddr_port_bw_table0: ddr-port-bw-table0 {
+		compatible = "operating-points-v2";
+		opp@200000000	{opp-hz = /bits/ 64 <25600>;};
+		opp@300000000	{opp-hz = /bits/ 64 <38400>;};
+		opp@400000000	{opp-hz = /bits/ 64 <51200>;};
+	};
+
+	ddr_port_bw_table1: ddr-port-bw-table1 {
+		compatible = "operating-points-v2";
+		opp@200000000  {opp-hz = /bits/ 64 <25600>;};
+		opp@300000000  {opp-hz = /bits/ 64 <38400>;};
+		opp@400000000  {opp-hz = /bits/ 64 <512000>;};
+	};
+
+	ddr_port_bw_table2: ddr-port-bw-table2 {
+		compatible = "operating-points-v2";
+		opp@200000000  {opp-hz = /bits/ 64 <25600>;};
+		opp@300000000  {opp-hz = /bits/ 64 <38400>;};
+		opp@400000000  {opp-hz = /bits/ 64 <51200>;};
+	};
+
+	ddr_dfs:jlq,ddr-devfreq {
+		compatible = "jlq,ddr-devfreq";
+		governor = "userspace";
+		polling_ms = <50> ;
+		operating-points-v2 = <&ddr_opp_table>;
+		//jlq,bw-tbl;
+	};
+
+	ddr_opp_table: ddr-opp-table {
+		compatible = "operating-points-v2";
+		opp@200000000  {opp-hz = /bits/ 64 <200000000>;};
+		opp@533000000  {opp-hz = /bits/ 64 <533000000>;};
+		opp@800000000  {opp-hz = /bits/ 64 <800000000>;};
+		opp@1066000000 {opp-hz = /bits/ 64 <1066000000>;};
+		opp@1333000000 {opp-hz = /bits/ 64 <1333000000>;};
+		opp@1866000000 {opp-hz = /bits/ 64 <1866000000>;};
+	};
+};

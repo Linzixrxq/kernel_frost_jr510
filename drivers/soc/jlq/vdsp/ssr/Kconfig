@@ -1,0 +1,6 @@
+config JLQ_SSR
+	tristate "JLQ VDSP SSR support"
+	depends on ARCH_JLQ
+	default n
+	help
+	  jlq vdsp subsys restart and ramdump.

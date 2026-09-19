@@ -1,0 +1,136 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/pinctrl/jlq_pinctrl.h>
+
+&soc {
+	gpio@3450D000 {
+		usbphy_pins {
+			usb_phy_cs_pin: usb_phy_cs_pin {
+				pins = "GPIO9";
+				function = "gpio";
+			};
+
+			usb_phy_reset_pin: usb_phy_reset_pin {
+				pins = "GPIO78";
+				function = "gpio";
+			};
+
+			usb_phy_id_pin: usb_phy_id_pin {
+				pins = "GPIO61";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_UP>;
+			};
+		};
+
+		fingerprint_pins {
+			fp_pwr_en: fp_pwr_en {
+				pins = "SD1DATA3";
+				function = "gpio";
+			};
+			fp_int_pin_active:fp_int_pin_active {
+				pins = "SSI2TX";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+			};
+			fp_int_pin_suspend:fp_int_pin_suspend {
+				pins = "SSI2TX";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+			};
+			fp_reset_output_low:fp_reset_output_low {
+				pins = "SSI2RX";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+			};
+			fp_reset_output_high:fp_reset_output_high {
+				pins = "SSI2RX";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_UP>;
+			};
+		};
+
+		spi0_pins {
+			spi0_tx_rx_clk_pins:ssi0@0 {
+				pins = "SSI0TX", "SSI0RX",
+					"SSI0CLK";
+				function = "ssi0";
+				jlq,pull = <MUXPIN_PULL_UP>;
+			};
+			spi0_cs_pins: ssi0@1 {
+				pins = "SSI0SSN";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_UP>;
+			};
+		};
+
+		spi1_pins {
+			spi1_tx_rx_clk_pins:ssi1@0 {
+				pins = "SSI1TX", "SSI1RX",
+					"SSI1CLK";
+				function = "ssi1";
+				jlq,pull = <MUXPIN_PULL_UP>;
+			};
+			spi1_cs_pins: ssi1@1 {
+				pins = "SSI1SSN";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_UP>;
+			};
+		};
+
+		cm4gpio_pin {
+			cm4gpio_general: cm4gpio_general {
+				pins = "GPIO28","GPIO78";
+				function = "cm4_gpio";
+			};
+			cm4gpio_pull: cm4gpio_pull {
+				pins = "GPIO79";
+				function = "cm4_gpio";
+				jlq,pull = <MUXPIN_PULL_UP>;
+			};
+			sargpio_general: sargpio_general {
+				pins = "SSI2SSN";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+			};
+			sarcm4gpio: sarcm4gpio {
+				pins = "GPIO26";
+				function = "cm4_gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+			};
+		};
+
+
+
+		tp_pins {
+			tp_irq_pin:tp@0 {
+				pins = "GPIO9";
+				function = "gpio";
+			};
+			tp_reset_pin:tp@1 {
+				pins = "GPIO8";
+				function = "gpio";
+			};
+		};
+		vib_pins {
+			vib_enable_pin:vib_enable {
+				pins = "SD1DATA0";
+				function = "gpio";
+			};
+		};
+		ant-check-pin {
+			ant_check_default: ant_check_default {
+				pins = "UART0TX";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+			};
+		};
+		ant-check-div-pin {
+			ant_check_div_default: ant_check_div_default {
+				pins = "GPIO36";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+			};
+		};
+	};
+};
+
+

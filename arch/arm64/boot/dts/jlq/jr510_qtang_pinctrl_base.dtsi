@@ -1,0 +1,160 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/pinctrl/jlq_pinctrl.h>
+
+/ {
+	soc: soc@0 {
+		qtang_gpio: qtang_gpio@24D300B4 {
+			compatible = "jlq,qtang-gpio";
+			reg = <0x24D300BC 0x4>, <0x24D300DC 0x50>, <0x20D00000 0x3c014>;
+			reg-names = "ufs_reset_mem", "cam_gpio_mem", "common_gpio_mem";
+			#gpio-cells = <2>;
+			gpio-controller;
+			gpio-ranges = <&qtang_gpio 4 0 17>,
+					<&qtang_gpio 0 17 2>,
+					<&qtang_gpio 3 19 1>,
+					<&qtang_gpio 21 20 1>,
+					<&qtang_gpio 59 21 2>,
+					<&qtang_gpio 63 23 1>;
+
+			cam_sensor_reset0_active: cam_sensor_reset0_active {
+				pins = "GPIO4";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_reset0_suspend: cam_sensor_reset0_suspend {
+				pins = "GPIO4";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_reset1_active: cam_sensor_reset1_active {
+				pins = "GPIO5";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_reset1_suspend: cam_sensor_reset1_suspend {
+				pins = "GPIO5";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_reset2_active: cam_sensor_reset2_active {
+				pins = "GPIO19";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_reset2_suspend: cam_sensor_reset2_suspend {
+				pins = "GPIO19";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_reset3_active: cam_sensor_reset3_active {
+				pins = "GPIO20";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_reset3_suspend: cam_sensor_reset3_suspend {
+				pins = "GPIO20";
+				function = "gpio";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk0_active:cam_sensor_mclk0_active {
+				pins = "GPIO6";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk0_suspend:cam_sensor_mclk0_suspend {
+				pins = "GPIO6";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk1_active:cam_sensor_mclk1_active {
+				pins = "GPIO7";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk1_suspend:cam_sensor_mclk1_suspend {
+				pins = "GPIO7";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk2_active:cam_sensor_mclk2_active {
+				pins = "GPIO13";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk2_suspend:cam_sensor_mclk2_suspend {
+				pins = "GPIO13";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk3_active:cam_sensor_mclk3_active {
+				pins = "GPIO14";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DISABLE>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cam_sensor_mclk3_suspend:cam_sensor_mclk3_suspend {
+				pins = "GPIO14";
+				function = "cam_mclk";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+			};
+
+			cci0_active: cci0_active {
+				pins = "GPIO8", "GPIO9";
+				function = "cam_cci";
+				jlq,pull = <MUXPIN_PULL_UP>;
+				jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+			};
+
+			cci0_suspend: cci0_suspend {
+				pins = "GPIO8", "GPIO9";
+				function = "cam_cci";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+			};
+
+			cci1_active: cci1_active {
+				pins = "GPIO15", "GPIO16";
+				function = "cam_cci";
+				jlq,pull = <MUXPIN_PULL_UP>;
+				jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+			};
+
+			cci1_suspend: cci1_suspend {
+				pins = "GPIO15", "GPIO16";
+				function = "cam_cci";
+				jlq,pull = <MUXPIN_PULL_DOWN>;
+				jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+			};
+		};
+	};
+};

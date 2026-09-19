@@ -1,0 +1,11 @@
+config MFD_I2C_PMIC
+	tristate "QTI I2C PMIC support"
+	depends on I2C && OF
+	select IRQ_DOMAIN
+	select REGMAP_I2C
+	select MFD_CORE
+	help
+	  This enables support for controlling Qualcomm Technologies, Inc.
+	  PMICs over I2C. The driver controls interrupts, and provides register
+	  access for all of the device's peripherals.  Some QTI PMIC chips
+	  support communication over both I2C and SPMI.

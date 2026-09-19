@@ -1,0 +1,29 @@
+&dsi {
+	status = "disabled";
+
+	virtual_panel: panel {
+		compatible = "jlq,dsi-panel";
+		status = "disabled";
+		panel_name = "virtual panel";
+		reg = <0>;
+
+		dsi,lanes = <4>;
+		dsi,flags = <2051>;
+		dsi,format = <0>;
+
+		display_timings: display-timings {
+			native-mode = <&timing_virtual>;
+			timing_virtual: timing0 {
+				clock-frequency = <35000000>;
+				hactive = <800>;
+				vactive = <480>;
+				hfront-porch = <210>;
+				hsync-len = <2>;
+				hback-porch = <46>;
+				vfront-porch = <22>;
+				vsync-len = <2>;
+				vback-porch = <23>;
+			};
+		};
+	};
+};

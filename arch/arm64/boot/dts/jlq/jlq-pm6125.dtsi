@@ -1,0 +1,94 @@
+// SPDX-License-Identifier: GPL-2.0+
+&spmi_bus {
+	qcom,pm6125@1 {
+		S1A: qcom,smpa1 {
+			compatible = "jlq-regulator";
+			reg = <0x1400 0x100>;
+			regulator-name = "pm6125_s1";
+			regulator-min-microvolt = <400000>;
+			regulator-max-microvolt = <1140000>;
+			regulator-always-on;
+		};
+		S3A_LEVEL: qcom,smpa3 {
+			compatible = "jlq-regulator";
+			reg = <0x1a00 0x100>;
+			regulator-name = "pm6125_s3";
+			send-request;
+			regulator-min-microvolt = <400000>;
+			regulator-max-microvolt = <1076000>;
+			regulator-always-on;
+		};
+		S8A: qcom,smpa8 {
+			compatible = "jlq-regulator";
+			reg = <0x2900 0x100>;
+			regulator-name = "pm6125_s8";
+			send-request;
+			regulator-min-microvolt = <400000>;
+			regulator-max-microvolt = <1352000>;
+			regulator-always-on;
+		};
+		L2A: qcom,ldo2 {
+			compatible = "jlq-regulator";
+			reg = <0x4100 0x100>;
+			regulator-name = "pm6125_l2";
+			regulator-min-microvolt = <312000>;
+			regulator-max-microvolt = <1304000>;
+			regulator-always-on;
+		};
+		L3A_LEVEL: qcom,ldo3 {
+			compatible = "jlq-regulator";
+			reg = <0x4200 0x100>;
+			regulator-name = "pm6125_l3";
+			regulator-min-microvolt = <312000>;
+			regulator-max-microvolt = <1304000>;
+			regulator-always-on;
+		};
+		L5A: qcom,ldo5 {
+			compatible = "jlq-regulator";
+			reg = <0x4400 0x100>;
+			regulator-name = "pm6125_l5";
+			regulator-min-microvolt = <1504000>;
+			regulator-max-microvolt = <3544000>;
+			regulator-always-on;
+		};
+		L6A: qcom,ldo6 {
+			compatible = "jlq-regulator";
+			reg = <0x4500 0x100>;
+			regulator-name = "pm6125_l6";
+			regulator-min-microvolt = <312000>;
+			regulator-max-microvolt = <1304000>;
+			regulator-always-on;
+		};
+		L11A: qcom,ldo11 {
+			compatible = "jlq-regulator";
+			reg = <0x4a00 0x100>;
+			regulator-name = "pm6125_l11";
+			regulator-min-microvolt = <1504000>;
+			regulator-max-microvolt = <2000000>;
+			regulator-always-on;
+		};
+		L15A: qcom,ldo15 {
+			compatible = "jlq-regulator";
+			reg = <0x4e00 0x100>;
+			regulator-name = "pm6125_l15";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+//			regulator-always-on;
+		};
+		L22A: qcom,ldo22 {
+			compatible = "jlq-regulator";
+			reg = <0x5500 0x100>;
+			regulator-name = "pm6125_l22";
+			regulator-min-microvolt = <1504000>;
+			regulator-max-microvolt = <2960000>;
+		};
+		L24A: qcom,ldo24 {
+			compatible = "jlq-regulator";
+			reg = <0x5700 0x100>;
+			regulator-name = "pm6125_l24";
+			regulator-min-microvolt = <1504000>;
+			regulator-max-microvolt = <3544000>;
+			regulator-always-on;
+		};
+	};
+};

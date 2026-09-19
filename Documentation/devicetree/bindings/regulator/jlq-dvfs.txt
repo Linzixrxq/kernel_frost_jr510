@@ -1,0 +1,23 @@
+JLQ Duty cycle Driver
+
+Duty cycle is used to record the regulator voltages in some time.
+It can provide the statistic data for Power Optimize.
+
+Required properties:
+ - compatible:		Must be "jlq,dc-stat"
+ - label:			A string, must be one of as following:
+					"cpu"
+					"ddr"
+					"core"
+
+Optional properties:
+ - cpu-supply:		the input supply for cpu
+ - ddr-supply:		the input supply for ddr
+ - core-supply:		the input supply for core
+
+Example:
+	dc_stat0 : dc_stat0 {
+		compatible = "jlq,dc-stat";
+		cpu-supply = <&S1A>;
+		lable = "cpu";
+	};

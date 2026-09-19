@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# LCT touchscreen drivers
+#
+config TOUCHSCREEN_LCT
+    tristate "lct Touchscreen Driver"
+    help
+      Say Y here if you want to add lct touchscreen driver.
+      If unsure, say N.
+
+source "drivers/soc/jlq/touchscreen/gsl/Kconfig"
+source "drivers/soc/jlq/touchscreen/novatek/Kconfig"
+source "drivers/soc/jlq/touchscreen/focaltech/Kconfig"

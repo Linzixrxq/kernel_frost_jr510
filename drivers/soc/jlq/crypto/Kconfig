@@ -1,0 +1,11 @@
+config JLQ_CRYPTO_FDE
+	tristate "JLQ Inline Crypto Module, ARM FDE-741"
+	default n
+	depends on FS_ENCRYPTION
+	depends on FS_ENCRYPTION_INLINE_CRYPT
+	help
+	  This driver supports Inline Crypto Engine for JLQ chipset JR510,
+	  to accelerate crypto operations for storage needs.
+	  To compile this driver as a module, choose M here: the
+	  module will be called fde.
+

@@ -1,0 +1,358 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/pinctrl/jlq_pinctrl.h>
+
+&gpio {
+	sdhc_sd0_pins {
+		sdhc_sd0_clk:sdhc_sd_0 {
+			pins = "SD0CLK";
+			function = "sd0";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+		};
+		sdhc_sd0_cmd:sdhc_sd_1 {
+			pins = "SD0CMD";
+			function = "sd0";
+			jlq,pull = <MUXPIN_PULL_UP>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+		};
+		sdhc_sd0_data:sdhc_sd_2 {
+			pins = "SD0DATA3", "SD0DATA2",
+				"SD0DATA1", "SD0DATA0";
+			function = "sd0";
+			jlq,pull = <MUXPIN_PULL_UP>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+		};
+		sdhc_sd0_cd:sdhc_sd_3 {
+			pins = "GPIO35";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE0_DRIVE_LEVEL3>;
+		};
+		sdhc_sd0_sleep:sdhc_sd_sleep {
+			pins = "SD0CLK", "SD0CMD","SD0DATA3", "SD0DATA2",
+				"SD0DATA1", "SD0DATA0";
+			function = "sd0";
+			jlq,pull = <MUXPIN_PULL_DOWN>;
+			jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+		};
+	};
+
+	sdhc_sd1_pins {
+		sdhc_sd1_clk:sdhc_sdio_0 {
+			pins = "SD1CLK";
+			function = "sd1";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+		};
+			sdhc_sd1_cmd:sdhc_sdio_1 {
+			pins = "SD1CMD";
+			function = "sd1";
+			jlq,pull = <MUXPIN_PULL_UP>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+		};
+		sdhc_sd1_data:sdhc_sdio_2 {
+			pins = "SD1DATA3", "SD1DATA2",
+			"SD1DATA1", "SD1DATA0";
+			function = "sd1";
+			jlq,pull = <MUXPIN_PULL_UP>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+		};
+	};
+
+	sdhc_emmc_pins {
+		sdhc_emmc_clk:sdhc_emmc_0 {
+			pins = "EMMCCLK";
+			function = "emmc";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL2>;
+		};
+		sdhc_emmc_cmd:sdhc_emmc_1 {
+			pins = "EMMCCMD";
+			function = "emmc";
+			jlq,pull = <MUXPIN_PULL_UP>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL2>;
+		};
+		sdhc_emmc_data:sdhc_emmc_2 {
+			pins = "EMMCDATA7", "EMMCDATA6",
+				"EMMCDATA5", "EMMCDATA4",
+				"EMMCDATA3", "EMMCDATA2",
+				"EMMCDATA1", "EMMCDATA0";
+			function = "emmc";
+			jlq,pull = <MUXPIN_PULL_UP>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL2>;
+		};
+		sdhc_emmc_strobe:sdhc_emmc_3 {
+			pins = "EMMCSTROBE";
+			function = "emmc";
+			jlq,pull = <MUXPIN_PULL_DOWN>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL2>;
+		};
+		sdhc_emmc_cmd_sleep:sdhc_emmc_4 {
+			pins = "EMMCCMD";
+			function = "emmc";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL2>;
+		};
+		sdhc_emmc_data_sleep:sdhc_emmc_5 {
+			pins = "EMMCDATA7", "EMMCDATA6",
+				"EMMCDATA5", "EMMCDATA4",
+				"EMMCDATA3", "EMMCDATA2",
+				"EMMCDATA1", "EMMCDATA0";
+			function = "emmc";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL2>;
+		};
+		sdhc_emmc_strobe_sleep:sdhc_emmc_6 {
+			pins = "EMMCSTROBE";
+			function = "emmc";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE1_DRIVE_LEVEL2>;
+		};
+	};
+
+	pericom_pins {
+		pericom_irq_pin: pericom_irq_pin {
+			pins = "GPIO9";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+	};
+
+	pwm_pins {
+		pwm0_output_enable:pwm0 {
+			pins = "SSI2CLK";
+			function = "pwm0";
+		};
+
+		pwm1_output_enable:pwm1 {
+			pins = "GPIO55";
+			function = "pwm1";
+		};
+	};
+
+	spi1_pins {
+		spi1_tx_pin:ssi1@0 {
+			pins = "SSI1TX";
+			function = "ssi1";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+		spi1_rx_clk_pins:ssi1@1 {
+			pins = "SSI1RX", "SSI1CLK";
+			function = "ssi1";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+		spi1_cs_pins: ssi1@2 {
+			pins = "SSI1SSN";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+
+	cm4gpio_pin {
+		cm4gpio_general: cm4gpio_general {
+			pins = "GPIO24", "GPIO25",
+				"GPIO28","GPIO78";
+			function = "cm4_gpio";
+		};
+		cm4gpio_pull: cm4gpio_pull {
+			pins = "GPIO27", "GPIO79";
+			function = "cm4_gpio";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+		cm4gpio_nopull: cm4gpio_nopull {
+			pins = "GPIO26";
+			function = "cm4_gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+	};
+
+	uart1_pins {
+		uart1_tx_rx_rts_pins: uart1_tx_rx_rts_pins {
+			pins = "UART1TX", "UART1RX", "UART1RTS";
+			function = "uart1";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+		uart1_cts_pins: uart1_cts_pins {
+			pins = "UART1CTS";
+			function = "uart1";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+		uart1_rts_pins: uart1_rts_pins {
+			pins = "UART1RTS";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+	};
+
+	com_uart_pins {
+		com_uart_tx_rx_active: com_uart_tx_rx_pins_a {
+			pins = "COMUARTTX", "COMUARTRX";
+			function = "com_uart";
+		};
+		com_uart_tx_rx_sleep: com_uart_tx_rx_pins_s {
+			pins = "COMUARTTX", "COMUARTRX";
+			function = "com_uart";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+	};
+
+	dump_pin {
+		force_dump_pin: force_dump_pin {
+			pins = "UART0RX";
+			function = "gpio";
+		};
+	};
+
+	bolero_dmic_pins {
+		cdc_dmic01_data:cdc_dmic01_data {
+			pins = "GPIO60";
+			function = "dmic";
+		};
+		cdc_dmic01_clk:cdc_dmic01_clk {
+			pins = "GPIO61";
+			function = "dmic";
+		};
+	};
+
+	wcd937x_reset_active: wcd937x_reset_active {
+		pins = "GPIO15";
+		function = "gpio";
+		jlq,pull = <MUXPIN_PULL_UP>;
+		jlq,drive = <TYPE0_DRIVE_LEVEL3>;
+	};
+
+	wcd937x_reset_sleep: wcd937x_reset_sleep {
+		pins = "GPIO15";
+		function = "gpio";
+		jlq,pull = <MUXPIN_PULL_DOWN>;
+		jlq,drive = <TYPE0_DRIVE_LEVEL3>;
+	};
+
+	wcd_pin {
+		wcd937x_rst_pin: wcd937x_rst_pin {
+			pins = "GPIO51";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+		};
+	};
+
+	hph_select_pin: hph_select_pin {
+			pins = "SSI1SSN";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+			jlq,drive = <TYPE0_DRIVE_LEVEL0>;
+	};
+
+	pm8008_rst {
+		pm8008_rst_pin: pm8008_rst_pin {
+			pins = "GPIO8";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+
+	i2c3_pin {
+		i2c3_pins: i2c3_pins {
+			pins = "I2C3SCL", "I2C3SDA";
+			function = "i2c3";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+
+	i2c4_pin {
+		i2c4_pins: i2c4_pins {
+			pins = "I2C4SCL", "I2C4SDA";
+			function = "i2c4";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+	i2c5_pin {
+		i2c5_pins: i2c5_pins {
+			pins = "I2C5SCL", "I2C5SDA";
+			function = "i2c5";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+
+	camera_pins {
+		cam_flash_en_active: cam_flash_en_active {
+			pins = "GPIO24";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+
+		cam_flash_en_suspend: cam_flash_en_suspend {
+			pins = "GPIO24";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DOWN>;
+		};
+		cam_flash_now_active: cam_flash_now_active {
+			pins = "GPIO25";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+
+		cam_flash_now_suspend: cam_flash_now_suspend {
+			pins = "GPIO25";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DOWN>;
+		};
+	};
+	i2c4_pin {
+		i2c4_pins: i2c4_pins {
+			pins = "I2C4SCL", "I2C4SDA";
+			function = "i2c4";
+			jlq,pull = <MUXPIN_PULL_UP>;
+		};
+	};
+	lcd_pins {
+		lcd_reset_active:lcd_reset_active {
+			pins = "GPIO69";
+			function = "gpio";
+		};
+
+		lcd_bias_enp_active:lcd_bias_enp_active {
+			pins = "GPIO27";
+			function = "gpio";
+		};
+
+		lcd_bias_enn_active:lcd_bias_enn_active {
+			pins = "SSI2SSN";
+			function = "gpio";
+		};
+
+		lcd_reset_suspend:lcd_reset_suspend {
+			pins = "GPIO69";
+			function = "gpio";
+			jlq,pull = <MUXPIN_PULL_DISABLE>;
+		};
+
+		lcd_bias_enp_suspend:lcd_bias_enp_suspend {
+			pins = "GPIO27";
+			function = "gpio";
+		};
+
+		lcd_bias_enn_suspend:lcd_bias_enn_suspend {
+			pins = "SSI2SSN";
+			function = "gpio";
+		};
+	};
+        ant-check-pin {
+               ant_check_default: ant_check_default {
+                               pins = "UART0TX";
+                               function = "gpio";
+                                jlq,pull = <MUXPIN_PULL_DISABLE>;
+               };
+       };
+       ant-check-div-pin {
+               ant_check_div_default: ant_check_div_default {
+                               pins = "GPIO36";
+                               function = "gpio";
+                                jlq,pull = <MUXPIN_PULL_DISABLE>;
+               };
+       };
+};
+
+
+

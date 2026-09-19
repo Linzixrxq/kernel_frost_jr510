@@ -1,0 +1,9 @@
+obj-y		+= revid/
+obj-y		+= regulator/
+obj-y		+= pinctrl/
+obj-y		+= pon/
+obj-y		+= flash/
+obj-y		+= pwm/
+obj-y		+= rgb/
+obj-y		+= vibrator/
+obj-y		+= pm8008/

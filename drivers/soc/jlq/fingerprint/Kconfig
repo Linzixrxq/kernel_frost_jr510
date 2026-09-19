@@ -1,0 +1,5 @@
+# JLQ fingerprint drivers
+
+source "drivers/soc/jlq/fingerprint/fpc/Kconfig"
+source "drivers/soc/jlq/fingerprint/goodix/Kconfig"
+source "drivers/soc/jlq/fingerprint/silead/Kconfig"

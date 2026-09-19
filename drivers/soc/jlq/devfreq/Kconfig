@@ -1,0 +1,34 @@
+config DEVFREQ_GOV_CPUFREQ
+	tristate "CPUfreq"
+	depends on CPU_FREQ
+	help
+	  Chooses frequency based on the online CPUs' current frequency and a
+	  CPU frequency to device frequency mapping table(s). This governor
+	  can be useful for controlling devices such as DDR, cache, CCI, etc.
+
+config DEVFREQ_SIMPLE_DEV
+	tristate "Device driver for simple clock device with no status info"
+	select DEVFREQ_GOV_PERFORMANCE
+	select DEVFREQ_GOV_POWERSAVE
+	select DEVFREQ_GOV_USERSPACE
+	select DEVFREQ_GOV_CPUFREQ
+	help
+	  Device driver for simple devices that control their frequency using
+	  clock APIs and don't have any form of status reporting.
+
+config DEVFREQ_DDR
+	tristate "Device driver for ddr dfs device with additional command"
+	depends on PM_DEVFREQ
+	depends on PM_CTRL
+	select DEVFREQ_GOV_PERFORMANCE
+	select DEVFREQ_GOV_POWERSAVE
+	select DEVFREQ_GOV_USERSPACE
+	select DEVFREQ_GOV_CPUFREQ
+	help
+	  Device driver for ddr dfs device that control their frequency using
+	  bridge APIs and have additional command such as show ddr status.
+
+config BW_BUSMON
+	tristate "Device driver for ddr bandwidth monitor"
+	help
+	  Device driver for ddr master bandwidth monitor.

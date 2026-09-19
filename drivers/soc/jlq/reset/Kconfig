@@ -1,0 +1,7 @@
+config RESET_JLQ
+	tristate "JLQ Reset Driver"
+	depends on ARCH_JLQ
+	default n
+	help
+	  This enables the reset controller driver for JR510 Socs
+

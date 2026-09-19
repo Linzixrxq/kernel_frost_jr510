@@ -1,0 +1,27 @@
+config JLQ_WATCHDOG
+        tristate "JLQ watchdog"
+	default n
+        help
+          Select this to support JLQ watchdog for monitor system run.
+	  this driver will register an watchdog bark irq routine, the kernel
+	  will to kick watchdog before it timeouts. if two consecutive timeout
+	  happeded, the wdt hareware will generate an wdt bite irq signal which
+	  routes to cm4 and arm cores. and the system will reset and when it is
+	  unmasked for reset the Soc
+
+config JLQ_SYSDUMP
+	tristate "JLQ JLQ sysdump"
+	default n
+	help
+	  the sysdump driver will receive extenal gpio trigger signal when
+	  the serial or usb is not function properly, also it will receive
+	  kernel panic notifier to force wdog timeout which cm4 will receive
+	  wdog bite signal to start cpu and common register dump.
+
+config JLQ_ISR_MONITOR
+	tristate "irq count monitor"
+	default n
+	help
+	  monitor the recent irq happened in JLQ soc, useful when
+	  there are irq storm triggered to soc and the irq statics
+	  will show in panic flow.

@@ -1,0 +1,110 @@
+/*
+ * JLQ Inline Crypto Module
+ *
+ * Copyright 2018~2021 JLQ Technology Co.,
+ * Ltd. or its affiliates. All rights reserved.
+ *
+ * SPDX-License-Identifier: GPL-2.0
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef __FDE_REGS_H__
+#define __FDE_REGS_H__
+
+enum E_FDE_CONTEXT_WORD0_DATA_UNIT_SIZE {
+	FDE_CONTEXT_WORD0_DATA_UNIT_SIZE_512	= 1,
+	FDE_CONTEXT_WORD0_DATA_UNIT_SIZE_1024	= 2,
+	FDE_CONTEXT_WORD0_DATA_UNIT_SIZE_2048	= 3,
+	FDE_CONTEXT_WORD0_DATA_UNIT_SIZE_4096	= 4,
+	FDE_CONTEXT_WORD0_DATA_UNIT_SIZE_INVALID
+};
+
+enum E_FDE_KEY_MODE {
+	FDE_KEY_MODE_XTS_AES	= 0,
+	FDE_KEY_MODE_CBC_ESSIV	= 1,
+	FDE_KEY_MODE_ECB		= 2
+};
+
+enum E_FDE_KEY_SIZE {
+	FDE_KEY_SIZE_128B		= 0,
+	FDE_KEY_SIZE_192B		= 1,
+	FDE_KEY_SIZE_256B		= 2,
+};
+
+enum E_FDE_IV_KEY_SIZE {
+	FDE_IVKEY_SIZE_256B		= 0,
+	FDE_IVKEY_SIZE_128B		= 1,
+	FDE_IVKEY_SIZE_192B		= 2,
+};
+
+#define FDE_CONTEXT_SEL_CTX_SEL_MSK				0x1F
+#define FDE_CONTEXT_SEL_CTX_SEL_OFFSET			(0)
+
+#define FDE_CONTEXT_WORD0_NOBYPASS_MSK			(0x01)
+#define FDE_CONTEXT_WORD0_NOBYPASS_OFFSET		(0)
+#define FDE_CONTEXT_WORD0_KEYSLOT_SEL_MSK		(0x1F)
+#define FDE_CONTEXT_WORD0_KEYSLOT_SEL_OFFSET	(1)
+#define FDE_CONTEXT_WORD0_DATA_UNIT_SIZE_MSK	(0x0F)
+#define FDE_CONTEXT_WORD0_DATA_UNIT_SIZE_OFFSET	(6)
+
+#define FDE_AXUSER_SYNC_DISABLE_MSK				(0x01)
+#define FDE_AXUSER_SYNC_DISABLE_OFFSET			(0)
+
+
+#define FDE_REGS_CONTEXT_SEL					(0x00)
+#define FDE_REGS_CONTEXT_WORD0					(0x04)
+#define FDE_REGS_CONTEXT_WORD1					(0x08)
+#define FDE_REGS_AXUSER_SYNC_DISABLE			(0x404)
+
+
+#define FDE_SEC_KEY_SLOT_KEY_SIZE_MSK			(0x03)
+#define FDE_SEC_KEY_SLOT_KEY_SIZE_OFFSET		(0)
+#define FDE_SEC_KEY_SLOT_KEY_SIZE_128B			(0)
+#define FDE_SEC_KEY_SLOT_KEY_SIZE_192B			(1) //XTS NOT SUPPORT
+#define FDE_SEC_KEY_SLOT_KEY_SIZE_256B			(2)
+
+
+#define FDE_SEC_KEY_SLOT_KEY_MODE_MSK			(0x03)
+#define FDE_SEC_KEY_SLOT_KEY_MODE_OFFSET		(2)
+
+#define FDE_SEC_SYS_CONFIG_IVKEY_LENGTH_OFFSET	2
+
+#define FDE_SEC_KEY_SLOT_SEL					(0x20)
+#define FDE_SEC_RESET							(0x24)
+#define FDE_SEC_BYPASS							(0x28)
+#define FDE_SEC_KEY_SLOT_KEY					(0x100)
+#define FDE_SEC_KEY_SLOT_IV_KEY					(0x200)
+#define FDE_SEC_KEY_SLOT_KEY_SIZE_MODE			(0x300)
+#define FDE_AES_SYS_CONFIG						(0x400)
+
+
+#define FDE_HBLK_EMMC_DMA_CONTEXT				(0x200)
+#define FDE_HBLK_DECYPT_CONTEXT_SEL_OFFSET		(0)
+#define FDE_HBLK_DECYPT_CONTEXT_SEL_BITWIDTH	(5)
+#define FDE_HBLK_DECYPT_CONTEXT_SEL_MSK					\
+	(((1 << (FDE_HBLK_DECYPT_CONTEXT_SEL_BITWIDTH)) - 1) \
+		<< (FDE_HBLK_DECYPT_CONTEXT_SEL_OFFSET))
+
+#define FDE_HBLK_ENCYPT_CONTEXT_SEL_OFFSET		(5)
+#define FDE_HBLK_ENCYPT_CONTEXT_SEL_BITWIDTH	(5)
+#define FDE_HBLK_ENCYPT_CONTEXT_SEL_MSK					\
+	(((1 << (FDE_HBLK_ENCYPT_CONTEXT_SEL_BITWIDTH)) - 1) \
+		<< (FDE_HBLK_ENCYPT_CONTEXT_SEL_OFFSET))
+
+#define FDE_HBLK_EMMC_DMA_CONTEXT_SET_DEC(val, dec)		\
+	(((val) & (~(FDE_HBLK_DECYPT_CONTEXT_SEL_MSK)))	\
+	| ((dec) << (FDE_HBLK_DECYPT_CONTEXT_SEL_OFFSET)))
+
+#define FDE_HBLK_EMMC_DMA_CONTEXT_SET_ENC(val, enc)		\
+	((((val) & (~(FDE_HBLK_ENCYPT_CONTEXT_SEL_MSK)))	\
+	| ((enc) << FDE_HBLK_ENCYPT_CONTEXT_SEL_OFFSET)))
+
+
+#endif

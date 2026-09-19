@@ -1,0 +1,25 @@
+JLQ's USB PHY
+
+PROPERTIES
+
+- compatible: "jlq,jlq-usb-phy"
+- reg: offset and length of the register block.
+- reg-names: name of register
+- usb1v8-supply: should contain a reference to the 3.3V supply
+- usb1v8-supply: should contain a reference to the 1.8V supply
+- clocks: should contain clock specifier for the reference clocks
+- clock-names: should contain "usb_clk" for the reference clocks
+
+
+EXAMPLE
+
+usb0_phy: usb_phy@3450E2E0 {
+	compatible = "jlq,jlq-usb-phy";
+	reg = <0x3450E2E0 0x8>,<0x34511200 0x4>;
+	reg-names = "usbphy", "usbrst";
+	usb3v3-supply = <&dldo10>;
+	usb1v8-supply = <&dldo4>;
+	clocks = <&usb_otg_refclk>,<&usbotg_hclk>;
+	clock-names = "usb_clk","usb_hclk";
+};
+

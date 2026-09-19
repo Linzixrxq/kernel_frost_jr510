@@ -1,0 +1,42 @@
+JLQ Charger Manager driver binding
+
+This binding descirbes the JLQ Charger Manager driver
+
+Required properties :
+	- cm-name:Definition: JLQ charger-manager register power supply name.
+	- cm-poll-interval: Charger check poll interval,(unit:ms).
+	- cm-batt-id-iio:The IIO interface which for read battery ID.
+	- cm-fuel-gauge:The power supply name which register by fuel-gauge.
+	- cm-charger-extcon:Extcon interface Name ,which for notice cable be plugIN/OUT.
+	- power-supply:battery charger power-supply.
+	- cm-chip-name:battery charger power regulator,used for regulate charger volt& current
+	- cm-chip-max:charger chip max charge current.
+
+Optional properties :
+	- cm-regulator-name : Input power regulator,if it can setting volt various.
+	- otg_regulator_name:OTG power regulator.
+
+Example :
+	jlq-charger-manager {
+		compatible = "jlq,charger-manager";
+
+		cm-name = "battery";
+		cm-poll-interval= <1000>;
+		cm-batt-id-iio = "batt-id-iio";
+		cm-fuel-gauge = "SH36610x";
+		cm-regulator-name = "Charger-input-power";
+		cm-charger-extcon = "charger-usb-extcon";
+		otg_regulator_name = "otg-power";
+		charger1{
+			power-supply = "sd7601";
+			cm-chip-name = "sd7601-charger-power";
+			cm-chip-min = 0;
+			cm-chip-max = 3000000;
+		};
+		charger2{
+			power-supply = "smb13x";
+			cm-chip-name = "smb13x-charger-power";
+			cm-chip-min = 0;
+			cm-chip-max = 2000000;
+		};
+	};

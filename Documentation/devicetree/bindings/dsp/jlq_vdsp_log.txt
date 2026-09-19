@@ -1,0 +1,20 @@
+JLQ vdsp log bindings
+
+Required properties:
+- compatible:
+  - "jlq,vdsp-log"
+- interrupt-parent: use mailbox irq.
+- interrupt-controller: Mark the device node as an interrupt controller.
+- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
+- interrupts: Specify the interrupt.
+- jlq,vdsp_log_tx_irq: the number of ap send irq to vdsp by mailbox.
+
+Example:
+
+vdsp_log: vdsp_log {
+	compatible = "jlq,vdsp-log";
+	interrupt-parent = <&top_mbox_irq_vdspnsec>;
+	interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
+	interrupt-names = "log-irq-id";
+	jlq,vdsp_log_tx_irq = <1>;
+};

@@ -1,0 +1,117 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/pinctrl/jlq_pinctrl.h>
+
+/ {
+	soc: soc@0 {
+		pinctrl: pinctrl@34501000 {
+			compatible = "jlq,jr510-pinctrl";
+			reg = <0x34501000 0x1000>;
+			sdhc_sd0_pins {
+				sdhc_sd0_clk:sdhc_sd_0 {
+					jlq,pins = "SD0CLK";
+					jlq,function = "sd0";
+					jlq,pull = <MUXPIN_PULL_DISABLE>;
+					jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+				};
+				sdhc_sd0_cmd:sdhc_sd_1 {
+					jlq,pins = "SD0CMD";
+					jlq,function = "sd0";
+					jlq,pull = <MUXPIN_PULL_UP>;
+					jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+				};
+				sdhc_sd0_data:sdhc_sd_2 {
+					jlq,pins = "SD0DATA3", "SD0DATA2",
+						"SD0DATA1", "SD0DATA0";
+					jlq,function = "sd0";
+					jlq,pull = <MUXPIN_PULL_UP>;
+					jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+				};
+				sdhc_sd0_cd:sdhc_sd_3 {
+					jlq,pins = "GPIO35";
+					jlq,function = "gpio";
+					jlq,pull = <MUXPIN_PULL_DISABLE>;
+					jlq,drive = <TYPE0_DRIVE_LEVEL3>;
+				};
+			};
+
+			sdhc_sd1_pins {
+				sdhc_sd1_clk:sdhc_sdio_0 {
+					jlq,pins = "SD1CLK";
+					jlq,function = "sd1";
+					jlq,pull = <MUXPIN_PULL_DISABLE>;
+					jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+				};
+					sdhc_sd1_cmd:sdhc_sdio_1 {
+					jlq,pins = "SD1CMD";
+					jlq,function = "sd1";
+					jlq,pull = <MUXPIN_PULL_UP>;
+					jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+				};
+				sdhc_sd1_data:sdhc_sdio_2 {
+					jlq,pins = "SD1DATA3", "SD1DATA2",
+					"SD1DATA1", "SD1DATA0";
+					jlq,function = "sd1";
+					jlq,pull = <MUXPIN_PULL_UP>;
+					jlq,drive = <TYPE1_DRIVE_LEVEL3>;
+				};
+			};
+
+			usbphy_pins {
+				usb_phy_cs_pin: usb_phy_cs_pin {
+					jlq,pins = "GPIO9";
+					jlq,function = "gpio";
+				};
+
+				usb_phy_reset_pin: usb_phy_reset_pin {
+					jlq,pins = "GPIO78";
+					jlq,function = "gpio";
+				};
+			};
+
+			pwm_pins {
+				pwm0_output_enable:pwm0 {
+					jlq,pins = "SSI2CLK";
+					jlq,function = "pwm0";
+				};
+
+				pwm1_output_enable:pwm1 {
+					jlq,pins = "GPIO55";
+					jlq,function = "pwm1";
+				};
+			};
+
+			spi1_pins {
+				spi1_tx_rx_clk_pins:ssi1@0 {
+					jlq,pins = "SSI1TX", "SSI1RX",
+						"SSI1CLK";
+					jlq,function = "ssi1";
+				};
+				spi1_cs_pins: ssi1@1 {
+					jlq,pins = "SSI1SSN";
+					jlq,function = "gpio";
+					jlq,pull = <MUXPIN_PULL_UP>;
+				};
+			};
+
+			uart1_pins {
+				uart1_tx_rx_rts_pins: uart1_tx_rx_rts_pins {
+					jlq,pins = "UART1TX", "UART1RX", "UART1RTS";
+					jlq,function = "uart1";
+				};
+				uart1_cts_pins: uart1_cts_pins {
+					jlq,pins = "UART1CTS";
+					jlq,function = "uart1";
+				};
+			};
+			dump_pin {
+				force_dump_pin: force_dump_pin {
+					jlq,pins = "UART0RX";
+					jlq,function = "gpio";
+				};
+			};
+
+		};
+	};
+};
+
+

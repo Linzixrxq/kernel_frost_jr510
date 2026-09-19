@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/jlq/jr510/jlq_dmas.h>
+
+&soc {
+	ssi0: spi@30701000 {
+			compatible = "jlq,jlq-spi";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x30701000 0x1000>, <0x3450E080 0x4>;
+			reg-names = "ssi", "ap_ctrl";
+			interrupts = <GIC_SPI INT_SSI0 IRQ_TYPE_LEVEL_HIGH>;
+			rx_dma_channel = <&ap_dmas DMAS_CH_SSI0_RX 0>;
+			tx_dma_channel = <&ap_dmas DMAS_CH_SSI0_TX 0>;
+			num_chipselect= <1>;
+			cs_state;
+			ssi_protocol = <(0x10001)>;/*10000->ssp,10001->spi*/
+			clocks = <&ssi0_clk>, <&ssi0_pclk>;
+			clock-names = "ssi_clk", "ssi_pclkgt";
+			status = "disabled";
+	};
+
+	ssi1: spi@34102000 {
+			compatible = "jlq,jlq-spi";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x34102000 0x1000>, <0x34103010 0x4>;
+			reg-names = "ssi", "ap_ctrl";
+			interrupts = <GIC_SPI INT_SSI1 IRQ_TYPE_LEVEL_HIGH>;
+			rx_dma_channel = <&top_dmas DMAS_CH_SSI1_RX 0>;
+			tx_dma_channel = <&top_dmas DMAS_CH_SSI1_TX 0>;
+			num_chipselect= <1>;
+			cs_state;
+			ssi_protocol = <(0x1)>;/*10000->ssp,10001->spi*/
+			clocks = <&ssi1_clk>, <&ssi1_pclk>;
+			clock-names = "ssi_clk", "ssi_pclkgt";
+			status = "disabled";
+	};
+
+	ssi2: spi@30702000 {
+			compatible = "jlq,jlq-spi";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x30702000 0x1000>, <0x3450E080 0x4>;
+			reg-names = "ssi", "ap_ctrl";
+			interrupts = <GIC_SPI INT_SSI2 IRQ_TYPE_LEVEL_HIGH>;
+			rx_dma_channel = <&ap_dmas DMAS_CH_SSI2_RX 0>;
+			tx_dma_channel = <&ap_dmas DMAS_CH_SSI2_TX 0>;
+			num_chipselect= <1>;
+			cs_state;
+			ssi_protocol = <(0x40004)>;/*40000->ssp,40004->spi*/
+			clocks = <&ssi2_clk>, <&ssi2_pclk>;
+			clock-names = "ssi_clk", "ssi_pclkgt";
+			status = "disabled";
+	};
+};

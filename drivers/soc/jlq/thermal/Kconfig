@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ thermal drivers
+#
+source "drivers/soc/jlq/thermal/mpss/Kconfig"
+source "drivers/soc/jlq/thermal/pmu/Kconfig"
+source "drivers/soc/jlq/thermal/tsens/Kconfig"
+source "drivers/soc/jlq/thermal/camera/Kconfig"

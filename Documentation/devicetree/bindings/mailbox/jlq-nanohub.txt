@@ -1,0 +1,19 @@
+jlq Nanohub driver
+
+Nanohub driver is used to communicate between AP host and Sensorhub.
+
+Required properties:
+- compatible : should be "jlq,nanohub".
+- sensorhub,cm4gpios : bit0~6 corresponding cm4gpio0~6 should be set to 1,
+			when sensorhub use them as interrupt input gpios.
+- pinctrl-names : must be default
+- pinctrl-0 : initiate the muxpin configuration of gpios that sensorhub used.
+
+Example:
+	nanohub {
+		compatible = "jlq,nanohub";
+		sensorhub,cm4gpios = <0x00000072>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&spi1_tx_pin &spi1_rx_clk_pins &cm4gpio_general
+				&cm4gpio_pull &cm4gpio_nopull &i2c5_pins>;
+	};

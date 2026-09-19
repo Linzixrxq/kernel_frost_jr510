@@ -1,0 +1,28 @@
+&dsi {
+	virtual_panel: panel {
+		compatible = "jlq,dsi-panel";
+		status = "okay";
+		panel_name = "panel_default";
+		panel_id = <0>;
+		reg = <0>;
+
+		dsi,lanes = <4>;
+		dsi,flags = <2051>;
+		dsi,format = <0>;
+
+		display_timings: display-timings {
+			native-mode = <&timing_virtual>;
+			timing_virtual: timing0 {
+				clock-frequency = <160000000>;
+				hactive = <1080>;
+				vactive = <1920>;
+				hfront-porch = <135>;
+				hsync-len = <30>;
+				hback-porch = <135>;
+				vfront-porch = <6>;
+				vsync-len = <6>;
+				vback-porch = <4>;
+			};
+		};
+	};
+};

@@ -1,0 +1,30 @@
+SH36610X for JLQ board driver binding
+
+Required properties:
+- compatible : One of:
+  - sh,sh366101
+  - jlq,sh36610x
+
+Optional properties :
+ - monitored-battery: phandle of battery characteristics node
+     The fuel gauge uses the following battery properties:
+     + energy-full-design-microwatt-hours
+     + charge-full-design-microamp-hours
+     + voltage-min-design-microvolt
+   Both or neither of the *-full-design-*-hours properties must be set.
+   See Documentation/devicetree/bindings/power/supply/battery.txt
+
+
+Example :
+	bat: battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <1900000>;
+		constant-charge-voltage-max-microvolt = <4350000>;
+	};
+
+	SH36610X@AA {
+		compatible = "jlq,sh36610x";
+		reg = <0xaa>;
+		interrupts-extended = <&gpiochip 10 IRQ_TYPE_EDGE_FALLING>;
+		monitored-battery = <&bat>;
+	};

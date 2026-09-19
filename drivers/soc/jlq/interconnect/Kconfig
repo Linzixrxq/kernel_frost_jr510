@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config INTERCONNECT_JLQ
+	tristate "JLQ bus interconnect drivers"
+	depends on ARCH_JLQ
+	help
+	  Support for JLQ's bus interconnect hardware.
+
+config INTERCONNECT_JR510
+	tristate "Qualcomm HOLI interconnect driver"
+	depends on INTERCONNECT_JLQ
+	help
+	  This is a driver for the JLQ bus on jr510 platforms. The interconnect
+	  provider collects and aggreagates the cosumer bandwidth requests to
+	  satisfy constraints placed on bus performance states.
+
+config INTERCONNECT_TEST
+	tristate "Debugfs test"
+	depends on INTERCONNECT_JLQ
+	depends on DEBUG_FS
+	help
+	  Expose the interconnect API to userspace for testing purposes. This
+	  will create /sys/kernel/debug/interconnect-test to allow requesting
+	  bandwidth between endpoints.
+
+	  If unsure, say no.

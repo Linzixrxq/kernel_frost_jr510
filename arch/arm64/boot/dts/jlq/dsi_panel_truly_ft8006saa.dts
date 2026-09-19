@@ -1,0 +1,121 @@
+// SPDX-License-Identifier: GPL-2.0+
+/dts-v1/;
+/plugin/;
+#include <dt-bindings/pinctrl/jlq_pinctrl.h>
+/ {
+	jlq,panel-id   = <3 0>;
+};
+
+&dsi {
+	panel_ft8006saa: ft8006saa {
+		compatible = "jlq,dsi-panel";
+		reg = <0>;
+		panel_name = "xiaomi C3QP 43 03 0b hd+ longh video dsi panel";
+		status = "okay";
+		inited = "true";
+
+		pinctrl-names = "panel_active", "panel_suspend";
+		pinctrl-0 = <&lcd_reset_active
+			&lcd_bias_enp_active
+			&lcd_bias_enn_active>;
+		pinctrl-1 = <&lcd_reset_suspend
+			&lcd_bias_enp_suspend
+			&lcd_bias_enn_suspend>;
+
+		reset-gpio = <&gpio 69 0>;
+		reset-sequence = <1 10 0 20 1 10>;
+		reset-gpio-keep-high;
+		bias-enp-gpio = <&gpio 27 0>;
+		bias-enn-gpio = <&gpio 68 0>;
+
+		dsi,lanes = <4>;
+		dsi,channel = <0>;
+		dsi,flags = <0x24400803>;
+		dsi,format = <0>;
+
+		init-delay-ms = <35>;
+		prepare-delay-ms = <0>;
+		enable-delay-ms = <2>;
+		unprepare-delay-ms = <0>;
+		disable-delay-ms = <2>;
+		reset-delay-ms = <10>;
+		width-mm = <68>;
+		height-mm = <156>;
+		backlight-type = <1>;
+		backlight-max-level = <2047>;
+		ic-vendor = <2>;
+                esd-check-mode = "reg_read";
+                esd-check-period = <6000>;
+
+		panel-exit-sequence = [
+			05 05 01 28
+			05 96 01 10
+			29 00 02 17 5a
+			29 40 02 18 5a
+		];
+
+		panel-init-sequence = [
+			29 00 03 41 5A 19
+			29 00 05 A0 00 00 46 00
+			29 00 03 41 5A 24
+			29 00 02 8D 5A
+			29 00 03 41 5A 2F
+			29 00 02 4C 03
+			29 00 02 51 00
+			29 00 02 53 2c
+			29 00 02 55 00
+			05 64 01 11
+			05 0a 01 29
+		];
+
+                esd-entries {
+                       #address-cells = <1>;
+                       #size-cells = <0>;
+
+                       esd-entry@0 {
+                               reg = <0>;
+                               return-packet-size = <1>;
+                               valid-value-array = /bits/ 8 <0x9c>;
+                               read-sequence = [
+                                       06 01 01 0a
+                               ];
+                       };
+               };
+
+
+		display-timings {
+			native-mode = <&ft8006saa_timing>;
+			ft8006saa_timing: timing0 {
+				clock-frequency = <90000000>;
+				hactive = <720>;
+				vactive = <1650>;
+				hfront-porch = <68>;
+				hsync-len = <16>;
+				hback-porch = <38>;
+				vfront-porch = <75>;
+				vsync-len = <10>;
+				vback-porch = <45>;
+				hsync-active = <1>;
+				vsync-active = <1>;
+			};
+		};
+	};
+};
+
+
+&ssi1 {
+	focaltech@0 {
+		compatible = "focaltech,fts";
+		reg = <0x0>;
+		status = "okay";
+		panel = <&panel_ft8006saa>;
+		spi-max-frequency = <6000000>;
+		interrupt-parent = <&gpio>;
+		interrupts = <9 2>;
+		focaltech,reset-gpio = <&gpio 8 0>;
+		focaltech,irq-gpio = <&gpio 9 0>;
+		focaltech,longv-mode = <0x0>;
+		focaltech,max-touch-number = <10>;
+		focaltech,display-coords =  <0 0 720 1650>;
+	};
+};

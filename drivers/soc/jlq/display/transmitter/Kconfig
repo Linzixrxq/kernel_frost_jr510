@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ dsi/lcd/backlight drivers
+#
+config DSI_TRANSMITTER_JLQ
+	tristate "jlq dsi transmitter driver"
+	select DRM_PANEL
+	select DRM_MIPI_DSI
+	select VIDEOMODE_HELPERS
+	select DRM_KMS_HELPER
+	help
+	 This selects support for jlq SoC specific extensions for
+	 the Synopsys DesignWare DSI driver. If you want to enable MIPI DSI on
+	 jlq platform, you should selet this option.
+
+config DRM_VIRT_ENCODER
+	tristate "Virtual OF-based encoder"
+	depends on DRM && OF
+	select VIDEOMODE_HELPERS
+	help
+	  Choose this option to get a virtual encoder and its associated
+	  connector that will use the device tree to read the display
+	  timings information. If M is selected the module will be called
+	  drm_vencoder.
+
+config BACKLIGHT_JLQ
+	tristate "jlq backlight driver"
+	help
+	  jlq backlight driver provides a sys file by which userspace
+	  can control the backlight brightness of lcd. Choose this option
+	  to enable jlq backlight driver.
+
+	  If M is selected the module will be called jlq backlighter.

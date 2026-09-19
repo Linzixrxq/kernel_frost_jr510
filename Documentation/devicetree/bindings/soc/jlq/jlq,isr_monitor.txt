@@ -1,0 +1,34 @@
+JLQ dummy driver bindinngs
+
+This binding descirbes the isr monitor driver which can monitor all irq times
+in a specified period, it will shows the active irq count when kernel crash,
+This driver can help to detect irq storm.
+
+
+- compatible:
+	Usage: required
+	Value type: <string>
+	Definition: must be "jlq,isr-monitor"
+
+- irq-interval:
+	Usage: required
+	Value type: <uint32>
+	Definition: the monitor interval of isr monitor, in seconds unit
+
+- max-irqs:
+	Usage: required
+	Value type: <uint32>
+	Definition: the monitor maximum physical irqs supported by chip:
+
+
+= EXAMPLE
+
+The following example represents isr-monitor driver dts
+
+disabled.
+        isr-monitor {
+		compatible = "jlq,isr-monitor";
+		irq-interval = <10>;
+		max-irqs = <256>;
+	};
+

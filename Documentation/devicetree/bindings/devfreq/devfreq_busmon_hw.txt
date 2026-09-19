@@ -1,0 +1,38 @@
+JLQ DDR bandwidth monitor device
+
+busmon is a device that represents the jlq ddr bandwidth monitors that
+can be used to measure the bandwidth of read/write traffic from the DDRC
+master ports. For example, the CPU subsystem sits on one ddrc master port.
+
+Required properties:
+- compatible:         Must be "jlq,busmon"
+- reg:                Pairs of physical base addresses and region sizes of
+            memory mapped registers.
+- reg-names:          Names of the bases for the above registers. Expected
+            bases are: "bm_base", "sysctrl_base"
+- interrupt-parent:   Parent of IRQ.
+- interrupts:         Lists the threshold IRQ.
+- busmon_port_nums:   The bus monitor hardware master port numbers that this device can monitor
+- busmon_group_nums:  The bus monitor group numbers, which is hardware related.
+- busmon_port0_target-dev:  The DT device that corresponds to this master port0
+- busmon_port1_target-dev:  The DT device that corresponds to this master port1
+- busmon_port2_target-dev:  The DT device that corresponds to this master port2
+Optional properties:
+- busmon_polling_ms:  Polling interval for the device in milliseconds. Default: 50
+
+Example:
+
+busmon: jlq,busmon {
+    compatible = "jlq,busmon";
+    reg = <0x34688000 0x8000>,<0x3450e000 0x1000>;
+    reg-names = "bm_base","sysctrl_base"
+    interrupt-parent = <&gic>;
+    interrupts = <GIC_SPI INT_BUSMON IRQ_TYPE_LEVEL_HIGH>;
+    interrupt-controller;
+    busmon_port_nums = <6>;
+    busmon_port0_target-dev = <&icc_ddr_port0>;
+    busmon_port1_target-dev = <&icc_ddr_port1>;
+    busmon_port2_target-dev = <&icc_ddr_port2>;
+    busmon_group_nums = <16>;
+    busmon_polling_ms = <50>;
+};

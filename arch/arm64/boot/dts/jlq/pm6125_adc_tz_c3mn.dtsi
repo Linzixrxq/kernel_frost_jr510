@@ -1,0 +1,81 @@
+// SPDX-License-Identifier: GPL-2.0+
+&pm6125_gpios {
+	pm6125_gpio_tm_adcs_pins:pm6125_gpio_tm_adcs_pins {
+		pm6125_gpio4_default: pm6125_gpio4_default {
+			pins = "gpio4";
+			function = "normal";
+			bias-high-impedance; /* DISABLE GPIO4 for ADC*/
+			bias-disable;
+		};
+		pm6125_gpio7_default: pm6125_gpio7_default {
+			pins = "gpio7";
+			function = "normal";
+			bias-high-impedance; /* DISABLE GPIO7 for ADC*/
+			bias-disable;
+		};
+	};
+};
+
+&pm6125_adc_tm {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pm6125_gpio4_default>;
+	io-channels = < &pm6125_vadc ADC5_AMUX_THM2_100K_PU >, <&pm6125_vadc ADC5_AMUX_THM1_100K_PU >,
+		          <&pm6125_vadc ADC5_XO_THERM_100K_PU >, <&pm6125_vadc ADC5_GPIO2_100K_PU>;
+	io-channel-names = "THM2_100K", "THM1_100K", "XO_100K", "GPIO4_100K";
+	gpio4_therm {
+		reg = <ADC5_GPIO2_100K_PU>;
+		label = "gpio4_therm";
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+	};
+};
+
+&xo_therm_usr {
+	status = "okay";
+	thermal-sensors = <&pm6125_adc_tm ADC5_XO_THERM_100K_PU>;
+};
+
+&pa_therm0_usr {
+	status = "okay";
+	thermal-sensors = <&pm6125_adc_tm ADC5_AMUX_THM1_100K_PU>;
+};
+
+&emmc_therm_usr {
+	status = "okay";
+	thermal-sensors = <&pm6125_adc_tm ADC5_GPIO2_100K_PU>;
+};
+
+&soc {
+	generic_adc_thermal:generic_adc_thermal {
+		status = "okay";
+		compatible = "generic-adc-thermal";
+		#io-channel-cells = <1>;
+		#thermal-sensor-cells = <0>;
+		io-channels = <&pm6125_vadc ADC5_GPIO4_100K_PU>;
+		io-channel-names = "sensor-channel";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pm6125_gpio7_default>;
+	};
+	generic_adc_quiet_thermal:generic_adc_quiet_thermal {
+		status = "okay";
+		compatible = "generic-adc-thermal";
+		#io-channel-cells = <1>;
+		#thermal-sensor-cells = <0>;
+		io-channels = <&pm6125_vadc ADC5_AMUX_THM2_100K_PU>;
+		io-channel-names = "sensor-channel";
+	};
+};
+
+&backlight_therm_usr {
+	#thermal-sensor-cells = <0>;
+	status = "okay";
+	thermal-sensors = <&generic_adc_thermal>;
+};
+
+&quiet_therm_usr {
+	#thermal-sensor-cells = <0>;
+	status = "okay";
+	thermal-sensors = <&generic_adc_quiet_thermal>;
+};

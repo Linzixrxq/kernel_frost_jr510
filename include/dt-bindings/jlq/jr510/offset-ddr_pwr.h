@@ -1,0 +1,69 @@
+#ifndef _DT_BINDINGS_OFFSET_DDR_PWR_H
+#define _DT_BINDINGS_OFFSET_DDR_PWR_H
+
+
+#define DDRPWR_PLL_CPU_CFG0			(0x000)
+#define DDRPWR_PLL_CPU_CFG1			(0x004)
+#define DDRPWR_PLL_DDR0_CFG0			(0x008)
+#define DDRPWR_PLL_DDR0_CFG1			(0x00C)
+#define DDRPWR_PLL_DDR1_CFG0			(0x010)
+#define DDRPWR_PLL_DDR1_CFG1			(0x014)
+#define DDRPWR_PLL_AI_CFG0			(0x018)
+#define DDRPWR_PLL_AI_CFG1			(0x01C)
+#define DDRPWR_PLL_GPU_CFG0			(0x020)
+#define DDRPWR_PLL_GPU_CFG1			(0x024)
+#define DDRPWR_PLL_DSU_CFG0			(0x028)
+#define DDRPWR_PLL_DSU_CFG1			(0x02C)
+#define DDRPWR_PLL_COMM_CFG0			(0x038)
+#define DDRPWR_PLL_COMM_CFG1			(0x03C)
+#define DDRPWR_PLL_STABLETIME			(0x030)
+
+#define DDRPWR_COMPONENT_CLKEN0			(0x040)
+#define DDRPWR_COMPONENT_CLKEN1			(0x044)
+#define DDRPWR_COMPONENT_CLKEN2			(0x550)
+#define DDRPWR_COMPONENT_CLKEN3			(0x560)
+#define DDRPWR_COMPONENT_CLKEN4			(0x560)
+#define DDRPWR_BUS_CLKEN0			(0x048)
+#define DDRPWR_BUS_CLKEN1			(0x04C)
+#define DDRPWR_BUS_CLKEN2			(0x554)
+#define DDRPWR_BUS_LPEN0			(0x054)
+#define DDRPWR_BUS_LPEN1			(0x558)
+
+#define DDRPWR_COM_UART_CLK_CTL			(0x058)
+#define DDRPWR_UART1_CLK_CTL			(0x700)
+#define DDRPWR_UART2_CLK_CTL			(0x704)
+#define DDRPWR_UART3_CLK_CTL			(0x708)
+#define DDRPWR_UART4_CLK_CTL			(0x70C)
+
+#define DDRPWR_I2S_CLK_CTL			(0x710)
+#define DDRPWR_DDR_BUS_CLK_CTL			(0x714)
+#define DDRPWR_I2C_CLK_CTL			(0x718)
+#define DDRPWR_SSI_CLK_CTL			(0x71C)
+
+#define DDRPWR_TIMER_TCLK_CTL			(0x720)
+#define DDRPWR_CPU_LOW_CLK_CTL			(0x724)
+#define DDRPWR_ADSP_CLK_CTL			(0x728)
+#define DDRPWR_QTANG_MASTER0_CLK_CTL		(0x72C)
+#define DDRPWR_TRACECLKIN_CLK_CTL		(0x730)
+
+#define DDRPWR_DDR_DFS_DISABLE			(0x06C)
+
+#define DDRPWR_PLL_I2S_CFG			(0x55C)
+
+
+#define PWR_MASK(len)		((1 << len) - 1)
+#define PWR_BIT_SFT(x)		(x)
+#define PWR_WEBIT_SFT(x,offset) (PWR_BIT_SFT(x) + offset)
+#define PWR_WEBIT_DEF(x)	PWR_WEBIT_SFT(x,16)
+#define PWR_WEBIT_NONE		(0)
+
+#define PLL_MASK(len)		PWR_MASK(len)
+#define PLL_P_SFT			(0)
+#define PLL_M_SFT			(6)
+#define PLL_S_SFT			(16)
+#define PLL_K_SFT			(0)
+#define PLL_PD_SFT			(31)
+#define PLL_ADJ_SFT			(31)
+
+
+#endif /* _DT_BINDINGS_OFFSET_DDR_PWR_H */

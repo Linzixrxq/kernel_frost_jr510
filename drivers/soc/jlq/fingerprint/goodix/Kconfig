@@ -1,0 +1,9 @@
+#
+# GOODIX Fingerprint driver configuration
+#
+
+config GOODIX_FINGERPRINT
+	tristate "GOODIX Fingerprint driver support"
+	depends on FPC_FINGERPRINT
+	help
+	  This supports GOODIX Fingerprint drivers.

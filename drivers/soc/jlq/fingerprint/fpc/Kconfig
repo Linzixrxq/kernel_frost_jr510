@@ -1,0 +1,8 @@
+#
+# FPC Fingerprint driver configuration
+#
+
+config FPC_FINGERPRINT
+	tristate "FPC Fingerprint driver support"
+	help
+	  This supports FPC Fingerprint drivers.

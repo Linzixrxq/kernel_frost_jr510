@@ -1,0 +1,110 @@
+#include "jr510-opp.dtsi"
+#include "jlq-pm6125.dtsi"
+
+&soc {
+	qt_snoc: qt_snoc {
+		compatible = "jlq,qt_snoc";
+		#interconnect-cells = <1>;
+		bus,util-factor = <100>;
+		bus,smd-bus;
+		clock-names = "bus";
+		clocks = <&rpmcc RPM_SMD_SNOC_CLK>;
+	};
+
+	qt_cnoc: qt_cnoc {
+		compatible = "jlq,qt_cnoc";
+		#interconnect-cells = <1>;
+		bus,util-factor = <100>;
+		bus,smd-bus;
+		clock-names = "bus";
+		clocks = <&rpmcc RPM_SMD_CNOC_CLK>;
+	};
+
+	qt_sys_noc_rt: qt_sys_noc_rt {
+		compatible = "jlq,qt_sys_noc_rt";
+		#interconnect-cells = <1>;
+		bus,util-factor = <139>;
+		bus,peer-bus;
+		clock-names = "bus","peer";
+		clocks = <&gcc GCC_SYS_NOC_RT_CLK>,
+			<&gcc GCC_SYS_NOC_CLK>;
+		operating-points-v2 = <&qt_sys_noc_rt_nrt_opp_table>;
+	};
+
+	qt_sys_noc_nrt: qt_sys_noc_nrt {
+		compatible = "jlq,qt_sys_noc_nrt";
+		#interconnect-cells = <1>;
+		bus,util-factor = <142>;
+		bus,peer-bus;
+		clock-names = "bus","peer";
+		clocks = <&gcc GCC_SYS_NOC_NRT_CLK>,
+			<&gcc GCC_SYS_NOC_CLK>;
+		operating-points-v2 = <&qt_sys_noc_rt_nrt_opp_table>;
+	};
+
+	qt_sys_noc: qt_sys_noc {
+		compatible = "jlq,qt_sys_noc";
+		#interconnect-cells = <1>;
+		bus,util-factor = <139>;
+		clock-names = "bus";
+		clocks = <&gcc GCC_SYS_NOC_CLK>;
+		operating-points-v2 = <&qt_sys_noc_opp_table>;
+	};
+
+	bus_sw0: bus_sw0 {
+		compatible = "jlq,bus_sw0";
+		#interconnect-cells = <1>;
+		bus,util-factor = <151>;
+		bus,smd-bus;
+		clock-names = "bus";
+		//clocks = <&ddr_bus0_clk>;
+		clocks = <&ddr_bus0_clk_smd>;
+		//vdd_core-supply = <&S3A_LEVEL>;
+		//vdd_ddr-supply = <&S8A>;
+		//operating-points-v2 = <&bus_sw0_opp_table>;
+		//operating-points-v2 = <&bus_sw0_smd_opp_table>;
+	};
+
+	top_bus: top_bus {
+		compatible = "jlq,top_bus";
+		#interconnect-cells = <1>;
+		bus,util-factor = <151>;
+		bus,fixed-freq = <160000000>;
+		clock-names = "bus";
+		clocks = <&top_bus_clk>;
+		//vdd_core-supply = <&S3A_LEVEL>;
+		operating-points-v2 = <&top_bus_opp_table>;
+	};
+
+	fbe_bus: fbe_bus {
+		compatible = "jlq,fbe_bus";
+		#interconnect-cells = <1>;
+		bus,util-factor = <151>;
+		clock-names = "bus";
+		clocks = <&fbe_bus_clk>;
+		vdd_core-supply = <&S3A_LEVEL>;
+		operating-points-v2 = <&fbe_bus_opp_table>;
+	};
+
+	bus_sw1: bus_sw1 {
+		compatible = "jlq,bus_sw1";
+		#interconnect-cells = <1>;
+		bus,util-factor = <151>;
+		clock-names = "bus";
+		clocks = <&ddr_bus1_clk>;
+		vdd_core-supply = <&S3A_LEVEL>;
+		vdd_ddr-supply = <&S8A>;
+		operating-points-v2 = <&bus_sw1_opp_table>;
+	};
+
+	bus_sw2: bus_sw2 {
+		compatible = "jlq,bus_sw2";
+		#interconnect-cells = <1>;
+		bus,util-factor = <151>;
+		clock-names = "bus";
+		clocks = <&ddr_bus2_clk>;
+		vdd_core-supply = <&S3A_LEVEL>;
+		vdd_ddr-supply = <&S8A>;
+		operating-points-v2 = <&bus_sw2_opp_table>;
+	};
+};

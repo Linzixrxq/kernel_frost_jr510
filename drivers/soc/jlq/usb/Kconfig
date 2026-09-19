@@ -1,0 +1,65 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ Soc USB drivers
+#
+
+config JLQ_DWC2PHY
+	tristate "JLQ DWC2 PHY controller Driver"
+	select USB_PHY
+	help
+	  Enable this to support JLQ DWC2 phy controller
+	  for JLQ SoCs.
+
+config JLQ_USB_DWC2
+	tristate "JLQ USB DWC2 Configuration"
+	help
+	  say y to support for JLQ DWC2 Configuration：
+	  add dma_dir member in struct dwc2_hsotg_ep for
+	  the input parameter for USB map/umap DMA in
+	  DWC2
+
+config USB_F_CDEV
+	tristate
+
+config USB_F_GSI
+	tristate
+
+config USB_CONFIGFS_F_CDEV
+	tristate "USB Serial Character function"
+	select USB_F_CDEV
+	depends on USB_CONFIGFS
+	help
+	  The serial character function is a generic function driver that
+	  exposes a pair of bulk IN and OUT endpoints which are backed by
+	  a character device and mapped to its read/write routines. The
+	  function also supports a single interrupt IN endpoint for
+	  asynchronous notification to the host. This driver is typically
+	  used to support DUN/NMEA functions.
+
+config USB_CONFIGFS_F_GSI
+	tristate "USB GSI function"
+	select USB_F_GSI
+	depends on USB_CONFIGFS
+	help
+	  Generic function driver to support h/w acceleration to IPA
+	  over GSI. This driver provides USB RMNET/RNDIS/ECM/MBIM/DPL
+	  related functionalities using GSI hardware accelerated data
+	  path and control path.
+
+config USB_EXT_TYPE_C_PERICOM
+	tristate "USB Type-C charger detection support using Pericom chip"
+	depends on I2C && POWER_SUPPLY
+	help
+	  Enables support for the USB Type-C chargers using external
+	  pericom chip connected using I2C.
+
+	  This adds support for detecting USB Type-C chargers that
+	  can supply upto 3A Vbus current for charging.
+
+config EXTCON_JLQ_USB_GPIO
+	tristate "USB GPIO extcon support"
+	depends on GPIOLIB
+	help
+	  Say Y here to enable GPIO based USB cable detection extcon support.
+	  Used typically if GPIO is used for USB ID pin detection.
+

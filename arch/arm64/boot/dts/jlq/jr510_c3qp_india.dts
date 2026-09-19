@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: GPL-2.0+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/jlq/jr510/irqs.h>
+#include <dt-bindings/jlq/iio/qcom,spmi-vadc.h>
+#include <dt-bindings/gpio/gpio.h>
+
+#include "jr510_c3qp_common.dtsi"
+#include "jr510_camera_sensor_india.dtsi"
+
+/ {
+	jlq,msm-id     = <0x10510 1>;
+	jlq,pmic-id    = <0x10002 0 0 0>;
+	jlq,board-id   = <12 0>;
+};
+
+&soc {
+	goodix_fp: goodix_fp@0x00 {
+		compatible = "goodix,goodix_fp";
+		spi-max-frequency = <10000000>;
+
+		rst-gpios = <&gpio 67 0>;
+		irq-gpios = <&gpio 66 0>;
+		vdd_gpios = <&gpio 39 0>;
+		status = "okay";
+	};
+};

@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ PMIC drivers
+#
+menu "JLQ PMIC drivers"
+
+source "drivers/soc/jlq/pmic/revid/Kconfig"
+
+source "drivers/soc/jlq/pmic/regulator/Kconfig"
+
+source "drivers/soc/jlq/pmic/pinctrl/Kconfig"
+
+source "drivers/soc/jlq/pmic/pon/Kconfig"
+
+source "drivers/soc/jlq/pmic/flash/Kconfig"
+
+source "drivers/soc/jlq/pmic/pwm/Kconfig"
+
+source "drivers/soc/jlq/pmic/rgb/Kconfig"
+
+source "drivers/soc/jlq/pmic/vibrator/Kconfig"
+
+source "drivers/soc/jlq/pmic/pm8008/Kconfig"
+
+endmenu

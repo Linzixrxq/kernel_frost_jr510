@@ -1,0 +1,31 @@
+JLQ SSI controller.
+
+Required properties:
+- compatible : should be "jlq,jlq-spi".
+- reg: Should contain ssi registers location and length.
+- reg-names: Should contain the resource reg names.
+	- ssi: ssi configuration register Address space
+	- ap_ctrl:ssi mode select
+- interrupts: should contain the ssi interrupt number.
+- #address-cells, #size-cells : Must be present if the device has sub-nodes
+
+Example:
+
+For ja310:
+master:ssi ctroller
+ssi1: spi@FA726000 {
+	compatible = "jlq,jlq-spi";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	reg = <0xFA726000 0x1000>;
+	reg-names = "ssi";
+	interrupts = <0 INT_SSI1 0>;
+	rx_dma_channel = <&ap_dmas 11 0>;
+	tx_dma_channel = <&ap_dmas 3 0>;
+	num_chipselect= <1>;
+	ssi_protocol = <(0x30002)>;/*0->ssp,1->spi*/
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi1_tx_rx_clk_ssn_pins>;
+	clocks = <&ssi1_clk>, <&ssi0_pclk>;
+	clock-names = "ssi_clk", "ssi_pclkgt";
+};

@@ -1,0 +1,4 @@
+config JLQ_BTSTATE
+        tristate "JLQ bluetooth state"
+        help
+          Select this to set or get JLQ bluetooth state.

@@ -1,0 +1,62 @@
+* JLQ SDHCI controller (sdhci-jlq)
+
+This file documents differences between the core properties in mmc.txt
+and the properties used by the sdhci-jlq driver.
+
+Required properties:
+- compatible: Should contain "jlq,sdhci-jlq".
+- reg: Base address and length of the register in the following order:
+	- Host controller register map (required)
+- interrupts: Should contain an interrupt-specifiers for the interrupts:
+	- Host controller interrupt (required)
+	- DLL interrupt for Host controller (optional)
+- clocks: A list of phandle + clock-specifier pairs for the clocks listed in clock-names.
+- clock-names: Should contain the following:
+	"ciu" - Main peripheral bus clock (PCLK/HCLK - AHB Bus clock) (required)
+	"biu"	- SDC MMC clock (MCLK) (required)
+- device-type: 0, DEVICE_UNKNOWN; 1, DEVICE_EMMC; 2, DEVICE_SD; 3, DEVICE_SDIO
+- bus-width: 1, 1 bit; 4, 4 bits; 8, 8 bits
+- jlq,clk-rates: clock rates available for different bus speed modes
+
+Example:
+
+	sdhc_emmc: sdhci@34458000 {
+		compatible = "jlq,sdhci-jlq";
+		reg = <0x34458000 0x1000>;
+		reg-names = "emmc_hc_mem";
+		interrupts = <GIC_SPI INT_SDMMC0 IRQ_TYPE_EDGE_RISING>,
+			<GIC_SPI INT_EMMC_DLL IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "hc_irq", "dll_irq";
+		clocks = <&emmc_clktx>, <&emmc_bclk>;
+		clock-names = "clktx", "bclk";
+		device-type = <1>;
+		cap-mmc-highspeed;
+		non-removable;
+		bus-width = <8>;
+		jlq,clk-rates = <400000 25000000 50000000 100000000 200000000>;
+		status = "disabled";
+	};
+
+	sdhc_sd: sdhci@34456000 {
+		compatible = "jlq,sdhci-jlq";
+		reg = <0x34456000 0x1000>;
+		reg-names = "sd0_hc_mem";
+		interrupts = <GIC_SPI INT_SDIO0 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "hc_irq";
+		clocks = <&sdio0_clktx>, <&sdio0_bclk>;
+		clock-names = "clktx", "bclk";
+		device-type = <2>;
+		vmmc-supply = <&dldo9>;
+		vqmmc-supply = <&dldo14>;
+		cap-sd-highspeed;
+		sd-uhs-sdr12;
+		sd-uhs-sdr25;
+		sd-uhs-sdr50;
+		sd-uhs-ddr50;
+		sd-uhs-sdr104;
+		wp-inverted;
+		bus-width = <4>;
+		jlq,clk-rates = <400000 25000000 50000000 100000000 133000000>;
+		cd-gpio = <&gpio 35 GPIO_ACTIVE_LOW>;
+		status = "disabled";
+	};

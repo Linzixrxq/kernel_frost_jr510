@@ -1,0 +1,56 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2020, The Linux Foundation. All rights reserved.
+ */
+
+#ifndef __DT_BINDINGS_INTERCONNECT_JR510_H
+#define __DT_BINDINGS_INTERCONNECT_JR510_H
+
+#define MASTER_TOP_BUS				100
+#define MASTER_QTANG_MODEM1_BUS			101
+#define MASTER_VDSP_BUS				102
+#define MASTER_HBLK_BUS				103
+#define MASTER_QTANG_XM1_AXI_BUS		104
+#define MASTER_AUDIO_BUS			105
+#define MASTER_CM4_BUS				106
+#define MASTER_HBLK_PERI_BUS			107
+#define MASTER_TOP_DMAS_BUS			108
+#define MASTER_QTANG_UFS_AXI_BUS		109
+#define MASTER_GPU_BUS				110
+#define MASTER_AI_BUS				111
+#define MASTER_VPU_BUS				112
+#define MASTER_QTANG_CAMNRT_BUS			113
+#define MASTER_AP2SW1_BUS			114
+#define MASTER_DISPLAY_BUS			115
+#define MASTER_CAMRT_BUS			116
+#define MASTER_AP2SW2_BUS			117
+#define MASTER_CPU_BUS				118
+#define MASTER_QTANG_MODEM0			119
+
+#define MASTER_QTANG_CAMRT			120
+#define MASTER_QTANG_CAMNRT			121
+#define MASTER_SYS_NOC_CAMNRT			122
+
+#define MASTER_SNOC_IPA				123
+#define MASTER_CNOC_IPA				124
+
+
+#define SLAVE_TOP_BUS				200
+#define SLAVE_DDR_PORT1				201
+#define SLAVE_QTANG_XM1_AXI_BUS			202
+#define SLAVE_FBE_BUS				204
+#define SLAVE_DDR_PORT4				205
+#define SLAVE_DDR_PORT2				206
+#define SLAVE_DDR_PORT0				207
+#define SLAVE_DDR_PORT3				208
+
+#define SLAVE_QTANG_CAMRT			209
+#define SLAVE_QTANG_CAMNRT			210
+#define SLAVE_SYS_NOC_CAMNRT			211
+
+#define SLAVE_SNOC_IPA				212
+#define SLAVE_CNOC_IPA				213
+
+
+
+#endif

@@ -1,0 +1,35 @@
+SD7601 for JLQ board driver binding
+
+Required properties :
+  - compatible : Must be "jlq,sd7601ad"
+  - reg : Offset and length of the register set for the device
+  - charger_name : charger power supply name
+  - bigm,irq_gpio : IRQ GPIO
+  - bigm,ce_gpio : Enable gpio
+  - bigm,ilimit_ma : current limit
+  - bigm,vlimit_mv : voltage limit
+  - bigm,cc_ma : charger current
+  - bigm,cv_mv : charger voltage
+  - bigm,pre_ma : pre-charge current
+  - bigm,eoc_ma : endof charge(terminal charge) current
+  - bigm,vsysmin_mv : Vsys voltage
+  - bigm,rechg_mv : recharge voltage drop detect.
+
+Example :
+
+SD7601@d6 {
+	compatible = "jlq,sd7601ad";
+	reg = <0xd6>;
+
+	charger_name = "sd7601";
+	bigm,irq_gpio = 1;
+	bigm,ce_gpio = 2;
+	bigm,ilimit_ma = 3000;
+	bigm,vlimit_mv = 4600;
+	bigm,cc_ma = 2200;
+	bigm,cv_mv = 4400;
+	bigm,pre_ma = 540;
+	bigm,eoc_ma = 180;
+	bigm,vsysmin_mv = 3500;
+	bigm,rechg_mv = 100;
+};

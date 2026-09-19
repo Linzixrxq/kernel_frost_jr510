@@ -1,0 +1,36 @@
+JLQ,COSMX_6000mAH_10K_NTC10K_DTSI {
+    /*COSMX_6000mAH_10K_NTC10K_DTSI */
+	term-current-ma = <240>;
+	recharge-drop-mv = <100>;
+	precharge-ma = <180>;
+	fullbatt-voltage = <4430000>;
+	emptybatt-voltage = <3200000>;
+	cutoffbatt-voltage = <3560000>;
+	fullbatt-soc = <100>;
+	cutoffbatt-soc = <0>;
+	fullbatt-capacity = <6000>;
+	fullbatt-energy = <23220>;
+    fastchg-volt-uv = <4450000>;
+    fastchg-current-ua = <3600000>;
+    batt-id-kohm = <100>;
+	batt-ir-mohm = <90>;
+	vchg-comp-max-mv = <32>;
+	battery-cold = <0>;
+	battery-hot = <600>;
+    battery-name = "COSMX_6000mAH_100K_NTC10K";
+	sw-jeita-enabled;
+	sw-jeita-ranges = < 0   50  4450000 590000
+						50  100 4450000 1770000
+						100 150 4450000 2800000
+						150 450 4450000 3600000
+						450 579 4100000 2800000
+					  >;
+//	step-chg-enabled;
+	step-chg-ranges = < 0    4270 4438000 3600000
+						4270 4330 4438000 3000000
+						4330 4360 4438000 2000000
+						4360 4430 4438000 1500000
+						4430 4440 4438000 500000
+					  >;
+	#include "sh366101_COSMX_B61Y_6000mAh_params.dtsi"
+};

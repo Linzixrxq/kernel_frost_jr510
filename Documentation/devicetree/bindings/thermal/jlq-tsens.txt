@@ -1,0 +1,31 @@
+* JLQ SoC Temperature Sensor (TSENS)
+
+Required properties:
+- compatible:
+  Must be one of the following:
+    - "jlq,ja310-tsens" (ja310/ja308)
+    - "jlq,jr510-tsens" (jr510)
+- reg: Address range of the thermal registers.
+  New platforms containing v2.x.y of the TSENS IP must specify the SROT and TM
+  register spaces separately, with order being TM before SROT.
+  See Example 2, below.
+- #jlq,sensors: Number of sensors in tsens block
+- #jlq,tsens-slope_numerator / jlq,tsens-slope_denominator is Division value.
+- #jlq,sensor-id is sensor-id mapping.
+- #thermal-sensor-cells : Should be 1.
+
+Example 1:
+	tsens: tsens@34500180 {
+		compatible = "jlq,jr510-tsens";
+		reg = <0x34500180 0x50>;
+		reg-names = "tsens_base";
+		interrupts = <GIC_SPI INT_PVT_INTR 0>;
+		interrupt-names = "tsens-upper-lower";
+		jlq,sensors = <4>;
+		jlq,tsens-slope_numerator = <1>;
+		jlq,tsens-slope_denominator = <16>;
+		jlq,sensor-id = <0 1 2 3>;
+		#thermal-sensor-cells = <1>;
+	};
+
+

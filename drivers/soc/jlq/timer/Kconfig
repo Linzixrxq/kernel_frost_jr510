@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config JLQ_DW_APB_TIMER
+	tristate "DW APB timer driver"
+	help
+	  Enables the support for the dw_apb timer. this will register the
+	  dw apb timer as an clocksource timer and been treated as a broadcast
+	  timer in the end.
+

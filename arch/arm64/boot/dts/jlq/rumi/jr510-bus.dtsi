@@ -1,0 +1,134 @@
+#include "jr510-opp.dtsi"
+
+&soc {
+	qt_sys_noc_rt: qt_sys_noc_rt {
+		compatible = "jlq,qt_sys_noc_rt";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <139>;
+		qcom,keepalive;
+		qcom,peerclk;
+		clock-names = "bus","peer_clk";
+		clocks = <&gcc GCC_SYS_NOC_RT_CLK>,
+			<&gcc GCC_SYS_NOC_CLK>;
+		operating-points-v2 = <&qt_sys_noc_rt_opp_table>;
+	};
+
+	qt_sys_noc_nrt: qt_sys_noc_nrt {
+		compatible = "jlq,qt_sys_noc_nrt";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <142>;
+		qcom,keepalive;
+		qcom,peerclk;
+		clock-names = "bus","peer_clk";
+		clocks = <&gcc GCC_SYS_NOC_NRT_CLK>,
+			<&gcc GCC_SYS_NOC_CLK>;
+		operating-points-v2 = <&qt_sys_noc_nrt_opp_table>;
+	};
+
+	qt_sys_noc: qt_sys_noc {
+		compatible = "jlq,qt_sys_noc";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <139>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&gcc GCC_SYS_NOC_CLK>;
+		operating-points-v2 = <&qt_sys_noc_opp_table>;
+	};
+
+	bus_sw0: bus_sw0 {
+		compatible = "jlq,bus_sw0";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&ddr_bus0_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&bus_sw0_opp_table>;
+	};
+
+	top_bus: top_bus0 {
+		compatible = "jlq,top_bus";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&top_bus_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&top_bus_opp_table>;
+	};
+
+	qt_xm1_bus: qt_xm1_bus0 {
+		compatible = "jlq,qtang_xm1_bus";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&qtang_xm1_axi_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&qt_xm1_bus_opp_table>;
+	};
+
+	hblk_bus: hblk_bus0 {
+		compatible = "jlq,hblk_bus";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&fbe_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&hblk_bus_opp_table>;
+	};
+
+	bus_sw1: bus_sw1 {
+		compatible = "jlq,bus_sw1";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&ddr_bus1_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&bus_sw1_opp_table>;
+	};
+
+	bus_sw2: bus_sw2 {
+		compatible = "jlq,bus_sw2";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&ddr_bus2_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&bus_sw2_opp_table>;
+	};
+
+	bus_p0: bus_p0 {
+		compatible = "jlq,bus_p0";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&ddr_p0_axi_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&bus_p0_opp_table>;
+	};
+
+	bus_p3: bus_p3 {
+		compatible = "jlq,bus_p3";
+		#interconnect-cells = <1>;
+		qcom,util-factor = <151>;
+		qcom,keepalive;
+		clock-names = "bus";
+		clocks = <&ddr_p3_axi_clk>;
+		//vdd_core-supply = <&L8A>;//TBD
+		//vdd_ddr-supply = <&L8A>;//TBD
+		operating-points-v2 = <&bus_p3_opp_table>;
+	};
+
+};

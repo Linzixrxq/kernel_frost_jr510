@@ -1,0 +1,86 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/clock/qcom,gcc-bengal.h>
+#include <dt-bindings/jlq/jr510/qti_thermal.h>
+#include "pm6125.dtsi"
+#include "jr510_thermal_modem.dtsi"
+&soc {
+	wdog: qcom,wdt@f017000 {
+		status = "disabled";
+	};
+	qupv3_se1_i2c: i2c@4a84000 {
+		compatible = "qcom,i2c-geni";
+		status = "disabled";
+	};
+};
+
+&rpm_bus {
+	/delete-node/ rpm-regulator-smpa3;
+	/delete-node/ rpm-regulator-smpa5;
+	/delete-node/ rpm-regulator-smpa6;
+	/delete-node/ rpm-regulator-smpa7;
+	/delete-node/ rpm-regulator-smpa8;
+	/delete-node/ rpm-regulator-ldoa1;
+	/delete-node/ rpm-regulator-ldoa2;
+	/delete-node/ rpm-regulator-ldoa3;
+	/delete-node/ rpm-regulator-ldoa4;
+	/delete-node/ rpm-regulator-ldoa5;
+	/delete-node/ rpm-regulator-ldoa6;
+	/delete-node/ rpm-regulator-ldoa7;
+	/delete-node/ rpm-regulator-ldoa8;
+	/delete-node/ rpm-regulator-ldoa9;
+	/delete-node/ rpm-regulator-ldoa10;
+	/delete-node/ rpm-regulator-ldoa11;
+	/delete-node/ rpm-regulator-ldoa12;
+	/delete-node/ rpm-regulator-ldoa13;
+	/delete-node/ rpm-regulator-ldoa14;
+	/delete-node/ rpm-regulator-ldoa15;
+	/delete-node/ rpm-regulator-ldoa16;
+	/delete-node/ rpm-regulator-ldoa17;
+	/delete-node/ rpm-regulator-ldoa18;
+	/delete-node/ rpm-regulator-ldoa19;
+	/delete-node/ rpm-regulator-ldoa20;
+	/delete-node/ rpm-regulator-ldoa21;
+	/delete-node/ rpm-regulator-ldoa22;
+	/delete-node/ rpm-regulator-ldoa23;
+	/delete-node/ rpm-regulator-ldoa24;
+};
+
+#include "bengal-stub-regulator.dtsi"
+
+&ufsphy_mem {
+	compatible = "qcom,ufs-phy-qrbtc-sdm845";
+
+	vdda-phy-supply = <&L4A>; /* 0.9v */
+	vdda-pll-supply = <&L12A>; /* 1.8v */
+	vdda-phy-max-microamp = <51400>;
+	vdda-pll-max-microamp = <14200>;
+
+	status = "ok";
+};
+
+&ufshc_mem {
+	limit-tx-hs-gear = <1>;
+	limit-rx-hs-gear = <1>;
+	limit-rate = <1>; /* HS Rate-A */
+
+	vdd-hba-supply = <&gcc_ufs_phy_gdsc>;
+	vdd-hba-fixed-regulator;
+	vcc-supply = <&L24A>;
+	vccq2-supply = <&L11A>;
+	vcc-max-microamp = <600000>;
+	vccq2-max-microamp = <600000>;
+
+	qcom,vddp-ref-clk-supply = <&L18A>;
+	qcom,vddp-ref-clk-max-microamp = <100>;
+	qcom,vddp-ref-clk-min-uV = <1232000>;
+	qcom,vddp-ref-clk-max-uV = <1232000>;
+
+	qcom,disable-lpm;
+	rpm-level = <0>;
+	spm-level = <0>;
+	status = "ok";
+};
+
+&gcc_ufs_phy_gdsc {
+	status = "ok";
+};

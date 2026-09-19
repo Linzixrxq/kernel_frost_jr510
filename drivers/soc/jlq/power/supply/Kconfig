@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# JLQ POWER drivers
+
+config JLQ_CHARGER_MANAGER
+	tristate "JLQ charger manager"
+	depends on ARCH_JLQ
+	help
+	  Say Y here to enable JLQ charger manager support.This allows
+	  jlq charger (batteries, jcmvote, charger manager) .
+
+config JLQ_SD7601
+	tristate "SD7601 charger IC for JLQ charger"
+	depends on ARCH_JLQ
+	help
+	  Say Y here to enable SD7601 charger IC for JLQ chargert.
+	  This allows SD7601 charger driver.
+
+config JLQ_SGM4154X
+        tristate "SD7601 charger IC for JLQ charger"
+        depends on ARCH_JLQ
+        help
+          Say Y here to enable SGM4154X charger IC for JLQ chargert.
+          This allows SGM4154X charger driver.
+
+
+
+
+config JLQ_SH36610X
+	tristate "SH36610x fuel gauge IC for JLQ charger"
+	depends on ARCH_JLQ
+	help
+	  Say Y here to enable SH36610x gauge IC for JLQ chargert.
+	  This allows SH36610x gauge driver.
+
+config JLQ_CHARGER_FG_INFO_DEBUG
+	tristate "SH36610x fuel gauge IC for JLQ charger debug"
+	depends on ARCH_JLQ
+	help
+	 Say Y here to enable SH36610x gauge IC for JLQ charger debug.
+
+

@@ -1,0 +1,8 @@
+config CPU_DCSTAT_JR510
+	bool "Cpu debug feature for run stats and dutycycle stats"
+	depends on CPU_FREQ
+	depends on CPU_IDLE
+	help
+	  This enables cpu stats debug feature for cpu run stats and dutycycle
+	  stats, including run time and idle time.You can get these stats with
+	  debugfs interface.

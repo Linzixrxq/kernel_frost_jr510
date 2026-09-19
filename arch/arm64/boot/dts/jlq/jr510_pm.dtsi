@@ -1,0 +1,20 @@
+
+&soc {
+	rpm_sleep_stats: soc-sleep-stats@24690000 {
+		compatible = "qcom,rpm-sleep-stats";
+		reg = <0x24690000 0x400>;
+	};
+
+	qcom,rpm-master-stats@245f0150 {
+		compatible = "qcom,rpm-master-stats";
+		reg = <0x245f0150 0x3000>;
+		qcom,masters = "APSS";
+		qcom,master-stats-version = <2>;
+		qcom,master-offset = <4096>;
+	};
+
+	rpmh-master-stats {
+		compatible = "qcom,rpmh-master-stats-v1";
+	};
+
+};

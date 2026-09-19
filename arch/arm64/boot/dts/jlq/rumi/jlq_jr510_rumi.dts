@@ -1,0 +1,63 @@
+
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/jlq/jr510/irqs.h>
+/dts-v1/;
+#include "jlq_jr510.dtsi"
+#include "jr510_pinctrl_emu.dtsi"
+#include "bengal-rumi.dtsi"
+//#include "jr510_jvcc_rumi.dtsi"
+
+&soc {
+	usb_phy: usb_phy@3450E2E0 {
+		cs-gpio = <&gpio 9 0>;
+		reset-gpio = <&gpio 78 0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_phy_cs_pin &usb_phy_reset_pin>;
+		/delete-property/usb3v3-supply;
+		/delete-property/usb1v8-supply;
+	};
+	usb_otg: usb@30740000 {
+		compatible = "jlq,haps-usb";
+	};
+};
+&generic_timer {
+	clock-frequency = <20000000>;
+};
+
+/* in jr510, the broadcast time's frequency is 19.2MHz, but in HAPS
+ * the time0's frequency was fixed to 200KHz, so diable broadcast
+ * timer in emulation stage and enable it real boards
+ */
+
+&broadcast_timer {
+	//clock-freq = <200000>;
+	//status = "okay";
+};
+
+&backlight {
+	pwms = <&pwm0 0 32000>;
+};
+#include "dsi_panel_virtual.dtsi"
+
+&i2c_4 {
+	gt911@14 {
+		compatible = "goodix,gt911";
+		reg = <0x14>;
+		interrupt-parent = <&gpio>;
+		interrupts = <80 0>;
+
+		irq-gpios = <&gpio 80 0>;
+		reset-gpios = <&gpio 8 0>;
+	};
+};
+
+&pwm0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm0_output_enable>;
+};
+
+&dp0 {
+	status = "disabled";
+};
+

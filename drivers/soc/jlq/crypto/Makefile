@@ -1,0 +1,1 @@
+obj-$(CONFIG_JLQ_CRYPTO_FDE) += fde-jlq.o

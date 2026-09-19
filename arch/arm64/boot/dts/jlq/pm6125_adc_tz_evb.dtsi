@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include "dt-bindings/jlq/iio/qcom,spmi-vadc.h"
+
+&pm6125_gpios {
+	pm6125_gpio_tm_adcs_pins:pm6125_gpio_tm_adcs_pins {
+		pm6125_gpio3_default: pm6125_gpio3_default {
+			pins = "gpio3";
+			function = "normal";
+			bias-high-impedance; /* DISABLE GPIO3 for ADC*/
+			bias-disable;
+		};
+		pm6125_gpio7_default: pm6125_gpio7_default {
+			pins = "gpio7";
+			function = "normal";
+			bias-high-impedance; /* DISABLE GPIO7 for ADC*/
+			bias-disable;
+		};
+	};
+};
+
+&pm6125_adc_tm {
+	status = "okay";
+	io-channels = <&pm6125_vadc ADC5_AMUX_THM2_100K_PU >, <&pm6125_vadc ADC5_AMUX_THM1_100K_PU >,
+		          <&pm6125_vadc ADC5_XO_THERM_100K_PU >;
+};
+
+&quiet_therm_usr {
+	status = "okay";
+	thermal-sensors = <&pm6125_adc_tm ADC5_AMUX_THM2_100K_PU>;
+};
+
+&xo_therm_usr {
+	status = "okay";
+	thermal-sensors = <&pm6125_adc_tm ADC5_XO_THERM_100K_PU>;
+};
+
+&pa_therm0_usr {
+	status = "okay";
+	thermal-sensors = <&pm6125_adc_tm ADC5_AMUX_THM1_100K_PU>;
+};

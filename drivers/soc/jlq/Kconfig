@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ Soc drivers
+#
+menu "JLQ SoC drivers"
+
+config DMAS_JLQ
+	tristate "JLQ DMAS support"
+	help
+	  Say yes here to support the JLQ DMAS module.
+
+config SERIAL_JLQ
+	tristate "jlq serial port support"
+	select SERIAL_CORE
+	depends on DMAS_JLQ
+	help
+	  If you have a machine based on an jlq ja31x CPU you
+	  can enable its onboard serial ports by enabling this option.
+
+config SERIAL_JLQ_CONSOLE
+	bool "Console on comip serial port"
+	default n
+	depends on SERIAL_JLQ
+	select SERIAL_CORE_CONSOLE
+	select SERIAL_EARLYCON
+	help
+	  If you have enabled the serial port on the jlq serial console
+	  CPU you can make it the console by answering Y to this option.
+
+config PRINTK_LIMIT
+	bool "limit printk level"
+	depends on PRINTK
+	default n
+	help
+	  If you need to limit printk log for better performance you can
+	  enable this option by answering Y.
+	  By default this option should be n.
+
+config CLK_JLQ_JR510
+	tristate "JLQ CLock Driver Support"
+	depends on OF
+	help
+	  Say yes here to support the JLQ clock module.
+
+config IRQ_JLQ_MAILBOX
+	tristate "JLQ MAILBOX irq"
+	help
+	  Select this option to support MAILBOX irq.
+	  There are four mailbox irq groups for AP-SEC, CM4F2AP-NONSEC,
+	  ADSP2SP-NONSEC and VDSP2AP-NONSENONSEC in mailbox-irq
+	  driver.
+
+config JGKI
+	bool "Enable for JGKI or debug variant"
+	help
+	  When this flag is enabled, it is safe to assume that the build
+	  is a Non GKI build. It can be either JGKI build or a debug
+	  build. This does not differentiate a JGKI and a debug build.
+	  This flag is absent if the build is a GKI build. If this flag is
+	  enabled, all the ABI compatibilities are not applicable.
+
+config JLQ_SLIMBUS
+	tristate "slimbus support"
+	default m
+	---help---
+	  slimbus driver.
+
+config JLQ_SOCINFO
+	tristate "JLQ socinfo driver"
+	select SOC_BUS
+	help
+	  Say yes here to support the JLQ socinfo driver, providing
+	  information about the SoC to user space.
+
+source "drivers/soc/jlq/cpufreq/Kconfig"
+source "drivers/soc/jlq/pmic/Kconfig"
+source "drivers/soc/jlq/lpm/Kconfig"
+source "drivers/soc/jlq/pwm/Kconfig"
+source "drivers/soc/jlq/display/Kconfig"
+#source "drivers/soc/jlq/gpu/Kconfig"
+source "drivers/soc/jlq/gpio/Kconfig"
+source "drivers/soc/jlq/ssi/Kconfig"
+source "drivers/soc/jlq/bridge/Kconfig"
+source "drivers/soc/jlq/nanohub/Kconfig"
+source "drivers/soc/jlq/reset/Kconfig"
+source "drivers/soc/jlq/usb/Kconfig"
+source "drivers/soc/jlq/interconnect/Kconfig"
+source "drivers/soc/jlq/vdsp/Kconfig"
+source "drivers/soc/jlq/power/Kconfig"
+source "drivers/soc/jlq/audio-kernel/Kconfig"
+source "drivers/soc/jlq/devfreq/Kconfig"
+source "drivers/soc/jlq/iio/Kconfig"
+source "drivers/soc/jlq/thermal/Kconfig"
+#source "drivers/soc/jlq/glink/Kconfig"
+source "drivers/soc/jlq/i2s/Kconfig"
+source "drivers/soc/jlq/crypto/Kconfig"
+source "drivers/soc/jlq/sysdump/Kconfig"
+source "drivers/soc/jlq/dcstat/Kconfig"
+source "drivers/soc/jlq/touchscreen/Kconfig"
+source "drivers/soc/jlq/tz/Kconfig"
+source "drivers/soc/jlq/fingerprint/Kconfig"
+source "drivers/soc/jlq/bluetooth/Kconfig"
+source "drivers/soc/jlq/timer/Kconfig"
+source "drivers/soc/jlq/pmctrl/Kconfig"
+source "drivers/soc/jlq/blklog/Kconfig"
+endmenu

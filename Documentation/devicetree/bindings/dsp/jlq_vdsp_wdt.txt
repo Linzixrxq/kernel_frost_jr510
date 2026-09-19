@@ -1,0 +1,20 @@
+JLQ vdsp-watchdog bindings
+
+Required properties:
+- compatible:
+  - "jlq,vdsp_wdt"
+- reg: Physical base address and length of the controller's registers.
+- interrupt-controller: Mark the device node as an interrupt controller
+- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
+- interrupts: Specify the interrupt.
+
+Example:
+
+wdt3: watchdog@30709000 {
+	compatible = "jlq,vdsp_wdt";
+	reg = <0x30709000 0x1000>;
+	reg-names = "wdt3_base";
+	interrupts = <GIC_SPI INT_WDT3_BITE IRQ_TYPE_LEVEL_LOW>;
+	interrupt-names = "wdt3_bite";
+};
+

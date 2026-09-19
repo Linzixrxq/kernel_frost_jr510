@@ -1,0 +1,41 @@
+JLQ devfreq icc device
+
+devfreq icc is a device that represents a JLQ device's BW requirements from its
+master port(s) to a different device's slave port(s) in a JLQ SoC. This
+device is typically used to vote for BW requirements from a device's (Eg:
+CPU, GPU) master port(s) to the slave (Eg: DDR) port(s).
+
+Required properties:
+- compatible:       Must be "jlq,ddr-devfreq-port0" or "jlq,ddr-devfreq-port1"
+            or "jlq,ddr-devfreq-port2" or "jlq,ddr-devfreq-port3"
+            or "jlq,ddr-devfreq-port4"
+- interconnects:    Pairs of phandles and interconnect provider specificers
+            to denote the edge source and destination ports of the
+            desired interconnect path.
+- operating-points-v2:  A phandle to the OPP v2 table that holds meaningful
+            instantaneous bandwidth values (in MB/s) that can be
+            requested from the device master port to the slave port.
+            The list of values depend on the supported bus/slave
+            frequencies and the bus width.
+Optional properties:
+- jlq,active-only: Indicates that the bandwidth votes need to be
+            enforced only when the CPU subsystem is active.
+- governor:     Initial governor to use for the device.
+            Default: "gov-busmon-bw"
+
+Example:
+
+icc_ddr_port0: jlq,ddr-devfreq-port0 {
+    compatible = "jlq,ddr-devfreq-port0";
+    governor = "gov-busmon-bw";
+    interconnects = <&bus_sw0 MASTER_VDSP_BUS &bus_sw0 SLAVE_DDR_PORT1>;
+    jlq,active-only;
+    operating-points-v2 = <&ddr_port_bw_table0>;
+};
+
+ddr_port_bw_table0: ddr-port-bw-table0 {
+    compatible = "operating-points-v2";
+    opp@200000000   {opp-hz = /bits/ 64 <25600>;};
+    opp@300000000   {opp-hz = /bits/ 64 <38400>;};
+    opp@400000000   {opp-hz = /bits/ 64 <51200>;};
+};

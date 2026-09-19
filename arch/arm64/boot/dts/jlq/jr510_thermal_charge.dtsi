@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: GPL-2.0+
+
+&thermal_zones {
+	quiet_therm_step: quiet_therm_step {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-governor = "step_wise";
+		wake-capable-sensor;
+		status = "disable";
+
+		trips {
+			skin_batt_trip0: batt-trip0 {
+				temperature = <54000>;
+				hysteresis = <2000>;
+				type = "passive";
+			};
+
+			skin_batt_trip1: batt-trip1 {
+				temperature = <56000>;
+				hysteresis = <2000>;
+				type = "passive";
+			};
+
+			skin_batt_trip2: batt-trip2 {
+				temperature = <58000>;
+				hysteresis = <2000>;
+				type = "passive";
+			};
+
+			skin_batt_trip3: batt-trip3 {
+				temperature = <60000>;
+				hysteresis = <2000>;
+				type = "passive";
+			};
+		};
+	};
+};

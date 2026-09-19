@@ -1,0 +1,35 @@
+JLQ,SUNWADA_5000mAH_SD7601_SH366101_Sep15th2021 {
+    /*SUNWADA_5000mAH_SD7601_SH366101_Sep15th2021 */
+	term-current-ma = <240>;
+	recharge-drop-mv = <100>;
+	precharge-ma = <180>;
+	fullbatt-voltage = <4384000>;
+	emptybatt-voltage = <3200000>;
+	cutoffbatt-voltage = <3560000>;
+	fullbatt-soc = <95>;
+	cutoffbatt-soc = <2>;
+	fullbatt-capacity = <5010>;
+	fullbatt-energy = <19388>;
+    fastchg-volt-uv = <4384000>;
+    fastchg-current-ua = <3000000>;
+    batt-id-kohm = <330>;
+	batt-ir-mohm = <100>;
+	vchg-comp-max-mv = <32>;
+	battery-cold = <0>;
+	battery-hot = <600>;
+    battery-name = "SUNWADA_5000mAH_330K_Sep15th2021";
+	sw-jeita-enabled;
+	sw-jeita-ranges = < 0   100 4400000 490000
+						100 150 4400000 1470000
+						150 450 4400000 2500000
+						450 590 4200000 2450000
+					  >;
+//	step-chg-enabled;
+	step-chg-ranges = < 0    4250 4384000 2500000
+						4250 4280 4384000 2000000
+						4280 4330 4384000 1500000
+						4330 4380 4384000 1000000
+						4380 4385 4384000 500000
+					  >;
+	#include "sh366101_sunwond_5000mAh_params.dtsi"
+};

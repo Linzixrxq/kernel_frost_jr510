@@ -1,0 +1,4 @@
+config PM_CTRL
+	tristate "Device driver for pm control"
+	help
+	  Device driver for pm control.

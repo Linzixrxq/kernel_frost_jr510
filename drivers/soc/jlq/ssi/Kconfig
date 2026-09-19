@@ -1,0 +1,6 @@
+config SPI_JLQ
+	tristate "jlq SSP SPI master controller"
+	depends on SPI_MASTER
+	help
+	  This enables using a SSP port as a SPI master controller.
+

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+config JLQ_CAMERA_THERMAL
+    tristate "JLQ camera thermal and bwlm driver"
+    default m if ARCH_JLQ
+config JLQ_CAMERA_THERMAL_TEST
+    tristate "JLQ camera thermal and bwlm test driver"

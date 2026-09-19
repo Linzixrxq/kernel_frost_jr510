@@ -1,0 +1,53 @@
+Clock bindings for JLQ chips
+
+This binding uses the common clock binding[1].
+Documentation/devicetree/bindings/clock/clock-bindings.txt
+
+Required properties :
+- compatible :
+			"jlq,ap_pwr_clks"
+			"jlq,ddr_pwr_clks"
+			"jlq,clk-thru"
+			"jlq,clk-gate"
+			"jlq,clk-div"
+			"jlq,clk-mux"
+			"jlq,clk-pllx"
+			"jlq,clk-fdiv"
+			"jlq,clk-pll1143x"
+			"jlq,clk-pll1180x"
+			"jlq,top_crg_clks"
+			"jlq,cm4_sysctrl_clks"
+			"jlq,audio_sysctrl_clks"
+			"jlq,ai_sysctrl_clks"
+			"jlq,vdsp_sysctrl_clks"
+			"jlq,vpu_sysctrl_clks"
+			"jlq,display_sysctrl_clks"
+			"jlq,hblk_sysctrl_clks"
+			"jlq,clk-smd"
+			"qcom,bengal-gcc"
+
+- reg : shall contain base register location and length
+- #clock-cells : shall be 0
+- clocks: shall be the parent clock phandle
+- clock-output-names: clock name
+Example:
+		ddr_pwr_clks: ddr_pwr_clks@f9030000 {
+			compatible = "jlq,ddr_pwr_clks";
+			reg = <0xf9030000 0x1000>;
+
+			ddr_pwr_clk32k: ddr_pwr_clk32k {
+				compatible = "jlq,clk-thru";
+				#clock-cells = <0>;
+				clocks = <&clk32k>;
+				clock-output-names = "ddr_pwr_clk32k";
+			};
+			gpio_clkgt: gpio_clkgt {
+				compatible = "jlq,clk-gate";
+				#clock-cells = <0>;
+				clocks = <&ddr_pwr_clk32k>;
+				jlq,clkgt = <DDRPWR_COMPONENT_CLKEN1
+					PWR_BIT_SFT(5) PWR_WEBIT_DEF(5)>;
+				clock-output-names = "gpio_clkgt";
+			};
+		}
+

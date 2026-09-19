@@ -1,0 +1,7 @@
+config NANOHUB
+	tristate "Nanohub"
+	help
+	  Enable support for the nanohub sensorhub driver.
+	  This driver supports the android nanohub sensorhub.
+	  It contains the devices of "nanohub" and "nanohub_comms".
+	  If in doubt, say N here.

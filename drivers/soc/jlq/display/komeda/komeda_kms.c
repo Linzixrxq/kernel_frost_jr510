@@ -1,0 +1,749 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
+ * Author: James.Qian.Wang <james.qian.wang@arm.com>
+ *
+ */
+#include <linux/component.h>
+#include <linux/interrupt.h>
+
+#include <drm/drm_atomic.h>
+#include <drm/drm_atomic_helper.h>
+#include <drm/drm_drv.h>
+#include <drm/drm_fb_helper.h>
+#include <drm/drm_gem_cma_helper.h>
+#include <drm/drm_gem_framebuffer_helper.h>
+#include <drm/drm_irq.h>
+#include <drm/drm_probe_helper.h>
+#include <drm/drm_vblank.h>
+
+#include "komeda_debugfs.h"
+#include "komeda_dev.h"
+#include "komeda_framebuffer.h"
+#include "komeda_kms.h"
+
+DEFINE_DRM_GEM_CMA_FOPS(komeda_cma_fops);
+
+static bool komeda_drm_property_replace_blob(struct drm_property_blob **blob,
+			       struct drm_property_blob *new_blob)
+{
+	struct drm_property_blob *old_blob = *blob;
+
+	if (old_blob == new_blob)
+		return false;
+
+	drm_property_blob_put(old_blob);
+	if (new_blob)
+		drm_property_blob_get(new_blob);
+	*blob = new_blob;
+	return true;
+}
+
+/**
+* drm_property_replace_blob_from_id - replace existing blob property
+* @dev: drm device
+* @blob: a pointer to the member blob to be replaced
+* @blob_id: id of the new blob property
+* @expected_size: expected size of the new blob
+* @expected_elem_size: expected elements count of the new blob
+* @replaced: true if the blob was in fact replaced
+* @return 0 on success or error on failure
+*
+* This function will replace a blob property with the new blob of given blob
+* id. If not found the new blob with the blob id or size doesn't meet the
+* expected, will return on failure.
+*
+* Return: 0 when made a replace attempt.
+*/
+int drm_property_replace_blob_from_id(struct drm_device *dev,
+		struct drm_property_blob **blob,
+		uint64_t blob_id,
+		ssize_t expected_size,
+		ssize_t expected_elem_size,
+		bool *replaced)
+{
+	struct drm_property_blob *new_blob = NULL;
+
+	if (blob_id != 0) {
+		new_blob = drm_property_lookup_blob(dev, blob_id);
+		if (new_blob == NULL)
+			return -EINVAL;
+
+		if (expected_size > 0 &&
+			new_blob->length != expected_size) {
+			drm_property_blob_put(new_blob);
+			return -EINVAL;
+		}
+
+		if (expected_elem_size > 0 &&
+			new_blob->length % expected_elem_size != 0) {
+			drm_property_blob_put(new_blob);
+			return -EINVAL;
+		}
+	}
+
+	*replaced |= komeda_drm_property_replace_blob(blob, new_blob);
+	drm_property_blob_put(new_blob);
+
+	return 0;
+}
+
+static int komeda_gem_cma_dumb_create(struct drm_file *file,
+				      struct drm_device *dev,
+				      struct drm_mode_create_dumb *args)
+{
+	struct komeda_dev *mdev = dev->dev_private;
+	u32 pitch = DIV_ROUND_UP(args->width * args->bpp, 8);
+
+	args->pitch = ALIGN(pitch, mdev->chip.bus_width);
+
+	return drm_gem_cma_dumb_create_internal(file, dev, args);
+}
+
+static irqreturn_t komeda_kms_irq_handler(int irq, void *data)
+{
+	struct drm_device *drm = data;
+	struct komeda_dev *mdev = drm->dev_private;
+	struct komeda_kms_dev *kms = mdev->kms_dev;
+	struct komeda_events evts;
+	irqreturn_t status;
+	u32 i;
+
+	/* Call into the CHIP to recognize events */
+	memset(&evts, 0, sizeof(evts));
+	status = mdev->funcs->irq_handler(mdev, &evts);
+
+	komeda_print_events(&evts, drm);
+
+	/* Notify the crtc to handle the events */
+	for (i = 0; i < kms->n_crtcs; i++) {
+		komeda_crtc_handle_event(&kms->crtcs[i], &evts);
+		komeda_crtc_handle_atu_event(mdev, &kms->crtcs[i], &evts);
+	}
+
+	return status;
+}
+
+static struct drm_driver komeda_kms_driver = {
+	.driver_features = DRIVER_GEM | DRIVER_MODESET | DRIVER_ATOMIC,
+	.lastclose			= drm_fb_helper_lastclose,
+	.gem_free_object_unlocked	= drm_gem_cma_free_object,
+	.gem_vm_ops			= &drm_gem_cma_vm_ops,
+	.dumb_create			= komeda_gem_cma_dumb_create,
+	.prime_handle_to_fd		= drm_gem_prime_handle_to_fd,
+	.prime_fd_to_handle		= drm_gem_prime_fd_to_handle,
+	.gem_prime_get_sg_table		= drm_gem_cma_prime_get_sg_table,
+	.gem_prime_import_sg_table	= drm_gem_cma_prime_import_sg_table,
+	.gem_prime_vmap			= drm_gem_cma_prime_vmap,
+	.gem_prime_vunmap		= drm_gem_cma_prime_vunmap,
+	.gem_prime_mmap			= drm_gem_cma_prime_mmap,
+#ifdef CONFIG_DEBUG_FS
+	.debugfs_init			= komeda_kms_debugfs_register,
+#endif
+	.fops = &komeda_cma_fops,
+	.name = "komeda",
+	.desc = "Arm Komeda Display Processor driver",
+	.date = "20181101",
+	.major = 0,
+	.minor = 1,
+};
+
+static void komeda_drm_atomic_helper_wait_for_flip_done(struct drm_device *dev,
+					  struct drm_atomic_state *old_state)
+{
+	struct drm_crtc *crtc;
+	int i;
+
+	for (i = 0; i < dev->mode_config.num_crtc; i++) {
+		struct drm_crtc_commit *commit = old_state->crtcs[i].commit;
+		int ret;
+
+		crtc = old_state->crtcs[i].ptr;
+
+		if (!crtc || !commit)
+			continue;
+
+		ret = wait_for_completion_timeout(&commit->flip_done, 10 * HZ);
+		if (ret == 0)
+			DRM_ERROR("[CRTC:%d:%s] flip_done timed out\n",
+				  crtc->base.id, crtc->name);
+	}
+
+	if (old_state->fake_commit)
+		complete_all(&old_state->fake_commit->flip_done);
+}
+
+static void komeda_kms_commit_tail(struct drm_atomic_state *old_state)
+{
+	struct drm_device *dev = old_state->dev;
+
+	drm_atomic_helper_commit_modeset_disables(dev, old_state);
+
+	drm_atomic_helper_commit_planes(dev, old_state, DRM_PLANE_COMMIT_ACTIVE_ONLY);
+
+	drm_atomic_helper_commit_modeset_enables(dev, old_state);
+
+	komeda_drm_atomic_helper_wait_for_flip_done(dev, old_state);
+
+	drm_atomic_helper_commit_hw_done(old_state);
+
+	drm_atomic_helper_cleanup_planes(dev, old_state);
+}
+
+static const struct drm_mode_config_helper_funcs komeda_mode_config_helpers = {
+	.atomic_commit_tail = komeda_kms_commit_tail,
+};
+
+static int komeda_plane_state_list_add(struct drm_plane_state *plane_st,
+				       struct list_head *zorder_list)
+{
+	struct komeda_plane *kplane = to_kplane(plane_st->plane);
+	struct komeda_plane_state *new = to_kplane_st(plane_st);
+	struct komeda_plane_state *node, *last;
+	struct drm_plane_state *buddy_st;
+
+	/* if it's atu */
+	if (new->vp_outrect) {
+		buddy_st = drm_atomic_get_new_plane_state(plane_st->state,
+							  &kplane->atu_vp_buddy->base);
+		if (!buddy_st || list_empty(&to_kplane_st(buddy_st)->zlist_node))
+			goto add_to_list;
+		/* atu buddy is already added into zorder_list */
+		if (buddy_st->zpos != new->base.zpos) {
+			/* ATU VP0 and VP1 should use same zpos */
+			DRM_DEBUG_ATOMIC("ATU PLANE: %s and PLANE: %s has different zpos: %d, %d.\n",
+					new->base.plane->name, buddy_st->plane->name,
+					new->base.zpos, buddy_st->zpos);
+			return -EINVAL;
+		}
+		/* buddy is already added, skip current one */
+		new->base.normalized_zpos = 0xff;
+		return 0;
+	}
+
+add_to_list:
+	last = list_empty(zorder_list) ?
+	       NULL : list_last_entry(zorder_list, typeof(*last), zlist_node);
+
+	/* if list is empty or new node zpos is bigger than the last node
+	 * in the list, we can insert new node to the tail directly.
+	 * because the zpos in this list are arranged in positive order.
+	 */
+	if (!last || (new->base.zpos > last->base.zpos)) {
+		list_add_tail(&new->zlist_node, zorder_list);
+		return 0;
+	}
+
+	/* Build the list by zpos increasing */
+	list_for_each_entry(node, zorder_list, zlist_node) {
+		if (new->base.zpos < node->base.zpos) {
+			list_add_tail(&new->zlist_node, &node->zlist_node);
+			break;
+		} else if (node->base.zpos == new->base.zpos) {
+			struct drm_plane *a = node->base.plane;
+			struct drm_plane *b = new->base.plane;
+
+			/* Komeda doesn't support setting a same zpos for
+			 * different planes.
+			 */
+			DRM_DEBUG_ATOMIC("PLANE: %s and PLANE: %s are configured same zpos: %d.\n",
+					 a->name, b->name, node->base.zpos);
+			return -EINVAL;
+		}
+	}
+
+	return 0;
+}
+
+static int komeda_crtc_normalize_zpos(struct drm_crtc *crtc,
+				      struct drm_crtc_state *crtc_st)
+{
+	struct drm_atomic_state *state = crtc_st->state;
+	struct komeda_crtc *kcrtc = to_kcrtc(crtc);
+	struct komeda_crtc_state *kcrtc_st = to_kcrtc_st(crtc_st);
+	struct komeda_plane_state *kplane_st;
+	struct drm_plane_state *plane_st;
+	struct drm_plane *plane;
+	struct list_head zorder_list;
+	int order = 0, err;
+
+	DRM_DEBUG_ATOMIC("[CRTC:%d:%s] calculating normalized zpos values\n",
+			 crtc->base.id, crtc->name);
+
+	INIT_LIST_HEAD(&zorder_list);
+
+	/* This loop also added all effected planes into the new state */
+	drm_for_each_plane_mask(plane, crtc->dev, crtc_st->plane_mask) {
+		plane_st = drm_atomic_get_plane_state(state, plane);
+		if (IS_ERR(plane_st))
+			return PTR_ERR(plane_st);
+
+		/* Build a list by zpos increasing */
+		err = komeda_plane_state_list_add(plane_st, &zorder_list);
+		if (err)
+			return err;
+	}
+
+	kcrtc_st->max_slave_zorder = 0;
+
+	list_for_each_entry(kplane_st, &zorder_list, zlist_node) {
+		plane_st = &kplane_st->base;
+		plane = plane_st->plane;
+
+		plane_st->normalized_zpos = order++;
+		/* When layer_split has been enabled, one plane will be handled
+		 * by two separated komeda layers (left/right), which may needs
+		 * two zorders.
+		 * - zorder: for left_layer for left display part.
+		 * - zorder + 1: will be reserved for right layer.
+		 */
+		if (to_kplane_st(plane_st)->dflow.en_split)
+			order++;
+
+		DRM_DEBUG_ATOMIC("[PLANE:%d:%s] zpos:%d, normalized zpos: %d\n",
+				 plane->base.id, plane->name,
+				 plane_st->zpos, plane_st->normalized_zpos);
+
+		/* calculate max slave zorder */
+		if (has_bit(drm_plane_index(plane), kcrtc->slave_planes) &&
+		   (!kplane_st->vp_outrect) &&
+		   (plane_st->normalized_zpos > kcrtc_st->max_slave_zorder))
+			kcrtc_st->max_slave_zorder = plane_st->normalized_zpos;
+	}
+
+	crtc_st->zpos_changed = true;
+
+	return 0;
+}
+
+static int komeda_crtc_prepare_planes(struct drm_crtc *crtc,
+				      struct drm_crtc_state *crtc_st)
+{
+	struct drm_plane_state *plane_st;
+	struct drm_plane *plane;
+	int err;
+
+	drm_for_each_plane_mask(plane, crtc->dev, crtc_st->plane_mask) {
+		plane_st = drm_atomic_get_plane_state(crtc_st->state, plane);
+		if (IS_ERR(plane_st))
+			return PTR_ERR(plane_st);
+
+		err = komeda_plane_prepare(plane, plane_st);
+		if (err)
+			return err;
+	}
+
+	return 0;
+}
+
+static bool komeda_drm_display_mode_match_timings(const struct drm_display_mode *mode1,
+				   const struct drm_display_mode *mode2)
+{
+	return mode1->hdisplay == mode2->hdisplay &&
+		mode1->hsync_start == mode2->hsync_start &&
+		mode1->hsync_end == mode2->hsync_end &&
+		mode1->htotal == mode2->htotal &&
+		mode1->hskew == mode2->hskew &&
+		mode1->vdisplay == mode2->vdisplay &&
+		mode1->vsync_start == mode2->vsync_start &&
+		mode1->vsync_end == mode2->vsync_end &&
+		mode1->vtotal == mode2->vtotal &&
+		mode1->vscan == mode2->vscan;
+}
+
+static bool komeda_drm_display_mode_match_clock(const struct drm_display_mode *mode1,
+				  const struct drm_display_mode *mode2)
+{
+	/*
+	 * do clock check convert to PICOS
+	 * so fb modes get matched the same
+	 */
+	if (mode1->clock && mode2->clock)
+		return KHZ2PICOS(mode1->clock) == KHZ2PICOS(mode2->clock);
+	else
+		return mode1->clock == mode2->clock;
+}
+
+static bool komeda_drm_display_mode_match_flags(const struct drm_display_mode *mode1,
+				 const struct drm_display_mode *mode2)
+{
+	return (mode1->flags & ~DRM_MODE_FLAG_3D_MASK) ==
+		(mode2->flags & ~DRM_MODE_FLAG_3D_MASK);
+}
+
+static bool komeda_drm_display_mode_match_3d_flags(const struct drm_display_mode *mode1,
+				    const struct drm_display_mode *mode2)
+{
+	return (mode1->flags & DRM_MODE_FLAG_3D_MASK) ==
+		(mode2->flags & DRM_MODE_FLAG_3D_MASK);
+}
+
+static bool komeda_drm_display_mode_match_aspect_ratio(const struct drm_display_mode *mode1,
+					const struct drm_display_mode *mode2)
+{
+	return mode1->picture_aspect_ratio == mode2->picture_aspect_ratio;
+}
+
+/**
+ * komeda_drm_display_mode_match - test modes for (partial) equality
+ * @mode1: first mode
+ * @mode2: second mode
+ * @match_flags: which parts need to match (DRM_MODE_MATCH_*)
+ *
+ * Check to see if @mode1 and @mode2 are equivalent.
+ *
+ * Returns:
+ * True if the modes are (partially) equal, false otherwise.
+ */
+bool komeda_drm_display_mode_match(const struct drm_display_mode *mode1,
+		    const struct drm_display_mode *mode2,
+		    unsigned int match_flags)
+{
+	if (!mode1 && !mode2)
+		return true;
+
+	if (!mode1 || !mode2)
+		return false;
+
+	if (match_flags & DRM_MODE_MATCH_TIMINGS &&
+	    !komeda_drm_display_mode_match_timings(mode1, mode2))
+		return false;
+
+	if (match_flags & DRM_MODE_MATCH_CLOCK &&
+	    !komeda_drm_display_mode_match_clock(mode1, mode2))
+		return false;
+
+	if (match_flags & DRM_MODE_MATCH_FLAGS &&
+	    !komeda_drm_display_mode_match_flags(mode1, mode2))
+		return false;
+
+	if (match_flags & DRM_MODE_MATCH_3D_FLAGS &&
+	    !komeda_drm_display_mode_match_3d_flags(mode1, mode2))
+		return false;
+
+	if (match_flags & DRM_MODE_MATCH_ASPECT_RATIO &&
+	    !komeda_drm_display_mode_match_aspect_ratio(mode1, mode2))
+		return false;
+
+	return true;
+}
+/**
+ * komeda_vrr_match_mode - check if two modes are VRR-compatible.
+ * I.e. if both mode have the same timings except for VFP.
+ */
+static bool komeda_vrr_match_mode(const struct drm_display_mode *mode1,
+				  const struct drm_display_mode *mode2)
+{
+	return komeda_drm_display_mode_match(mode1, mode2,
+			      DRM_MODE_MATCH_CLOCK |
+			      DRM_MODE_MATCH_FLAGS |
+			      DRM_MODE_MATCH_3D_FLAGS|
+			      DRM_MODE_MATCH_ASPECT_RATIO) &&
+		mode1->hdisplay == mode2->hdisplay &&
+		mode1->hsync_start == mode2->hsync_start &&
+		mode1->hsync_end == mode2->hsync_end &&
+		mode1->htotal == mode2->htotal &&
+		mode1->hskew == mode2->hskew &&
+		mode1->vdisplay == mode2->vdisplay &&
+		mode1->vsync_end - mode1->vsync_start ==
+		mode2->vsync_end - mode2->vsync_start &&
+		mode1->vtotal - mode1->vsync_end ==
+		mode2->vtotal - mode2->vsync_end &&
+		mode1->vscan == mode2->vscan;
+}
+
+static int
+komeda_drm_atomic_add_affected_planes(struct drm_atomic_state *state,
+			       struct drm_crtc *crtc)
+{
+	const struct drm_crtc_state *old_crtc_state =
+		drm_atomic_get_old_crtc_state(state, crtc);
+	struct drm_plane *plane;
+
+	WARN_ON(!drm_atomic_get_new_crtc_state(state, crtc));
+
+	DRM_DEBUG_ATOMIC("Adding all current planes for [CRTC:%d:%s] to %p\n",
+			 crtc->base.id, crtc->name, state);
+
+	drm_for_each_plane_mask(plane, state->dev, old_crtc_state->plane_mask) {
+		struct drm_plane_state *plane_state =
+			drm_atomic_get_plane_state(state, plane);
+
+		if (IS_ERR(plane_state))
+			return PTR_ERR(plane_state);
+	}
+	return 0;
+}
+
+static void
+komeda_drm_atomic_helper_plane_changed(struct drm_atomic_state *state,
+				struct drm_plane_state *old_plane_state,
+				struct drm_plane_state *plane_state,
+				struct drm_plane *plane)
+{
+	struct drm_crtc_state *crtc_state;
+
+	if (old_plane_state->crtc) {
+		crtc_state = drm_atomic_get_new_crtc_state(state,
+						old_plane_state->crtc);
+
+		if (WARN_ON(!crtc_state))
+			return;
+
+		crtc_state->planes_changed = true;
+	}
+
+	if (plane_state->crtc) {
+		crtc_state = drm_atomic_get_new_crtc_state(state, plane_state->crtc);
+
+		if (WARN_ON(!crtc_state))
+			return;
+
+		crtc_state->planes_changed = true;
+	}
+}
+
+static void
+komeda_drm_atomic_helper_check_plane_damage(struct drm_atomic_state *state,
+				struct drm_plane_state *plane_state)
+{
+	struct drm_crtc_state *crtc_state;
+
+	if (plane_state->crtc) {
+		crtc_state = drm_atomic_get_new_crtc_state(state,
+						plane_state->crtc);
+
+		if (WARN_ON(!crtc_state))
+			return;
+
+		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
+			drm_property_blob_put(plane_state->fb_damage_clips);
+			plane_state->fb_damage_clips = NULL;
+		}
+	}
+}
+
+static int
+komeda_drm_atomic_helper_check_planes(struct drm_device *dev,
+			       struct drm_atomic_state *state)
+{
+	struct drm_crtc *crtc;
+	struct drm_crtc_state *new_crtc_state;
+	struct drm_plane *plane;
+	struct drm_plane_state *new_plane_state, *old_plane_state;
+	int i, ret = 0;
+
+	for_each_oldnew_plane_in_state(state, plane, old_plane_state, new_plane_state, i) {
+		const struct drm_plane_helper_funcs *funcs;
+
+		WARN_ON(!drm_modeset_is_locked(&plane->mutex));
+
+		funcs = plane->helper_private;
+
+		komeda_drm_atomic_helper_plane_changed(state, old_plane_state, new_plane_state, plane);
+
+		komeda_drm_atomic_helper_check_plane_damage(state, new_plane_state);
+
+		if (!funcs || !funcs->atomic_check)
+			continue;
+
+		ret = funcs->atomic_check(plane, new_plane_state);
+		if (ret) {
+			DRM_DEBUG_ATOMIC("[PLANE:%d:%s] atomic driver check failed\n",
+					 plane->base.id, plane->name);
+			return ret;
+		}
+	}
+
+	for_each_new_crtc_in_state(state, crtc, new_crtc_state, i) {
+		const struct drm_crtc_helper_funcs *funcs;
+
+		funcs = crtc->helper_private;
+
+		if (!funcs || !funcs->atomic_check)
+			continue;
+
+		ret = funcs->atomic_check(crtc, new_crtc_state);
+		if (ret) {
+			DRM_DEBUG_ATOMIC("[CRTC:%d:%s] atomic driver check failed\n",
+					 crtc->base.id, crtc->name);
+			return ret;
+		}
+	}
+
+	return ret;
+}
+
+static int komeda_kms_check(struct drm_device *dev,
+			    struct drm_atomic_state *state)
+{
+	struct drm_crtc *crtc;
+	struct drm_crtc_state *old_crtc_st, *new_crtc_st;
+	int i, err;
+
+#if IS_ENABLED(CONFIG_JGKI)
+	err = drm_atomic_helper_check_modeset(dev, state);
+#else
+	err = drm_atomic_helper_check(dev, state);
+#endif
+	if (err)
+		return err;
+
+	/* Komeda need to re-calculate resource assumption in every commit
+	 * so need to add all affected_planes (even unchanged) to
+	 * drm_atomic_state.
+	 */
+	for_each_oldnew_crtc_in_state(state, crtc, old_crtc_st, new_crtc_st, i) {
+		if (new_crtc_st->mode_changed &&
+		    komeda_vrr_match_mode(&old_crtc_st->mode,
+					  &new_crtc_st->mode))
+			new_crtc_st->mode_changed = false;
+
+		err = komeda_drm_atomic_add_affected_planes(state, crtc);
+		if (err)
+			return err;
+
+		err = komeda_crtc_prepare_planes(crtc, new_crtc_st);
+		if (err)
+			return err;
+
+		err = komeda_crtc_normalize_zpos(crtc, new_crtc_st);
+		if (err)
+			return err;
+	}
+
+	err = komeda_drm_atomic_helper_check_planes(dev, state);
+	if (err)
+		return err;
+
+	return 0;
+}
+
+static const struct drm_mode_config_funcs komeda_mode_config_funcs = {
+	.fb_create		= komeda_fb_create,
+	.atomic_check		= komeda_kms_check,
+	.atomic_commit		= drm_atomic_helper_commit,
+	.get_format_info        = komeda_get_format_info,
+};
+
+static void komeda_kms_mode_config_init(struct komeda_kms_dev *kms,
+					struct komeda_dev *mdev)
+{
+	struct drm_mode_config *config = &kms->base->mode_config;
+	struct komeda_layer *layer = mdev->pipelines[0]->layers[0];
+
+	drm_mode_config_init(kms->base);
+
+	komeda_kms_setup_crtcs(kms, mdev);
+
+	/* Get value from dev */
+	config->min_width	= layer->hsize_in.start;
+	config->min_height	= layer->vsize_in.start;
+	config->max_width	= 8192;
+	config->max_height	= 8192;
+	config->allow_fb_modifiers = true;
+
+	config->funcs = &komeda_mode_config_funcs;
+	config->helper_private = &komeda_mode_config_helpers;
+
+	komeda_kms_create_plane_properties(kms, mdev);
+}
+
+struct komeda_kms_dev *komeda_kms_attach(struct komeda_dev *mdev)
+{
+	struct komeda_kms_dev *kms = kzalloc(sizeof(*kms), GFP_KERNEL);
+	struct drm_device *drm;
+	int err = 0;
+
+	if (!kms)
+		return ERR_PTR(-ENOMEM);
+
+	drm  = drm_dev_alloc(&komeda_kms_driver, mdev->dev);
+	if (IS_ERR_OR_NULL(drm)) {
+		err = -ENODEV;
+		goto free_kms;
+	}
+
+	mdev->kms_dev = kms;
+	kms->base = drm;
+	drm->dev_private = mdev;
+
+	komeda_kms_mode_config_init(kms, mdev);
+
+	err = komeda_kms_add_private_objs(kms, mdev);
+	if (err)
+		goto cleanup_mode_config;
+
+	err = komeda_kms_add_planes(kms, mdev);
+	if (err)
+		goto cleanup_mode_config;
+
+	err = drm_vblank_init(drm, kms->n_crtcs);
+	if (err)
+		goto cleanup_mode_config;
+
+	err = komeda_kms_add_crtcs(kms, mdev);
+	if (err)
+		goto cleanup_mode_config;
+
+	err = komeda_kms_add_wb_connectors(kms, mdev);
+	if (err)
+		goto cleanup_mode_config;
+
+	err = component_bind_all(mdev->dev, drm);
+	if (err)
+		goto cleanup_mode_config;
+
+	komeda_dev_init_ad(mdev);
+	err = komeda_kms_crtcs_add_ad_properties(kms, mdev);
+	if (err)
+		goto cleanup_mode_config;
+
+	drm_mode_config_reset(drm);
+
+	err = devm_request_threaded_irq(drm->dev, mdev->irq, NULL,
+			       komeda_kms_irq_handler, IRQF_ONESHOT,
+			       drm->driver->name, drm);
+	if (err)
+		goto free_component_binding;
+
+	drm->irq_enabled = true;
+
+	drm_kms_helper_poll_init(drm);
+
+	err = drm_dev_register(drm, 0);
+	if (err)
+		goto free_interrupts;
+
+	return kms;
+
+free_interrupts:
+	drm_kms_helper_poll_fini(drm);
+	drm->irq_enabled = false;
+free_component_binding:
+	component_unbind_all(mdev->dev, drm);
+cleanup_mode_config:
+	drm_mode_config_cleanup(drm);
+	komeda_kms_cleanup_private_objs(kms);
+	drm->dev_private = NULL;
+	mdev->kms_dev = NULL;
+	drm_dev_put(drm);
+free_kms:
+	return ERR_PTR(err);
+}
+
+void komeda_kms_detach(struct komeda_kms_dev *kms)
+{
+	struct drm_device *drm = kms->base;
+	struct komeda_dev *mdev = drm->dev_private;
+
+	drm_dev_unregister(drm);
+	drm_kms_helper_poll_fini(drm);
+	drm_atomic_helper_shutdown(drm);
+	drm->irq_enabled = false;
+	component_unbind_all(mdev->dev, drm);
+	drm_mode_config_cleanup(drm);
+	komeda_kms_cleanup_private_objs(kms);
+	drm->dev_private = NULL;
+	drm_dev_put(drm);
+}

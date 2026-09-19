@@ -1,0 +1,36 @@
+JLQ devfreq ddr dfs device
+
+ddr-dfs-dev is a device that performs real-time statistics of DDR frequency
+requirements on the AP side and aggregates the requirements to vote for CM4.
+At the same time, the device is registered with cooling-device, using the
+cooling_devfreq logic.
+
+Required properties:
+- compatible:       Must be "devfreq-simple-dev"
+- operating-points-v2 : A phandle to the OPP v2 table that holds meaningful
+            instantaneous bandwidth values (in MB/s) that can be
+            requested from the device master port to the slave port.
+            The list of values depend on the supported bus/slave
+            frequencies and the bus width.
+Optional properties:
+- polling-ms:   Polling interval for the device in milliseconds. Default: 50
+- governor: Initial governor to user for the device. Default: "userspace"
+
+Example:
+
+ddr_dfs:jlq,ddr-devfreq {
+    compatible = "jlq,ddr-devfreq";
+    governor = "userspace";
+    polling_ms = <50> ;
+    operating-points-v2 = <&ddr_opp_table>;
+};
+
+ddr_opp_table: ddr-opp-table {
+    compatible = "operating-points-v2";
+    opp@200000000  {opp-hz = /bits/ 64 <200000000>;};
+    opp@533000000  {opp-hz = /bits/ 64 <533000000>;};
+    opp@800000000  {opp-hz = /bits/ 64 <800000000>;};
+    opp@1066000000 {opp-hz = /bits/ 64 <1066000000>;};
+    opp@1333000000 {opp-hz = /bits/ 64 <1333000000>;};
+    opp@1866000000 {opp-hz = /bits/ 64 <1866000000>;};
+};

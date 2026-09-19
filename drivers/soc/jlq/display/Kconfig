@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# JLQ display subsystem drivers
+#
+source "drivers/soc/jlq/display/cmdline/Kconfig"
+source "drivers/soc/jlq/display/komeda/Kconfig"
+source "drivers/soc/jlq/display/camille/Kconfig"
+source "drivers/soc/jlq/display/transmitter/Kconfig"

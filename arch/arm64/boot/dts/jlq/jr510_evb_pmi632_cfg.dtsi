@@ -1,0 +1,260 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/jlq/iio/qti_power_supply_iio.h>
+#include <dt-bindings/jlq/iio/qcom,spmi-vadc.h>
+#include <dt-bindings/pinctrl/jlq_pinctrl.h>
+#include <dt-bindings/thermal/thermal.h>
+#include "pmi632.dtsi"
+&soc {
+	evb_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+		#include "JLQ_4000mAH_PMI632_averaged_MasterSlave_Jun15th2020_DTSI.dtsi"
+	};
+};
+
+&pmi632_qg {
+	status = "ok";
+	#io-channel-cells = <1>;
+	io-channels = <&pmi632_vadc ADC5_BAT_THERM_100K_PU>,
+			<&pmi632_vadc ADC5_BAT_ID_100K_PU>,
+			<&pmi632_charger PSY_IIO_INPUT_CURRENT_LIMITED>,
+			<&pmi632_charger PSY_IIO_RECHARGE_SOC>,
+			<&pmi632_charger PSY_IIO_FORCE_RECHARGE>,
+			<&pmi632_charger PSY_IIO_CHARGE_DONE>;
+	io-channel-names = "batt-therm",
+			   "batt-id",
+			   "input_current_limited",
+			   "recharge_soc",
+			   "force_recharge",
+			   "charge_done",
+			   "cp_charging_enabled";
+	qcom,battery-data = <&evb_batterydata>;
+	qcom,qg-iterm-ma = <100>;
+	qcom,hold-soc-while-full;
+	qcom,linearize-soc;
+	qcom,qg-use-s7-ocv;
+};
+
+&pmi632_charger {
+	status = "ok";
+	#io-channel-cells = <1>;
+	io-channels = <&pmi632_vadc ADC5_USB_IN_V_16>,
+			<&pmi632_vadc ADC5_USB_IN_I>,
+			<&pmi632_vadc ADC5_CHG_TEMP>,
+			<&pmi632_vadc ADC5_DIE_TEMP>,
+			/*<&pmi632_vadc ADC5_AMUX_THM3_100K_PU>,*/
+			<&pmi632_vadc ADC5_VPH_PWR>,
+			/*<&pmi632_vadc ADC5_AMUX_THM1_100K_PU>,*/
+			<&pmi632_qg PSY_IIO_RESISTANCE_ID>,
+			<&pmi632_qg PSY_IIO_VOLTAGE_NOW>,
+			<&pmi632_qg PSY_IIO_TEMP>,
+			<&pmi632_qg PSY_IIO_CAPACITY>,
+			<&pmi632_qg PSY_IIO_VOLTAGE_OCV>,
+			<&pmi632_qg PSY_IIO_VOLTAGE_AVG>,
+			<&pmi632_qg PSY_IIO_DEBUG_BATTERY>,
+			<&pmi632_qg PSY_IIO_REAL_CAPACITY>,
+			<&pmi632_qg PSY_IIO_CC_SOC>,
+			<&pmi632_qg PSY_IIO_CURRENT_NOW>,
+			<&pmi632_qg PSY_IIO_VOLTAGE_MAX>,
+			<&pmi632_qg PSY_IIO_CHARGE_FULL>,
+			<&pmi632_qg PSY_IIO_CHARGE_COUNTER>,
+			<&pmi632_qg PSY_IIO_CYCLE_COUNT>,
+			<&pmi632_qg PSY_IIO_CHARGE_FULL_DESIGN>,
+			<&pmi632_qg PSY_IIO_TIME_TO_FULL_NOW>;
+	io-channel-names = "usb_in_voltage",
+			   "usb_in_current",
+			   "chg_temp",
+			   "die_temp",
+			   /*"conn_temp",*/
+			   "vph_voltage",
+			   /*"skin_temp",*/
+			   "resistance_id",
+			   "voltage_now",
+			   "temp",
+			   "capacity",
+			   "voltage_ocv",
+			   "voltage_avg",
+			   "debug_battery",
+			   "real_capacity",
+			   "cc_soc",
+			   "current_now",
+			   "voltage_max",
+			   "charge_full",
+			   "charge_counter",
+			   "cycle_count",
+			   "charge_full_design",
+			   "time_to_full_now";
+	qcom,battery-data = <&evb_batterydata>;
+	qcom,suspend-input-on-debug-batt;
+	qcom,fake-chg-status-on-debug-batt;
+	qcom,sw-jeita-enable;
+	qcom,step-charging-enable;
+	qcom,batteryless-platform;
+/*  //not use smb1355, so del below prop
+ *	// SMB1355 only
+ *	qcom,sec-charger-config = <2>;
+ *	qcom,hvdcp2-max-icl-ua = <2000000>;
+ *	dpdm-supply = <&usb_phy>;
+ *	qcom,charger-temp-max = <800>;
+ *	qcom,smb-temp-max = <800>;
+ *	qcom,auto-recharge-soc = <98>;
+ *	qcom,flash-disable-soc = <10>;
+ *	qcom,hw-die-temp-mitigation;
+ *	qcom,hw-connector-mitigation;
+ *	qcom,connector-internal-pull-kohm = <100>;
+ *	qcom,float-option = <1>;
+ *	qcom,thermal-mitigation = <4200000 3500000 3000000
+ *			2500000 2000000 1500000 1000000 500000>;
+ */
+};
+
+
+&pmi632_gpios {
+	smb_en {
+		smb_en_default: smb_en_default {
+			pins = "gpio2";
+			function = "func1";
+			output-enable;
+		};
+	};
+	pmi632_sense {
+		/* GPIO 7 and 8 are external-sense pins for PMI632 */
+		pmi632_sense_default: pmi632_sense_default {
+			pins = "gpio7", "gpio8";
+			bias-high-impedance;	/* disable the GPIO */
+			bias-disable;		/* no-pull */
+		};
+	};
+
+	pmi632_ctm {
+		/* Disable GPIO1 for h/w base mitigation */
+		pmi632_ctm_default: pmi632_ctm_default {
+			pins = "gpio1";
+			bias-high-impedance;	/* disable the GPIO */
+			bias-disable;		/* no-pull */
+		};
+	};
+	pmi632_skin_therm {
+		pmi632_skin_therm_default: skin_therm_default {
+			pins = "gpio3";
+			bias-high-impedance;
+		};
+	};
+};
+
+&pmi632_vadc {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pmi632_sense_default &pmi632_ctm_default &pmi632_skin_therm_default>;
+
+	conn_therm {
+			reg = <ADC5_GPIO1_100K_PU>;
+			label = "conn_therm";
+			qcom,ratiometric;
+			qcom,hw-settle-time = <200>;
+			qcom,pre-scaling = <1 1>;
+	};
+
+	skin_therm {
+			reg = <ADC5_GPIO3_100K_PU>;
+			label = "skin_therm";
+			qcom,ratiometric;
+			qcom,hw-settle-time = <200>;
+			qcom,pre-scaling = <1 1>;
+	};
+	smb_vchg_p {
+			reg = <ADC5_GPIO7_100K_PU>;
+			label = "smb_vchg_p";
+			qcom,ratiometric;
+			qcom,hw-settle-time = <200>;
+			qcom,pre-scaling = <1 1>;
+	};
+	smb_vchg_m {
+			reg = <ADC5_SBUx_100K_PU>;
+			label = "smb_vchg_m";
+			qcom,ratiometric;
+			qcom,hw-settle-time = <200>;
+			qcom,pre-scaling = <1 1>;
+	};
+
+/*
+ *	vbat_isns_p {
+ *			reg = <ADC5_GPIO7_100K_PU>;
+ *			label = "vbat_isns_p";
+ *			qcom,ratiometric;
+ *			qcom,hw-settle-time = <200>;
+ *			qcom,pre-scaling = <1 1>;
+ *	};
+ *	vbat_isns_m {
+ *			reg = <ADC5_SBUx_100K_PU>;
+ *			label = "vbat_isns_m";
+ *			qcom,ratiometric;
+ *			qcom,hw-settle-time = <200>;
+ *			qcom,pre-scaling = <1 1>;
+ *	};
+ */
+};
+
+&pmi632_adc_tm {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	io-channels = <&pmi632_vadc ADC5_GPIO3_100K_PU>;
+
+	/* Channel nodes */
+	skin_therm {
+			reg = <ADC5_GPIO3_100K_PU>;
+			qcom,ratiometric;
+			qcom,hw-settle-time = <200>;
+	};
+};
+/* //not use smb1355, so del below prop
+&pinctrl {
+	smb_int_default: smb_int_default {
+		jlq,pins = "GPIO71";
+		jlq,function = "gpio";
+		jlq,pull = <MUXPIN_PULL_UP>;
+		jlq,drive = <TYPE1_DRIVE_LEVEL1>;
+	};
+};
+
+&i2c_4{
+	status = "ok";
+	#include "smb1355.dtsi"
+};
+
+&smb1355 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&smb_int_default>;
+	interrupt-parent = <&gpio>;
+	interrupts = <71 IRQ_TYPE_LEVEL_LOW>;
+	status = "ok";
+};
+
+&smb1355_charger {
+	pinctrl-names = "default";
+	pinctrl-0 = <&smb_en_default &pmi632_sense_default &pmi632_ctm_default>;
+	qcom,parallel-mode = <1>;
+	qcom,disable-ctm;
+	qcom,hw-die-temp-mitigation;
+	status = "ok";
+};
+*/
+&thermal_zones {
+	pmi632-tz {
+		cooling-maps {
+			trip0_bat {
+				trip = <&pmi632_chg_trip0>;
+				cooling-device =
+					<&pmi632_charger (THERMAL_NO_LIMIT-2)
+						(THERMAL_NO_LIMIT-2)>;
+			};
+
+			trip1_bat {
+				trip = <&pmi632_chg_trip1>;
+				cooling-device =
+					<&pmi632_charger (THERMAL_NO_LIMIT-1)
+						(THERMAL_NO_LIMIT-1)>;
+			};
+		};
+	};
+};

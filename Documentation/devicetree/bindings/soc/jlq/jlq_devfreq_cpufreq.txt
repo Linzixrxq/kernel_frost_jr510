@@ -1,0 +1,16 @@
+devfreq driver, matching cpufreq
+
+this driver for devfreq, the device will be scaling when cpu frequency is changed.
+
+Required properties:
+- compatible:		Must be "jlq,devfreq-cpufreq"
+
+Optional properties:
+
+
+Example:
+
+        jlq-devfreq-cpufreq {
+                compatible = "jlq,devfreq-cpufreq";
+        };
+

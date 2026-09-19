@@ -1,0 +1,59 @@
+JLQ vdsp-hw-vp6 bindings
+
+Required properties:
+- compatible:
+  - "jlq,vdsp-hw-vp6,cma"
+- reg: Physical base address and length of the controller's registers.
+- vdsp-priv-mem : vdsp reserve mem.
+- vdsp-start-addr : vdsp hardware pc start address.
+- interrupt-controller: Mark the device node as an interrupt controller
+- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
+- interrupts: Specify the interrupt.
+- iommus: vdsp smmu streamid.
+- queue-priority: vdsp data stream queue priority.
+- core-clock-rate: vdsp core clock default clk rate.
+
+Example:
+
+vdsp: vdsp {
+	compatible = "jlq,vdsp-hw-vp6,cma";
+	reg = <0x30000000 0x40000>,
+		<0x30090000 0x1000>,
+		<0x0 0x200000>,
+		<0x200000 0xA00000>,
+		<0xC00000 0x200000>,
+		<0xE00000 0x100000>,
+		<0xF00000 0x100000>,
+		<0x1000000 0x7F000000>;
+	reg-names = "vdsp_tcm_mem",
+			"vdsp_sysctl_mem",
+			"code-region",
+			"reserved-region",
+			"sysdump-region",
+			"log-sys-region",
+			"smd-sys-region",
+			"dynamic-alloc-region";
+	vdsp-priv-mem = <&vdsp_mem_region>;
+	vdsp-start-addr = <0x80000000>;
+	interrupt-parent = <&top_mbox_irq_vdspnsec>;
+	interrupts = <0 IRQ_TYPE_LEVEL_HIGH>,
+				<2 IRQ_TYPE_LEVEL_HIGH>,
+				<3 IRQ_TYPE_LEVEL_HIGH>;
+	interrupt-names = "smd-irq-id",
+				"panic-irq-id", "wdog-irq-id";
+	iommus = <&smmu 0x100>;
+	clocks = <&vdsp_coreclk>, <&vdsp_bclk>, <&vdsp_pbclk>;
+	clock-names = "coreclk", "bus-clk", "debug-clk";
+	/* vdsp support the flow core clock rate : */
+	/* 800000000 692494000 519322000 400000000 */
+	/* 346214000 200000000 100000000 */
+	core-clock-rate = <800000000>;
+	is-debug-enable = <0>;
+	is-support-smmu = <1>;
+	device-irq = <0 1 0>; /* SMD IRQ_NUM, type(SECURE(0)/NON_SECURE(1)), reserved */
+	device-irq-mode = <1>; /* VDSP_IRQ_LEVEL */
+	host-irq = <0 1>; /* IRQ_NUM, type(SECURE(0)/NON_SECURE(1)) */
+	host-irq-mode = <1>; /* VDSP_IRQ_LEVEL */
+	queue-priority = <7>;
+	force_ramdump_tx_irq = <2>;
+}

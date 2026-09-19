@@ -1,0 +1,21 @@
+JLQ Global Distributed Switch Controller (GDSC) Regulator Driver
+
+The GDSC driver, implemented under the regulator framework, is responsible for
+safely collapsing and restoring power to peripheral and multimedia cores on
+chipsets like JA510 for power savings.
+
+Required properties:
+ - compatible:      Must be "jlq,gdsc"
+ - regulator-name:  A string used as a descriptive name for regulator outputs
+ - reg:             The address of the GDSCR register
+
+Optional properties:
+ - parent-supply:   phandle to the parent supply/regulator node
+
+Example:
+	gdsc_smmu: jlq,gdsc@34510290 {
+		compatible = "jlq,gdsc";
+		regulator-name = "smmu_gdsc";
+		parent-supply = <&pm6125_s4>;
+		reg = <0x34510290 0x4>;
+	};

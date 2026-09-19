@@ -1,0 +1,107 @@
+// SPDX-License-Identifier: GPL-2.0+
+#include <dt-bindings/pinctrl/jlq_pinctrl.h>
+
+&qtang_gpio {
+	qtang_ufs_pins {
+		ufs_reset:ufs_reset@0 {
+			pins = "UFS_RESET_N";
+			function = "gpio";
+		};
+	};
+
+	qtang_cam_pins {
+		gpio4:gpio4@0 {
+			pins = "GPIO4";
+			function = "gpio";
+		};
+		gpio5:gpio5@1 {
+			pins = "GPIO5";
+			function = "gpio";
+		};
+		gpio6:gpio6@2 {
+			pins = "GPIO6";
+			function = "gpio";
+		};
+		gpio7:gpio7@3 {
+			pins = "GPIO7";
+			function = "gpio";
+		};
+		gpio8:gpio8@4 {
+			pins = "GPIO8";
+			function = "gpio";
+		};
+		gpio9:gpio9@5 {
+			pins = "GPIO9";
+			function = "gpio";
+		};
+		gpio10:gpio10@6 {
+			pins = "GPIO10";
+			function = "gpio";
+		};
+		gpio11:gpio11@7 {
+			pins = "GPIO11";
+			function = "gpio";
+		};
+		gpio12:gpio12@8 {
+			pins = "GPIO12";
+			function = "gpio";
+		};
+		gpio13:gpio13@9 {
+			pins = "GPIO13";
+			function = "gpio";
+		};
+		gpio14:gpio14@10 {
+			pins = "GPIO14";
+			function = "gpio";
+		};
+		gpio15:gpio15@11 {
+			pins = "GPIO15";
+			function = "gpio";
+		};
+		gpio16:gpio16@12 {
+			pins = "GPIO16";
+			function = "gpio";
+		};
+		gpio17:gpio17@13 {
+			pins = "GPIO17";
+			function = "gpio";
+		};
+		gpio18:gpio18@14 {
+			pins = "GPIO18";
+			function = "gpio";
+		};
+		gpio19:gpio19@15 {
+			pins = "GPIO19";
+			function = "gpio";
+		};
+		gpio20:gpio20@16 {
+			pins = "GPIO20";
+			function = "gpio";
+		};
+	};
+
+	common_gpios {
+		gpio0:gpio0@0 {
+			pins = "GPIO0";
+			function = "gpio";
+		};
+		gpio1:gpio1@1 {
+			pins = "GPIO1";
+			function = "gpio";
+		};
+		gpio3:gpio3@2 {
+			pins = "GPIO3";
+			function = "gpio";
+		};
+		gpio21:gpio21@3 {
+			pins = "GPIO21";
+			function = "gpio";
+		};
+		gpio60:gpio8@4 {
+			pins = "GPIO60";
+			function = "gpio";
+		};
+	};
+};
+
+
