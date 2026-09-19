@@ -43,6 +43,10 @@ jobs:
         sed -i 's/const int ms\[len\] = {2, 2, 2, 3};/int ms[4] = {2, 2, 2, 3};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c
         sed -i 's/const char ptl_name\[len\]\[16\] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/char ptl_name[4][16] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c
 
+        # ПАТЧ 4: Заглушка для отсутствующей прошивки Focaltech
+        mkdir -p drivers/soc/jlq/touchscreen/focaltech/include/firmware
+        touch drivers/soc/jlq/touchscreen/focaltech/include/firmware/fw_sample.i
+
         mkdir -p out
         
         BASE_DEFCONFIG=""
