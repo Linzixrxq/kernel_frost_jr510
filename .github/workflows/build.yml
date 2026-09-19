@@ -73,7 +73,7 @@ jobs:
         # Игнорируем ошибки Section Mismatch на этапе MODPOST
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        make -j$(nproc --all) O=out Image dtbs modules || make -j1 O=out Image dtbs modules
+make -j$(nproc --all) O=out Image dtbs-jlq modules || make -j$(nproc --all) O=out Image modules
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
