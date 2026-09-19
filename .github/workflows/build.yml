@@ -18,8 +18,8 @@ jobs:
         xsltproc zip zlib1g-dev clang gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
         gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
-    - name: Compile Kernel via build.sh
-      timeout-minutes: 45
+    - name: Compile Kernel via Make
+      timeout-minutes: 60
       run: |
         export ARCH=arm64
         export SUBARCH=arm64
@@ -29,41 +29,40 @@ jobs:
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
-        export NON_INTERACTIVE=1
         export KCONFIG_NOTIMESTAMP=1
         
-        # Автоматический поиск build.sh
-        BUILD_SCRIPT=""
-        if [ -f "build.sh" ]; then
-          BUILD_SCRIPT="./build.sh"
-        elif [ -f "build/build.sh" ]; then
-          BUILD_SCRIPT="build/build.sh"
-        elif [ -f "build_kernel/build.sh" ]; then
-          BUILD_SCRIPT="build_kernel/build.sh"
-        fi
-
-        if [ -z "$BUILD_SCRIPT" ]; then
-          echo "ERROR: build.sh не найден!"
-          echo "Содержимое корневого каталога:"
-          ls -la
-          exit 1
-        fi
-
-        chmod +x "$BUILD_SCRIPT"
+        # Создаем папку для вывода
+        mkdir -p out
         
-        if [ -f "build.config.frost" ]; then
-          export BUILD_CONFIG=build.config.frost
-        elif [ -f "build_kernel/build.config.frost" ]; then
-          export BUILD_CONFIG=build_kernel/build.config.frost
+        # Поиск правильного defconfig файла
+        DEFCONFIG=""
+        if [ -f "arch/arm64/configs/frost_defconfig" ]; then
+          DEFCONFIG="frost_defconfig"
+        elif [ -f "arch/arm64/configs/jr510_defconfig" ]; then
+          DEFCONFIG="jr510_defconfig"
+        elif [ -f "arch/arm64/configs/vendor/frost_defconfig" ]; then
+          DEFCONFIG="vendor/frost_defconfig"
         fi
 
-        yes "" | $BUILD_SCRIPT
+        if [ -z "$DEFCONFIG" ]; then
+          echo "Ищем подходящий defconfig..."
+          DEFCONFIG=$(find arch/arm64/configs/ -name "*frost*" -o -name "*jr510*" | head -n 1 | sed 's|arch/arm64/configs/||')
+        fi
+
+        echo "Используем конфигурацию: $DEFCONFIG"
+        
+        # Генерируем .config
+        make O=out $DEFCONFIG
+        
+        # Запускаем сборку ядра и DTB на всех ядрах процессора
+        make -j$(nproc --all) O=out Image.gz dtbs modules
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: POCO-C40-Kernel-Artifacts
+        name: POCO-C40-Kernel-Image
         path: |
-          out/
-          out/*/dist/
+          out/arch/arm64/boot/Image.gz
+          out/arch/arm64/boot/dtb.img
+          out/arch/arm64/boot/dts/jlq/*.dtb
         if-no-files-found: warn
