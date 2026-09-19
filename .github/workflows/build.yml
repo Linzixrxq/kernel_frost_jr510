@@ -17,18 +17,38 @@ jobs:
 
     - name: Download Clang Toolchain
       run: |
-        mkdir -p clang
-        cd clang
-        curl -L "https://googlesource.com" -o clang.tar.gz
-        tar -xf clang.tar.gz
+        mkdir -p $GITHUB_WORKSPACE/clang
+        cd $GITHUB_WORKSPACE/clang
+        # Скачиваем стабильное зеркало официального Clang r416183b (Android R)
+        curl -LO "https://githubusercontent.com"
+        CLANG_URL=$(cat Clang-main-link.txt | grep -E "clang-r416183b" | head -n 1)
+        # Если зеркало недоступно, скачиваем стабильный автономный релиз Clang 12
+        if [ -z "$CLANG_URL" ]; then
+          CLANG_URL="https://github.com"
+        fi
+        echo "Downloading Clang from: $CLANG_URL"
+        curl -L "$CLANG_URL" -o clang_bin.tar.xz
+        tar -xf clang_bin.tar.xz --strip-components=1
 
     - name: Compile Kernel via build.config
       run: |
-        export PATH=$GITHUB_WORKSPACE/clang/bin:$PATH
         export ARCH=arm64
         export SUBARCH=arm64
         export HEADER_ARCH=arm64
-        # Запуск сборки через официальный скрипт Xiaomi
+        
+        # Задаем явные пути к компилятору для скрипта Xiaomi
+        export CLANG_PREBUILT_BIN_DIR=$GITHUB_WORKSPACE/clang/bin
+        export PATH=$CLANG_PREBUILT_BIN_DIR:$PATH
+        
+        # Настройка флагов кросс-компиляции процессора JLQ JR510
+        export CROSS_COMPILE=aarch64-linux-gnu-
+        export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+        export CC=clang
+        
+        # Создаем пустую папку out, если скрипт Xiaomi ее потребует
+        mkdir -p out/android-kernel/dist
+        
+        # Запуск официального сборщика Xiaomi
         BUILD_CONFIG=build.config.frost ./build/build.sh
 
     - name: Upload Compiled Kernel Artifacts
@@ -38,4 +58,3 @@ jobs:
         path: |
           out/android-kernel/dist/Image.gz
           out/android-kernel/dist/jlq_jr510.dtb
-
