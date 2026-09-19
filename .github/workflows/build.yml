@@ -79,8 +79,8 @@ jobs:
       with:
         name: POCO-C40-Kernel-Image
         path: |
-          out/arch/arm64/boot/Image.gz
           out/arch/arm64/boot/Image
-          out/arch/arm64/boot/dtb.img
+          out/arch/arm64/boot/Image.gz
+          out/arch/arm64/boot/dtb*
           out/arch/arm64/boot/dts/jlq/*.dtb
         if-no-files-found: warn
