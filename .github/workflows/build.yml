@@ -29,7 +29,7 @@ jobs:
         export CLANG_PREBUILT_BIN_DIR=/usr/bin
         export PATH=$CLANG_PREBUILT_BIN_DIR:$PATH
         
-        # Указываем кросс-компиляторы (используем стабильный системный aarch64 для сборки 64-бит)
+        # Указываем кросс-компиляторы
         export CROSS_COMPILE=aarch64-linux-gnu-
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
@@ -37,8 +37,9 @@ jobs:
         # Создаем пустую папку out для результатов сборки
         mkdir -p out/android-kernel/dist
         
-        # Запуск официального сборщика Xiaomi
-        BUILD_CONFIG=build.config.frost ./build/build.sh
+        # Исправляем путь: запускаем сборщик напрямую из оригинальной папки build_kernel
+        chmod +x build_kernel/build.sh
+        BUILD_CONFIG=build.config.frost ./build_kernel/build.sh
 
     # 4. Выгружаем готовый результат сборки
     - name: Upload Compiled Kernel Artifacts
