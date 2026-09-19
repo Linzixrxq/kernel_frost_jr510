@@ -7,39 +7,41 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-    # 1. Скачиваем исходники твоего ядра прямо в корень
+    # 1. Скачиваем исходники твоего ядра
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
 
-    # 2. Устанавливаем официальный и правильный Clang r416183b для Android R
-    - name: Setup Android Clang Toolchain
-      uses: android-pan/setup-clang@main
+    # 2. Устанавливаем официальный и стабильный Clang через инструмент GitHub
+    - name: Install Clang Compiler
+      uses: egor-tensin/setup-clang@v2
       with:
-        clang-version: r416183b
+        version: 12
+        platform: x64
 
-    # 3. Устанавливаем необходимые системные пакеты Linux
-    - name: Install Compiling Tools
+    # 3. Устанавливаем необходимые пакеты Linux и кросс-компиляторы GNU (GCC) для Android
+    - name: Install Compiling Tools & GCC Cross-Compilers
       run: |
         sudo apt-get update
-        sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzma lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+        sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev libelf-dev liblz4-tool libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzma lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev \
+        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
-    # 4. Запускаем компиляцию
+    # 4. Запускаем компиляцию ядра
     - name: Compile Kernel via build.config
       run: |
         export ARCH=arm64
         export SUBARCH=arm64
         export HEADER_ARCH=arm64
         
-        # Направляем оригинальный скрипт Xiaomi на установленный Clang
-        export CLANG_PREBUILT_BIN_DIR=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
+        # Настраиваем переменные путей компилятора под стандартную Ubuntu среду
+        export CLANG_PREBUILT_BIN_DIR=/usr/bin
         export PATH=$CLANG_PREBUILT_BIN_DIR:$PATH
         
-        # Настройка флагов кросс-компиляции процессора JLQ JR510
+        # Указываем кросс-компиляторы для чипсета JLQ JR510
         export CROSS_COMPILE=aarch64-linux-gnu-
         export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         export CC=clang
         
-        # Создаем пустую папку out для сборщика
+        # Создаем пустую папку out для результатов сборки
         mkdir -p out/android-kernel/dist
         
         # Запуск официального сборщика Xiaomi
