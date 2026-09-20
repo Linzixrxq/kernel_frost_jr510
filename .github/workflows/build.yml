@@ -54,10 +54,10 @@ jobs:
 
         # 2. Сборка ядра и модулей
         make -j$(nproc --all) O=out Image Image.gz modules
-        
-        # 3. Собираем ТОЛЬКО DTB и DTBO для JLQ
-        make -j$(nproc --all) O=out ARCH=arm64 arch/arm64/boot/dts/jlq/jlq_jr510.dtb
-        make -j$(nproc --all) O=out ARCH=arm64 arch/arm64/boot/dts/jlq/ || true
+
+        # 3. Собираем ТОЛЬКО DTB и DTBO для JLQ (без дублирования пути)
+        make -j$(nproc --all) O=out ARCH=arm64 jlq/jlq_jr510.dtb
+        make -j$(nproc --all) O=out ARCH=arm64 jlq/ || true
 
         # 4. Проверяем и склеиваем в Image.gz-dtb
         if [ -f "out/arch/arm64/boot/dts/jlq/jlq_jr510.dtb" ]; then
