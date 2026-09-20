@@ -55,17 +55,21 @@ jobs:
         # 2. Сборка ядра и модулей
         make -j$(nproc --all) O=out Image Image.gz modules
 
-        # 3. Собираем DTB только для JLQ с корректными путями к include
-        make -j$(nproc --all) O=out ARCH=arm64 dtbs dtb-y=jlq/jlq_jr510.dtb
+        # 3. Собираем DTB только для подкаталога JLQ
+        make -j$(nproc --all) O=out ARCH=arm64 dtbs SUBDIRS=arch/arm64/boot/dts/jlq || \
+        make -j$(nproc --all) O=out ARCH=arm64 arch/arm64/boot/dts/jlq/jlq_jr510.dtb DTC_FLAGS="-Iinclude" || \
+        make -j$(nproc --all) O=out ARCH=arm64 dtbs
 
-        # 4. Проверяем и склеиваем в Image.gz-dtb
-        if [ -f "out/arch/arm64/boot/dts/jlq/jlq_jr510.dtb" ]; then
-          echo "УСПЕХ: Найден файл jlq_jr510.dtb!"
-          cat out/arch/arm64/boot/Image.gz out/arch/arm64/boot/dts/jlq/jlq_jr510.dtb > out/arch/arm64/boot/Image.gz-dtb
+        # 4. Проверяем наличие DTB и склеиваем Image.gz-dtb
+        DTB_PATH=$(find out/arch/arm64/boot/dts/ -name "jlq_jr510.dtb" | head -n 1)
+
+        if [ -n "$DTB_PATH" ] && [ -f "$DTB_PATH" ]; then
+          echo "УСПЕХ: Найден файл $DTB_PATH!"
+          cat out/arch/arm64/boot/Image.gz "$DTB_PATH" > out/arch/arm64/boot/Image.gz-dtb
           echo "Успешно: Image.gz-dtb сформирован!"
         else
-          echo "ОШИБКА: jlq_jr510.dtb не скомпилировался!"
-          ls -la out/arch/arm64/boot/dts/jlq/ || true
+          echo "ОШИБКА: jlq_jr510.dtb не найден после компиляции!"
+          find out/arch/arm64/boot/dts/ -type f || true
           exit 1
         fi
 
