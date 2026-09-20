@@ -33,51 +33,32 @@ jobs:
         export KCPPFLAGS="-w -Wno-error"
         export KCONFIG_NOTIMESTAMP=1
 
-        # ПАТЧ 1: Замена static const VLA массивов на обычные массивы без static
-        sed -i 's/static const char defaults\[reg_num\] = {0x76, 0x66, 0x70};/const char defaults[] = {0x76, 0x66, 0x70};/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c
+        # ПАТЧИ ДЛЯ УСТРАНЕНИЯ ОШИБОК КОМПИЛЯЦИИ VLA
+        sed -i 's/static const char defaults\[reg_num\] = {0x76, 0x66, 0x70};/const char defaults[] = {0x76, 0x66, 0x70};/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c 2>/dev/null || true
+        sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c 2>/dev/null || true
+        sed -i 's/const int ms\[len\] = {2, 2, 2, 3};/int ms[4] = {2, 2, 2, 3};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c 2>/dev/null || true
+        sed -i 's/const char ptl_name\[len\]\[16\] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/char ptl_name[4][16] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c 2>/dev/null || true
 
-        # ПАТЧ 2: Исправление VLA инициализаций нулями
-        sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c
-
-        # ПАТЧ 3: Исправление VLA в драйвере отпечатка пальцев fpc1020
-        sed -i 's/const int ms\[len\] = {2, 2, 2, 3};/int ms[4] = {2, 2, 2, 3};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c
-        sed -i 's/const char ptl_name\[len\]\[16\] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/char ptl_name[4][16] = {"fpc_vdd_on", "fpc_rst_hi", "fpc_rst_lo", "fpc_rst_hi"};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c
-
-        # ПАТЧ 4: Заглушка для отсутствующей прошивки Focaltech
         mkdir -p drivers/soc/jlq/touchscreen/focaltech/include/firmware
         touch drivers/soc/jlq/touchscreen/focaltech/include/firmware/fw_sample.i
 
         mkdir -p out
-        
-        BASE_DEFCONFIG=""
-        if [ -f "arch/arm64/configs/gki_defconfig" ]; then
-          BASE_DEFCONFIG="gki_defconfig"
-        elif [ -f "arch/arm64/configs/vendor/jr510_defconfig" ]; then
-          BASE_DEFCONFIG="vendor/jr510_defconfig"
-        elif [ -f "arch/arm64/configs/frost_defconfig" ]; then
-          BASE_DEFCONFIG="frost_defconfig"
-        else
-          BASE_DEFCONFIG=$(find arch/arm64/configs/ -name "*defconfig" | head -n 1 | sed 's|arch/arm64/configs/||')
-        fi
 
-        make O=out $BASE_DEFCONFIG
+        # 1. Задаем базовый gki_defconfig
+        make O=out gki_defconfig
 
-        FRAGMENT=$(find arch/arm64/configs/ -name "*jr510*.config" -o -name "*frost*.config" | head -n 1)
-        if [ -n "$FRAGMENT" ]; then
-          ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config $FRAGMENT
-        fi
+        # 2. Накладываем вендорный фрагмент jr510_JGKI-perfuser.config поверх базового
+        ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
 
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
-
-        # Игнорируем ошибки Section Mismatch на этапе MODPOST
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # Добавили Image.gz и автосклейку dtb.img
-        make -j$(nproc --all) O=out Image Image.gz dtbs-jlq modules || make -j$(nproc --all) O=out Image Image.gz modules
+        # 3. Собираем ядро и деревиья устройств dtbs
+        make -j$(nproc --all) O=out Image Image.gz dtbs modules || make -j$(nproc --all) O=out Image Image.gz modules
 
-        # Склеиваем скомпилированные dtb в один файл dtb.img (если они есть)
+        # 4. Склеиваем Image.gz и DTB в единый бинарник Image.gz-dtb
         if [ -d "out/arch/arm64/boot/dts/jlq" ]; then
-          cat out/arch/arm64/boot/dts/jlq/*.dtb > out/arch/arm64/boot/dtb.img 2>/dev/null || true
+          cat out/arch/arm64/boot/Image.gz out/arch/arm64/boot/dts/jlq/*.dtb > out/arch/arm64/boot/Image.gz-dtb
         fi
 
     - name: Upload Compiled Kernel Artifacts
@@ -85,8 +66,6 @@ jobs:
       with:
         name: POCO-C40-Kernel-Image
         path: |
-          out/arch/arm64/boot/Image
+          out/arch/arm64/boot/Image.gz-dtb
           out/arch/arm64/boot/Image.gz
-          out/arch/arm64/boot/dtb*
-          out/arch/arm64/boot/dts/jlq/*.dtb
         if-no-files-found: warn
