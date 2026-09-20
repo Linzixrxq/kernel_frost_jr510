@@ -52,32 +52,14 @@ jobs:
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 2. Сборка ядра и модулей
+        # 2. Сборка только ядра Image / Image.gz и модулей
         make -j$(nproc --all) O=out Image Image.gz modules
-
-        # 3. Собираем DTB только для подкаталога JLQ
-        make -j$(nproc --all) O=out ARCH=arm64 dtbs SUBDIRS=arch/arm64/boot/dts/jlq || \
-        make -j$(nproc --all) O=out ARCH=arm64 arch/arm64/boot/dts/jlq/jlq_jr510.dtb DTC_FLAGS="-Iinclude" || \
-        make -j$(nproc --all) O=out ARCH=arm64 dtbs
-
-        # 4. Проверяем наличие DTB и склеиваем Image.gz-dtb
-        DTB_PATH=$(find out/arch/arm64/boot/dts/ -name "jlq_jr510.dtb" | head -n 1)
-
-        if [ -n "$DTB_PATH" ] && [ -f "$DTB_PATH" ]; then
-          echo "УСПЕХ: Найден файл $DTB_PATH!"
-          cat out/arch/arm64/boot/Image.gz "$DTB_PATH" > out/arch/arm64/boot/Image.gz-dtb
-          echo "Успешно: Image.gz-dtb сформирован!"
-        else
-          echo "ОШИБКА: jlq_jr510.dtb не найден после компиляции!"
-          find out/arch/arm64/boot/dts/ -type f || true
-          exit 1
-        fi
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: POCO-C40-Kernel-Image
         path: |
-          out/arch/arm64/boot/Image.gz-dtb
+          out/arch/arm64/boot/Image
           out/arch/arm64/boot/Image.gz
         if-no-files-found: error
