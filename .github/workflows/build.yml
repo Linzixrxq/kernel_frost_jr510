@@ -33,7 +33,7 @@ jobs:
         export KCPPFLAGS="-w -Wno-error"
         export KCONFIG_NOTIMESTAMP=1
 
-        # ПАТЧИ ДЛЯ УСТРАНЕНИЯ ОШИБОК VLA И ХЕДЕРОВ
+        # Патчи VLA
         sed -i 's/static const char defaults\[reg_num\] = {0x76, 0x66, 0x70};/const char defaults[] = {0x76, 0x66, 0x70};/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c 2>/dev/null || true
         sed -i 's/uint8_t vals\[reg_num\] = {0};/uint8_t vals\[reg_num\]; memset(vals, 0, reg_num);/' drivers/soc/jlq/audio-kernel/asoc/codecs/sia81xx/*.c 2>/dev/null || true
         sed -i 's/const int ms\[len\] = {2, 2, 2, 3};/int ms[4] = {2, 2, 2, 3};/' drivers/soc/jlq/fingerprint/fpc/fpc1020.c 2>/dev/null || true
@@ -44,7 +44,7 @@ jobs:
 
         mkdir -p out
 
-        # 1. Применяем конфигурацию
+        # 1. Конфигурация
         make O=out gki_defconfig
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
@@ -52,23 +52,26 @@ jobs:
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 2. Собираем ядро Image и Image.gz
-        make -j$(nproc --all) O=out Image Image.gz modules
+        # 2. Собираем Ядро + DTB в один заход
+        make -j$(nproc --all) O=out Image Image.gz dtbs modules
 
-        # 3. Собираем DTB строго для вендора JLQ
-        make -j$(nproc --all) O=out dtbs ARCH=arm64 CONFIG_ARCH_JLQ=y 2>/dev/null || make -j$(nproc --all) O=out arch/arm64/boot/dts/jlq/ 2>/dev/null || true
+        # 3. Ищем и склеиваем целевые DTB для JLQ/JR510
+        JLQ_DTBS=$(find out/arch/arm64/boot/dts/ -type f -name "*.dtb" | grep -i "jlq" || true)
 
-        # 4. Поиск скомпилированных DTB файлов в папке out/
-        DTB_FILES=$(find out/ -type f -name "*.dtb" 2>/dev/null)
-        
-        if [ -n "$DTB_FILES" ]; then
-          echo "Найдены DTB файлы:"
-          echo "$DTB_FILES"
-          cat out/arch/arm64/boot/Image.gz $DTB_FILES > out/arch/arm64/boot/Image.gz-dtb
-          echo "Успешно: Image.gz-dtb сформирован с DTB!"
+        if [ -z "$JLQ_DTBS" ]; then
+          # Если DTB скомпилировались в корень dts
+          JLQ_DTBS=$(find out/arch/arm64/boot/dts/ -type f -name "*jr510*.dtb" -o -name "*frost*.dtb" || true)
+        fi
+
+        if [ -n "$JLQ_DTBS" ]; then
+          echo "Найдены целевые DTB файлы для JLQ:"
+          echo "$JLQ_DTBS"
+          cat out/arch/arm64/boot/Image.gz $JLQ_DTBS > out/arch/arm64/boot/Image.gz-dtb
+          echo "Успешно: Image.gz-dtb сформирован со скомпилированным DTB!"
         else
-          echo "DTB файлы не найдены. Создаем Image.gz-dtb из ядра Image.gz"
-          cp out/arch/arm64/boot/Image.gz out/arch/arm64/boot/Image.gz-dtb
+          echo "ОШИБКА: DTB для JLQ не найдены! Проверяем папку dts:"
+          ls -la out/arch/arm64/boot/dts/
+          exit 1
         fi
 
     - name: Upload Compiled Kernel Artifacts
