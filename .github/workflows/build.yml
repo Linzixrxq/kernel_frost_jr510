@@ -54,12 +54,20 @@ jobs:
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 3. Собираем ядро и Device Tree
-        make -j$(nproc --all) O=out Image Image.gz dtbs modules || make -j$(nproc --all) O=out Image Image.gz modules
+        # 3. Собираем ядро и Device Tree (DTB)
+        make -j$(nproc --all) O=out Image Image.gz dtbs modules
 
-        # 4. Склеиваем скомпилированный Image.gz и DTB в единый бинарник Image.gz-dtb
-        if [ -d "out/arch/arm64/boot/dts/jlq" ]; then
-          cat out/arch/arm64/boot/Image.gz out/arch/arm64/boot/dts/jlq/*.dtb > out/arch/arm64/boot/Image.gz-dtb
+        # 4. Рекурсивный поиск всех DTB и их склейка с Image.gz
+        DTB_FILES=$(find out/arch/arm64/boot/dts/ -type f -name "*.dtb" 2>/dev/null)
+        
+        if [ -n "$DTB_FILES" ]; then
+          echo "Найдены файлы DTB:"
+          echo "$DTB_FILES"
+          cat out/arch/arm64/boot/Image.gz $DTB_FILES > out/arch/arm64/boot/Image.gz-dtb
+          echo "Успех: Image.gz-dtb сформирован."
+        else
+          echo "ОШИБКА: Ни одного .dtb файла не найдено в out/arch/arm64/boot/dts/"
+          exit 1
         fi
 
     - name: Upload Compiled Kernel Artifacts
@@ -69,4 +77,4 @@ jobs:
         path: |
           out/arch/arm64/boot/Image.gz-dtb
           out/arch/arm64/boot/Image.gz
-        if-no-files-found: warn
+        if-no-files-found: error
