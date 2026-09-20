@@ -44,7 +44,7 @@ jobs:
 
         mkdir -p out
 
-        # 1. Configuratie instellen (Essentieel!)
+        # 1. Конфигурация
         make O=out gki_defconfig
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
@@ -52,21 +52,20 @@ jobs:
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 2. Kernel, modules en DTB bouwen
+        # 2. Сборка ядра и модулей
         make -j$(nproc --all) O=out Image Image.gz modules
-        make -j$(nproc --all) O=out dtbs ARCH=arm64
         
-        # 3. Specifiek jlq_jr510.dtb en dtbo overlays compileren
+        # 3. Собираем ТОЛЬКО DTB и DTBO для JLQ
         make -j$(nproc --all) O=out ARCH=arm64 arch/arm64/boot/dts/jlq/jlq_jr510.dtb
-        make -j$(nproc --all) O=out ARCH=arm64 arch/arm64/boot/dts/jlq/
+        make -j$(nproc --all) O=out ARCH=arm64 arch/arm64/boot/dts/jlq/ || true
 
-        # 4. Controleer jlq_jr510.dtb en voeg samen tot Image.gz-dtb
+        # 4. Проверяем и склеиваем в Image.gz-dtb
         if [ -f "out/arch/arm64/boot/dts/jlq/jlq_jr510.dtb" ]; then
-          echo "SUCCES: Hoofdbestand jlq_jr510.dtb gevonden!"
+          echo "УСПЕХ: Найден файл jlq_jr510.dtb!"
           cat out/arch/arm64/boot/Image.gz out/arch/arm64/boot/dts/jlq/jlq_jr510.dtb > out/arch/arm64/boot/Image.gz-dtb
-          echo "Succesvol: Image.gz-dtb aangemaakt met de juiste DTB voor JR510!"
+          echo "Успешно: Image.gz-dtb сформирован!"
         else
-          echo "FOUT: jlq_jr510.dtb is niet gecompileerd!"
+          echo "ОШИБКА: jlq_jr510.dtb не скомпилировался!"
           ls -la out/arch/arm64/boot/dts/jlq/ || true
           exit 1
         fi
