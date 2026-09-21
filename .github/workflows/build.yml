@@ -52,14 +52,23 @@ jobs:
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 2. Сборка только ядра Image / Image.gz и модулей
+        # 2. Сборка ядра и модулей
         make -j$(nproc --all) O=out Image Image.gz modules
+
+    - name: Pack Kernel Modules
+      run: |
+        mkdir -p out/modules_prep
+        # Находим все скомпилированные модули .ko и копируем в одну папку
+        find out/ -type f -name "*.ko" -exec cp {} out/modules_prep/ \;
+        # Запаковываем все модули в один архив
+        cd out/modules_prep && zip -r ../modules.zip . && cd ../..
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: POCO-C40-Kernel-Image
+        name: POCO-C40-Kernel-Package
         path: |
           out/arch/arm64/boot/Image
           out/arch/arm64/boot/Image.gz
+          out/modules.zip
         if-no-files-found: error
