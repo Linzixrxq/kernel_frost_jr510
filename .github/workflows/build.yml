@@ -59,9 +59,9 @@ jobs:
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 2. Сборка только ядра
-        make -j$(nproc --all) O=out Image Image.gz
-        
+        # 2. Сборка ядра и модулей
+        make -j$(nproc --all) O=out Image Image.gz modules
+
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -69,4 +69,5 @@ jobs:
         path: |
           out/arch/arm64/boot/Image
           out/arch/arm64/boot/Image.gz
+          out/**/*.ko
         if-no-files-found: error
