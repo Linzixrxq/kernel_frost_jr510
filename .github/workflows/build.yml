@@ -49,20 +49,19 @@ jobs:
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
 
+        # Принудительный перевод SELinux в Permissive режим
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_DEVELOP
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
+        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 0
+      
+        # Исправление варнингов и ошибок сборки (до компиляции)
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 2. Сборка ядра и модулей
-        make -j$(nproc --all) O=out Image Image.gz modules
-
-    - name: Pack Kernel Modules
-      run: |
-        mkdir -p out/modules_prep
-        # Находим все скомпилированные модули .ko и копируем в одну папку
-        find out/ -type f -name "*.ko" -exec cp {} out/modules_prep/ \;
-        # Запаковываем все модули в один архив
-        cd out/modules_prep && zip -r ../modules.zip . && cd ../..
-
+        # 2. Сборка только ядра
+        make -j$(nproc --all) O=out Image Image.gz
+        
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -70,5 +69,4 @@ jobs:
         path: |
           out/arch/arm64/boot/Image
           out/arch/arm64/boot/Image.gz
-          out/modules.zip
         if-no-files-found: error
