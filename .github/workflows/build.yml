@@ -18,7 +18,7 @@ jobs:
         xsltproc zip zlib1g-dev clang gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
         gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
-      - name: Compile Kernel via Make
+    - name: Compile Kernel via Make
       timeout-minutes: 60
       run: |
         export ARCH=arm64
@@ -49,14 +49,13 @@ jobs:
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
 
-        # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC (Переводим из выключено в =y)
+        # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC
         ./scripts/config --file out/.config --enable CONFIG_ANDROID
         ./scripts/config --file out/.config --enable CONFIG_ANDROID_BINDER_IPC
         ./scripts/config --file out/.config --enable CONFIG_ANDROID_BINDERFS
         ./scripts/config --file out/.config --set-str CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
 
         # 3. ПРИНУДИТЕЛЬНЫЙ ПЕРЕВОД ДРАЙВЕРОВ КРИТИЧЕСКОЙ ПЕРИФЕРИИ JLQ ИЗ МОДУЛЕЙ (=m) В ЯДРО (=y)
-        # Без этого ядро падает до того, как сможет прочитать разделы памяти устройства
         ./scripts/config --file out/.config --enable CONFIG_ARCH_JLQ
         ./scripts/config --file out/.config --enable CONFIG_CLK_JLQ_JR510
         ./scripts/config --file out/.config --enable CONFIG_GPIO_JLQ
