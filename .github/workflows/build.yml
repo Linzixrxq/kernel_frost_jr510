@@ -18,7 +18,7 @@ jobs:
         xsltproc zip zlib1g-dev clang gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
         gcc-arm-linux-gnueabi g++-arm-linux-gnueabi
 
-    - name: Compile Kernel via Make
+      - name: Compile Kernel via Make
       timeout-minutes: 60
       run: |
         export ARCH=arm64
@@ -44,22 +44,50 @@ jobs:
 
         mkdir -p out
 
-        # 1. Конфигурация
+        # 1. Базовая конфигурация GKI + слияние с вендорскими фрагментами
         make O=out gki_defconfig
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
 
-        # Принудительный перевод SELinux в Permissive режим
+        # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC (Переводим из выключено в =y)
+        ./scripts/config --file out/.config --enable CONFIG_ANDROID
+        ./scripts/config --file out/.config --enable CONFIG_ANDROID_BINDER_IPC
+        ./scripts/config --file out/.config --enable CONFIG_ANDROID_BINDERFS
+        ./scripts/config --file out/.config --set-str CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
+
+        # 3. ПРИНУДИТЕЛЬНЫЙ ПЕРЕВОД ДРАЙВЕРОВ КРИТИЧЕСКОЙ ПЕРИФЕРИИ JLQ ИЗ МОДУЛЕЙ (=m) В ЯДРО (=y)
+        # Без этого ядро падает до того, как сможет прочитать разделы памяти устройства
+        ./scripts/config --file out/.config --enable CONFIG_ARCH_JLQ
+        ./scripts/config --file out/.config --enable CONFIG_CLK_JLQ_JR510
+        ./scripts/config --file out/.config --enable CONFIG_GPIO_JLQ
+        ./scripts/config --file out/.config --enable CONFIG_GPIO_JLQ_QTANG
+        ./scripts/config --file out/.config --enable CONFIG_PINCTRL_JLQ_SPMI_PMIC
+        ./scripts/config --file out/.config --enable CONFIG_MMC_SDHCI_JLQ
+        ./scripts/config --file out/.config --enable CONFIG_REGULATOR_QPNP_LCDB
+        ./scripts/config --file out/.config --enable CONFIG_MFD_SPMI_PMIC
+        ./scripts/config --file out/.config --enable CONFIG_JLQ_REGULATOR
+        ./scripts/config --file out/.config --enable CONFIG_SPMI_MSM_PMIC_ARB
+
+        # 4. ВКОМПИЛИРОВАНИЕ ДРАЙВЕРОВ ФАЙЛОВЫХ СИСТЕМ ANDROID
+        ./scripts/config --file out/.config --enable CONFIG_EROFS_FS
+        ./scripts/config --file out/.config --enable CONFIG_EROFS_FS_ZIP
+        ./scripts/config --file out/.config --enable CONFIG_F2FS_FS
+        ./scripts/config --file out/.config --enable CONFIG_EXT4_FS
+
+        # 5. Перевод SELinux в Permissive режим (на время отладки)
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_DEVELOP
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 0
       
-        # Исправление варнингов и ошибок сборки (до компиляции)
+        # 6. Исправление варнингов сборщика
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
-        # 2. Сборка ядра и модулей
+        # После всех инъекций обязательно обновляем Kconfig зависимости
+        make O=out olddefconfig
+
+        # 7. Сборка ядра и оставшихся модулей периферии (звук, тач, камера уйдут в .ko)
         make -j$(nproc --all) O=out Image Image.gz modules
 
     - name: Upload Compiled Kernel Artifacts
