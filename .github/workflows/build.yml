@@ -55,7 +55,7 @@ jobs:
         ./scripts/config --file out/.config --enable CONFIG_ANDROID_BINDERFS
         ./scripts/config --file out/.config --set-str CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
 
-        # 3. ПРИНУДИТЕЛЬНЫЙ ПЕРЕВОД ДРАЙВЕРОВ КРИТИЧЕСКОЙ ПЕРИФЕРИИ JLQ ИЗ МОДУЛЕЙ (=m) В ЯДРО (=y)
+        # 3. ПРИНУДИТЕЛЬНЫЙ ПЕРЕВОД ДРАЙВЕРОВ КРИТИЧЕСКОЙ ПЕРИФЕРИИ JLQ ИЗ МОДУЛЕЙ В ЯДРО (=y)
         ./scripts/config --file out/.config --enable CONFIG_ARCH_JLQ
         ./scripts/config --file out/.config --enable CONFIG_CLK_JLQ_JR510
         ./scripts/config --file out/.config --enable CONFIG_GPIO_JLQ
@@ -66,6 +66,22 @@ jobs:
         ./scripts/config --file out/.config --enable CONFIG_MFD_SPMI_PMIC
         ./scripts/config --file out/.config --enable CONFIG_JLQ_REGULATOR
         ./scripts/config --file out/.config --enable CONFIG_SPMI_MSM_PMIC_ARB
+        
+        # МОНОЛИТНЫЙ ФИКС ЗВУКА И ЗВУКОВЫХ КОДЕКОВ
+        ./scripts/config --file out/.config --enable CONFIG_SOUNDWIRE
+        ./scripts/config --file out/.config --enable CONFIG_SND_SOC_SIA81XX
+        ./scripts/config --file out/.config --enable CONFIG_SND_SOC_JR510
+        ./scripts/config --file out/.config --enable CONFIG_SND_SOC_BOLERO
+        
+        # МОНОЛИТНЫЙ ФИКС ДИСПЛЕЯ, ГРАФИКИ И ПОДСВЕТКИ
+        ./scripts/config --file out/.config --enable CONFIG_DISPLAY_JLQ
+        ./scripts/config --file out/.config --enable CONFIG_DSI_TRANSMITTER_JLQ
+        ./scripts/config --file out/.config --enable CONFIG_DISPLAY_CAMILLE
+        
+        # МОНОЛИТНЫЙ ФИКС ТАЧСКРИНОВ И СЕНСОРНОЙ ПАНЕЛИ
+        ./scripts/config --file out/.config --enable CONFIG_TOUCHSCREEN_FTS
+        ./scripts/config --file out/.config --enable CONFIG_TOUCHSCREEN_GSL
+        ./scripts/config --file out/.config --enable CONFIG_TOUCHSCREEN_LCT
 
         # 4. ВКОМПИЛИРОВАНИЕ ДРАЙВЕРОВ ФАЙЛОВЫХ СИСТЕМ ANDROID
         ./scripts/config --file out/.config --enable CONFIG_EROFS_FS
@@ -79,7 +95,7 @@ jobs:
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 0
         
-        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE (Слоты и Normal Boot)
+        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE (Включаем Normal Boot от загрузчика Xiaomi)
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
         ./scripts/config --file out/.config --enable CONFIG_CMDLINE_EXTEND
