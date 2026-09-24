@@ -73,15 +73,21 @@ jobs:
         ./scripts/config --file out/.config --enable CONFIG_F2FS_FS
         ./scripts/config --file out/.config --enable CONFIG_EXT4_FS
 
-        # 5. Перевод SELinux в Permissive режим (на время отладки)
+        # 5. Перевод SELinux в Permissive режим (на время отладки) + Фикс CMDLINE
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_DEVELOP
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 0
-        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE:
+        
+        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE (Слоты и Normal Boot)
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
         ./scripts/config --file out/.config --enable CONFIG_CMDLINE_EXTEND
+
+        # ПОЛНОЕ ОТКЛЮЧЕНИЕ ЗАГЛУШАЮЩЕГО СИСТЕМУ АУДИТА (Убираем бутлуп из-за бесконечных логов)
+        ./scripts/config --file out/.config --disable CONFIG_AUDIT
+        ./scripts/config --file out/.config --disable CONFIG_AUDITSYSCALL
+        ./scripts/config --file out/.config --disable CONFIG_AUDIT_CONTAINER_ID
 
         # 6. Исправление варнингов сборщика
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
