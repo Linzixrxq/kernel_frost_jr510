@@ -78,7 +78,11 @@ jobs:
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_DEVELOP
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 0
-      
+        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE:
+        ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
+        ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
+        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_EXTEND
+
         # 6. Исправление варнингов сборщика
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
