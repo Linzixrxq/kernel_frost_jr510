@@ -116,6 +116,10 @@ jobs:
         ./scripts/config --file out/.config --disable CONFIG_SOFTLOCKUP_DETECTOR
         ./scripts/config --file out/.config --set-val CONFIG_PANIC_TIMEOUT 0
 
+        # Полное удаление конфликтующего отладочного мусора Xiaomi
+        ./scripts/config --file out/.config --disable CONFIG_JLQ_SYSDUMP
+        ./scripts/config --file out/.config --disable CONFIG_JLQ_CORE_DUMP
+
         # 6. Исправление варнингов сборщика
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --set-val CONFIG_SECTION_MISMATCH_WARN_ONLY y
