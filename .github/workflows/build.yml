@@ -50,70 +50,81 @@ jobs:
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
 
         # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC
-        ./scripts/config --file out/.config --enable CONFIG_ANDROID
-        ./scripts/config --file out/.config --enable CONFIG_ANDROID_BINDER_IPC
-        ./scripts/config --file out/.config --enable CONFIG_ANDROID_BINDERFS
+        ./scripts/config --file out/.config --set-val CONFIG_ANDROID y
+        ./scripts/config --file out/.config --set-val CONFIG_ANDROID_BINDER_IPC y
+        ./scripts/config --file out/.config --set-val CONFIG_ANDROID_BINDERFS y
         ./scripts/config --file out/.config --set-str CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
 
-        # 3. ПРИНУДИТЕЛЬНЫЙ ПЕРЕВОД ДРАЙВЕРОВ КРИТИЧЕСКОЙ ПЕРИФЕРИИ JLQ ИЗ МОДУЛЕЙ В ЯДРО (=y)
-        ./scripts/config --file out/.config --enable CONFIG_ARCH_JLQ
-        ./scripts/config --file out/.config --enable CONFIG_CLK_JLQ_JR510
-        ./scripts/config --file out/.config --enable CONFIG_GPIO_JLQ
-        ./scripts/config --file out/.config --enable CONFIG_GPIO_JLQ_QTANG
-        ./scripts/config --file out/.config --enable CONFIG_PINCTRL_JLQ_SPMI_PMIC
-        ./scripts/config --file out/.config --enable CONFIG_MMC_SDHCI_JLQ
-        ./scripts/config --file out/.config --enable CONFIG_REGULATOR_QPNP_LCDB
-        ./scripts/config --file out/.config --enable CONFIG_MFD_SPMI_PMIC
-        ./scripts/config --file out/.config --enable CONFIG_JLQ_REGULATOR
-        ./scripts/config --file out/.config --enable CONFIG_SPMI_MSM_PMIC_ARB
+        # 3. ЖЕЛЕЗНЫЙ МОНОЛИТ (=y) ДЛЯ ВСЕЙ ПЕРИФЕРИИ (ИГНОРИРУЕМ МОДУЛИ)
+        ./scripts/config --file out/.config --set-val CONFIG_ARCH_JLQ y
+        ./scripts/config --file out/.config --set-val CONFIG_CLK_JLQ_JR510 y
+        ./scripts/config --file out/.config --set-val CONFIG_GPIO_JLQ y
+        ./scripts/config --file out/.config --set-val CONFIG_GPIO_JLQ_QTANG y
+        ./scripts/config --file out/.config --set-val CONFIG_PINCTRL_JLQ_SPMI_PMIC y
+        ./scripts/config --file out/.config --set-val CONFIG_MMC_SDHCI_JLQ y
+        ./scripts/config --file out/.config --set-val CONFIG_REGULATOR_QPNP_LCDB y
+        ./scripts/config --file out/.config --set-val CONFIG_MFD_SPMI_PMIC y
+        ./scripts/config --file out/.config --set-val CONFIG_JLQ_REGULATOR y
+        ./scripts/config --file out/.config --set-val CONFIG_SPMI_MSM_PMIC_ARB y
         
-        # МОНОЛИТНЫЙ ФИКС ЗВУКА И ЗВУКОВЫХ КОДЕКОВ
-        ./scripts/config --file out/.config --enable CONFIG_SOUNDWIRE
-        ./scripts/config --file out/.config --enable CONFIG_SND_SOC_SIA81XX
-        ./scripts/config --file out/.config --enable CONFIG_SND_SOC_JR510
-        ./scripts/config --file out/.config --enable CONFIG_SND_SOC_BOLERO
+        # МОНОЛИТНЫЙ ЗВУК
+        ./scripts/config --file out/.config --set-val CONFIG_SOUNDWIRE y
+        ./scripts/config --file out/.config --set-val CONFIG_SND_SOC_SIA81XX y
+        ./scripts/config --file out/.config --set-val CONFIG_SND_SOC_JR510 y
+        ./scripts/config --file out/.config --set-val CONFIG_SND_SOC_BOLERO y
         
-        # МОНОЛИТНЫЙ ФИКС ДИСПЛЕЯ, ГРАФИКИ И ПОДСВЕТКИ
-        ./scripts/config --file out/.config --enable CONFIG_DISPLAY_JLQ
-        ./scripts/config --file out/.config --enable CONFIG_DSI_TRANSMITTER_JLQ
-        ./scripts/config --file out/.config --enable CONFIG_DISPLAY_CAMILLE
+        # МОНОЛИТНЫЙ ДИСПЛЕЙ И ПОДСВЕТКА
+        ./scripts/config --file out/.config --set-val CONFIG_DISPLAY_JLQ y
+        ./scripts/config --file out/.config --set-val CONFIG_DSI_TRANSMITTER_JLQ y
+        ./scripts/config --file out/.config --set-val CONFIG_DISPLAY_CAMILLE y
         
-        # МОНОЛИТНЫЙ ФИКС ТАЧСКРИНОВ И СЕНСОРНОЙ ПАНЕЛИ
-        ./scripts/config --file out/.config --enable CONFIG_TOUCHSCREEN_FTS
-        ./scripts/config --file out/.config --enable CONFIG_TOUCHSCREEN_GSL
-        ./scripts/config --file out/.config --enable CONFIG_TOUCHSCREEN_LCT
+        # МОНОЛИТНЫЙ ТАЧСКРИН
+        ./scripts/config --file out/.config --set-val CONFIG_TOUCHSCREEN_FTS y
+        ./scripts/config --file out/.config --set-val CONFIG_TOUCHSCREEN_GSL y
+        ./scripts/config --file out/.config --set-val CONFIG_TOUCHSCREEN_LCT y
+
+        # ИНЪЕКЦИЯ ДРАЙВЕРОВ КАМЕРЫ В МОНОЛИТ
+        ./scripts/config --file out/.config --set-val CONFIG_MSM_PIL y
+        ./scripts/config --file out/.config --set-val CONFIG_MSM_SUBSYSTEM_RESTART y
+        ./scripts/config --file out/.config --set-val CONFIG_MSM_PIL_SSR_GENERIC y
 
         # 4. ВКОМПИЛИРОВАНИЕ ДРАЙВЕРОВ ФАЙЛОВЫХ СИСТЕМ ANDROID
-        ./scripts/config --file out/.config --enable CONFIG_EROFS_FS
-        ./scripts/config --file out/.config --enable CONFIG_EROFS_FS_ZIP
-        ./scripts/config --file out/.config --enable CONFIG_F2FS_FS
-        ./scripts/config --file out/.config --enable CONFIG_EXT4_FS
+        ./scripts/config --file out/.config --set-val CONFIG_EROFS_FS y
+        ./scripts/config --file out/.config --set-val CONFIG_EROFS_FS_ZIP y
+        ./scripts/config --file out/.config --set-val CONFIG_F2FS_FS y
+        ./scripts/config --file out/.config --set-val CONFIG_EXT4_FS y
 
         # 5. Перевод SELinux в Permissive режим (на время отладки) + Фикс CMDLINE
-        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX
-        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_DEVELOP
-        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
+        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX y
+        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_DEVELOP y
+        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM y
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 0
         
-        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE (Включаем Normal Boot от загрузчика Xiaomi)
+        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE (Убираем дублирование кавычек загрузчика)
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
-        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_EXTEND
+        ./scripts/config --file out/.config --set-val CONFIG_CMDLINE_EXTEND y
 
-        # ПОЛНОЕ ОТКЛЮЧЕНИЕ ЗАГЛУШАЮЩЕГО СИСТЕМУ АУДИТА (Убираем бутлуп из-за бесконечных логов)
+        # ПОЛНОЕ ОТКЛЮЧЕНИЕ ЗАГЛУШАЮЩЕГО СИСТЕМУ АУДИТА
         ./scripts/config --file out/.config --disable CONFIG_AUDIT
         ./scripts/config --file out/.config --disable CONFIG_AUDITSYSCALL
         ./scripts/config --file out/.config --disable CONFIG_AUDIT_CONTAINER_ID
 
+        # ОТКЛЮЧЕНИЕ WATCHDOG ЧТОБЫ УБРАТЬ ВЫЛЕТ В FASTBOOT
+        ./scripts/config --file out/.config --disable CONFIG_WATCHDOG
+        ./scripts/config --file out/.config --disable CONFIG_JLQ_WATCHDOG
+        ./scripts/config --file out/.config --disable CONFIG_SOFTLOCKUP_DETECTOR
+        ./scripts/config --file out/.config --set-val CONFIG_PANIC_TIMEOUT 0
+
         # 6. Исправление варнингов сборщика
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
-        ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
+        ./scripts/config --file out/.config --set-val CONFIG_SECTION_MISMATCH_WARN_ONLY y
 
         # После всех инъекций обязательно обновляем Kconfig зависимости
         make O=out olddefconfig
 
-        # 7. Сборка ядра и оставшихся модулей периферии (звук, тач, камера уйдут в .ko)
-        make -j$(nproc --all) O=out Image Image.gz modules
+        # 7. Чистая монолитная сборка (modules больше не собираем, всё ушло в Image)
+        make -j$(nproc --all) O=out Image Image.gz
 
     - name: Upload Compiled Kernel Artifacts
       uses: actions/upload-artifact@v4
