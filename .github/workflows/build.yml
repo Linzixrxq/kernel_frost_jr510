@@ -94,17 +94,17 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_F2FS_FS y
         ./scripts/config --file out/.config --set-val CONFIG_EXT4_FS y
 
-        # 5. Перевод SELinux в Permissive режим (на время отладки) + Фикс CMDLINE
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_DEVELOP y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM y
+        # 5. Перевод SELinux в Permissive режим + Фикс CMDLINE от ИИ
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_DEVELOP
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 0
         
-        # ФИКС КРИТИЧЕСКОГО БАГА CMDLINE (Убираем дублирование кавычек загрузчика)
+        # Полный обход ограничений загрузчика Xiaomi
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
-        ./scripts/config --file out/.config --set-val CONFIG_CMDLINE_EXTEND y
-
+        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_EXTEND
+        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FROM_BOOTLOADER
         # ПОЛНОЕ ОТКЛЮЧЕНИЕ ЗАГЛУШАЮЩЕГО СИСТЕМУ АУДИТА
         ./scripts/config --file out/.config --disable CONFIG_AUDIT
         ./scripts/config --file out/.config --disable CONFIG_AUDITSYSCALL
