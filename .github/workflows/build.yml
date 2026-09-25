@@ -104,7 +104,7 @@ jobs:
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
         ./scripts/config --file out/.config --enable CONFIG_CMDLINE_EXTEND
-        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FROM_BOOTLOADER
+
         # ПОЛНОЕ ОТКЛЮЧЕНИЕ ЗАГЛУШАЮЩЕГО СИСТЕМУ АУДИТА
         ./scripts/config --file out/.config --disable CONFIG_AUDIT
         ./scripts/config --file out/.config --disable CONFIG_AUDITSYSCALL
@@ -133,5 +133,4 @@ jobs:
         path: |
           out/arch/arm64/boot/Image
           out/arch/arm64/boot/Image.gz
-          out/**/*.ko
         if-no-files-found: error
