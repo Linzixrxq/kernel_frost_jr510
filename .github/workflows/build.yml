@@ -95,11 +95,12 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_EXT4_FS y
 
         # 5. Перевод SELinux в Permissive режим + Фикс CMDLINE от ИИ
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_DEVELOP y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 1
-        
+sed -i 's/# CONFIG_SECURITY_SELINUX is not set/CONFIG_SECURITY_SELINUX=y/' arch/arm64/configs/gki_defconfig
+echo "CONFIG_SECURITY_SELINUX=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
+echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
+echo "CONFIG_SECURITY_SELINUX_BOOTPARAM=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
+echo "CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE=1" >> arch/arm64/configs/vendor/jr510_JGKI.config
+
         # Полный обход ограничений загрузчика Xiaomi
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
