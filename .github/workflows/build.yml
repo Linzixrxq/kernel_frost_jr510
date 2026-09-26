@@ -95,11 +95,11 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_EXT4_FS y
 
         # 5. Перевод SELinux в Permissive режим + Фикс CMDLINE от ИИ
-sed -i 's/# CONFIG_SECURITY_SELINUX is not set/CONFIG_SECURITY_SELINUX=y/' arch/arm64/configs/gki_defconfig
-echo "CONFIG_SECURITY_SELINUX=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
-echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
-echo "CONFIG_SECURITY_SELINUX_BOOTPARAM=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
-echo "CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE=1" >> arch/arm64/configs/vendor/jr510_JGKI.config
+        sed -i 's/# CONFIG_SECURITY_SELINUX is not set/CONFIG_SECURITY_SELINUX=y/' arch/arm64/configs/gki_defconfig
+        echo "CONFIG_SECURITY_SELINUX=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
+        echo "CONFIG_SECURITY_SELINUX_DEVELOP=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
+        echo "CONFIG_SECURITY_SELINUX_BOOTPARAM=y" >> arch/arm64/configs/vendor/jr510_JGKI.config
+        echo "CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE=1" >> arch/arm64/configs/vendor/jr510_JGKI.config
 
         # Полный обход ограничений загрузчика Xiaomi
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
@@ -123,7 +123,7 @@ echo "CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE=1" >> arch/arm64/configs/vendor/jr
 
         # 6. Исправление варнингов сборщика
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
-./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
+        ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
         # После всех инъекций обязательно обновляем Kconfig зависимости
         make O=out olddefconfig
