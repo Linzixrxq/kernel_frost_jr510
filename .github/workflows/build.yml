@@ -103,8 +103,9 @@ jobs:
 
         # Полный обход ограничений загрузчика Xiaomi
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
-        ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
-        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_EXTEND
+        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FORCE
+        ./scripts/config --file out/.config --disable CONFIG_CMDLINE_EXTEND
+        ./scripts/config --file out/.config --set-str CONFIG_STATIC_USERMODEHELPER_PATH ""
 
         # ПОЛНОЕ ОТКЛЮЧЕНИЕ ЗАГЛУШАЮЩЕГО СИСТЕМУ АУДИТА
         ./scripts/config --file out/.config --disable CONFIG_AUDIT
