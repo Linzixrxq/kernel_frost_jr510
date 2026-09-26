@@ -123,7 +123,7 @@ echo "CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE=1" >> arch/arm64/configs/vendor/jr
 
         # 6. Исправление варнингов сборщика
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
-        ./scripts/config --file out/.config --set-val CONFIG_SECTION_MISMATCH_WARN_ONLY y
+./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
         # После всех инъекций обязательно обновляем Kconfig зависимости
         make O=out olddefconfig
