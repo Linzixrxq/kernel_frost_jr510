@@ -118,6 +118,14 @@ jobs:
         ./scripts/config --file out/.config --disable CONFIG_SOFTLOCKUP_DETECTOR
         ./scripts/config --file out/.config --set-val CONFIG_PANIC_TIMEOUT 0
 
+        # Отключаем цикличный затык тачскрина из-за отсутствия файлов в GSI
+        ./scripts/config --file out/.config --disable CONFIG_TOUCHSCREEN_FTS_FW_UPDATE
+        ./scripts/config --file out/.config --disable CONFIG_TOUCHSCREEN_NVT_FW_UPDATE
+
+        # Глушим заводской спам-лог подсистемы питания Xiaomi
+        ./scripts/config --file out/.config --disable CONFIG_POWER_SUPPLY_DEBUG
+        ./scripts/config --file out/.config --disable CONFIG_JLQ_CHARGER_DEBUG
+
         # Полное удаление конфликтующего отладочного мусора Xiaomi
         ./scripts/config --file out/.config --disable CONFIG_JLQ_SYSDUMP
         ./scripts/config --file out/.config --disable CONFIG_JLQ_CORE_DUMP
