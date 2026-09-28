@@ -95,7 +95,7 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_EXT4_FS y
 
         # Полный обход ограничений загрузчика Xiaomi (Чистый фикс слотов и SELinux)
-        ./scripts/config --file out/.config --set-str CONFIG_CMDLINE ""
+        ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
         ./scripts/config --file out/.config --disable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_EXTEND
