@@ -96,7 +96,6 @@ jobs:
 
         # Полный обход ограничений загрузчика Xiaomi (Чистый фикс слотов и SELinux)
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
-        ./scripts/config --file out/.config --disable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_EXTEND
         ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FROM_BOOTLOADER
@@ -132,8 +131,15 @@ jobs:
         sed -i 's/CONFIG_WERROR=y/# CONFIG_WERROR is not set/' out/.config
         ./scripts/config --file out/.config --enable CONFIG_SECTION_MISMATCH_WARN_ONLY
 
+        # Применяем фикс LZ4
+        ./scripts/config --file out/.config --enable CONFIG_RD_LZ4
+        ./scripts/config --file out/.config --enable CONFIG_CRYPTO_LZ4
+
         # После всех инъекций обязательно обновляем Kconfig зависимости
         make O=out olddefconfig
+
+        # И вот теперь проверяем, что ОСТАЛОСЬ в файле по факту
+        cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ"
 
         # 7. Чистая монолитная сборка (modules больше не собираем, всё ушло в Image)
         make -j$(nproc --all) O=out Image Image.gz
