@@ -101,11 +101,15 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM y
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 1
 
-        # Полный обход ограничений загрузчика Xiaomi
-        ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
-        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FORCE
+        # Полный обход ограничений загрузчика Xiaomi (Чистый фикс слотов и SELinux)
+        ./scripts/config --file out/.config --set-str CONFIG_CMDLINE ""
+        ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_EXTEND
-        ./scripts/config --file out/.config --set-str CONFIG_STATIC_USERMODEHELPER_PATH ""
+        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FROM_BOOTLOADER
+
+        # Жесткий патч исходников: заменяем enforce на permissive в самом коде ядра!
+        sed -i 's/selinux_enforcing = 1;/selinux_enforcing = 0;/' security/selinux/ss/services.c 2>/dev/null || true
+        sed -i 's/enforcing = 1;/enforcing = 0;/' security/selinux/hooks.c 2>/dev/null || true
 
         # ПОЛНОЕ ОТКЛЮЧЕНИЕ ЗАГЛУШАЮЩЕГО СИСТЕМУ АУДИТА
         ./scripts/config --file out/.config --disable CONFIG_AUDIT
