@@ -96,6 +96,7 @@ jobs:
 
         # Полный обход ограничений загрузчика Xiaomi (Чистый фикс слотов и SELinux)
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE ""
+        ./scripts/config --file out/.config --disable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_EXTEND
         ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FROM_BOOTLOADER
