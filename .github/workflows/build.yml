@@ -94,13 +94,6 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_F2FS_FS y
         ./scripts/config --file out/.config --set-val CONFIG_EXT4_FS y
 
-        # 5. Перевод SELinux в Permissive режим + Фикс CMDLINE от ИИ
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_DEVELOP y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM y
-        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 1
-
         # Полный обход ограничений загрузчика Xiaomi (Чистый фикс слотов и SELinux)
         ./scripts/config --file out/.config --set-str CONFIG_CMDLINE ""
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
