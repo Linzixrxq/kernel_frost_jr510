@@ -100,6 +100,10 @@ jobs:
         ./scripts/config --file out/.config --disable CONFIG_CMDLINE_EXTEND
         ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FROM_BOOTLOADER
 
+        # Фикс инициализации движка безопасности (Регистрируем selinuxfs)
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
+        ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 1
+
         # Жесткий патч исходников: заменяем enforce на permissive в самом коде ядра!
         sed -i 's/selinux_enforcing = 1;/selinux_enforcing = 0;/' security/selinux/ss/services.c 2>/dev/null || true
         sed -i 's/enforcing = 1;/enforcing = 0;/' security/selinux/hooks.c 2>/dev/null || true
