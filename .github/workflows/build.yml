@@ -94,12 +94,6 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_F2FS_FS y
         ./scripts/config --file out/.config --set-val CONFIG_EXT4_FS y
 
-        # Полный обход ограничений загрузчика Xiaomi (Чистый фикс слотов и SELinux)
-        ./scripts/config --file out/.config --set-str CONFIG_CMDLINE "androidboot.selinux=permissive"
-        ./scripts/config --file out/.config --disable CONFIG_CMDLINE_FORCE
-        ./scripts/config --file out/.config --disable CONFIG_CMDLINE_EXTEND
-        ./scripts/config --file out/.config --enable CONFIG_CMDLINE_FROM_BOOTLOADER
-
         # Фикс инициализации движка безопасности (Регистрируем selinuxfs)
         ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX_BOOTPARAM
         ./scripts/config --file out/.config --set-val CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE 1
@@ -138,6 +132,7 @@ jobs:
         # Применяем фикс LZ4
         ./scripts/config --file out/.config --enable CONFIG_RD_LZ4
         ./scripts/config --file out/.config --enable CONFIG_CRYPTO_LZ4
+        cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ|CONFIG_SERIAL_JLQ_CONSOLE|CONFIG_JGKI"
 
         # После всех инъекций обязательно обновляем Kconfig зависимости
         make O=out olddefconfig
