@@ -139,6 +139,7 @@ jobs:
 
         # И вот теперь проверяем, что ОСТАЛОСЬ в файле по факту
         cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ"
+        cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ|CONFIG_SERIAL_JLQ_CONSOLE|CONFIG_JGKI"
 
         # 7. Чистая монолитная сборка (modules больше не собираем, всё ушло в Image)
         make -j$(nproc --all) O=out Image Image.gz
