@@ -44,8 +44,11 @@ jobs:
 
         mkdir -p out
 
-        # 1. Загрузка основного вендорского конфига и слияние с perfuser
-        make O=out vendor/jr510_JGKI.config
+        # 1. Создаем пустую заготовку .config, чтобы Kbuild не ругался
+        touch out/.config
+
+        # Сливаем твой основной вендорский конфиг и перфьюзер в обход дефолтов Гугла
+        ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_perfuser.config
 
         # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC
