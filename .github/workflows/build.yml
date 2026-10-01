@@ -47,9 +47,9 @@ jobs:
         # 1. Создаем пустую заготовку .config, чтобы Kbuild не ругался
         touch out/.config
 
-        # Сливаем твой основной вендорский конфиг и перфьюзер в обход дефолтов Гугла
+        # Сливаем твой основной вендорский конфиг и ПРАВИЛЬНЫЙ перфьюзер в обход дефолтов Гугла
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
-        ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_perfuser.config
+        ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
 
         # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID y
