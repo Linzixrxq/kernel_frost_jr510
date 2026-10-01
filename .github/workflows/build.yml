@@ -44,12 +44,14 @@ jobs:
 
         mkdir -p out
 
-        # 1. Создаем пустую заготовку .config, чтобы Kbuild не ругался
-        touch out/.config
+        # 1. Базовая конфигурация GKI как технологический каркас Google
+        make O=out gki_defconfig
 
-        # Сливаем твой основной вендорский конфиг и ПРАВИЛЬНЫЙ перфьюзер в обход дефолтов Гугла
-        ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
+        # Накатываем перфьюзер, чтобы вырезать тяжелый дебаг логов
         ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
+
+        # Накатываем твой основной конфиг ПОСЛЕДНИМ, чтобы он перетер все косяки перфьюзера
+        ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
 
         # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID y
