@@ -44,10 +44,9 @@ jobs:
 
         mkdir -p out
 
-        # 1. Базовая конфигурация GKI + слияние с вендорскими фрагментами
-        make O=out gki_defconfig
-        ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI.config
-        ARCH=arm64 ./scripts/kconfig/merge_config.sh -O out out/.config arch/arm64/configs/vendor/jr510_JGKI-perfuser.config
+        # 1. Загрузка основного вендорского конфига и слияние с perfuser
+        make O=out vendor/jr510_JGKI.config
+        ARCH=arm64 ./scripts/kconfig/merge_config.sh -m -O out out/.config arch/arm64/configs/vendor/jr510_perfuser.config
 
         # 2. ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СИСТЕМНЫХ ДРАЙВЕРОВ ANDROID & IPC
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID y
