@@ -141,9 +141,11 @@ jobs:
         # После всех инъекций обязательно обновляем Kconfig зависимости
         make O=out olddefconfig
 
+        # БРОНЕБОЙНЫЙ ФИКС: зануляем путь usermodehelper после того, как отработал olddefconfig
+        ./scripts/config --file out/.config --set-str CONFIG_STATIC_USERMODEHELPER_PATH ""
+
         # И вот теперь проверяем, что ОСТАЛОСЬ в файле по факту
-        cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ"
-        cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ|CONFIG_SERIAL_JLQ_CONSOLE|CONFIG_JGKI"
+        cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ|CONFIG_SERIAL_JLQ_CONSOLE|CONFIG_STATIC_USERMODEHELPER_PATH"
 
         # 7. Чистая монолитная сборка (modules больше не собираем, всё ушло в Image)
         make -j$(nproc --all) O=out Image Image.gz
