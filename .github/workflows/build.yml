@@ -142,7 +142,12 @@ jobs:
         make O=out olddefconfig
 
         # БРОНЕБОЙНЫЙ ФИКС: зануляем путь usermodehelper после того, как отработал olddefconfig
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY
+        ./scripts/config --file out/.config --enable CONFIG_SECURITY_SELINUX
+        ./scripts/config --file out/.config --set-str CONFIG_DEFAULT_SECURITY "selinux"
         ./scripts/config --file out/.config --set-str CONFIG_STATIC_USERMODEHELPER_PATH ""
+        make O=out olddefconfig
+
 
         # И вот теперь проверяем, что ОСТАЛОСЬ в файле по факту
         cat out/.config | grep -E "CONFIG_RD_LZ4|CONFIG_SECURITY_SELINUX|CONFIG_DISPLAY_JLQ|CONFIG_SERIAL_JLQ_CONSOLE|CONFIG_STATIC_USERMODEHELPER_PATH"
