@@ -57,7 +57,12 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID y
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID_BINDER_IPC y
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID_BINDERFS y
-        ./scripts/config --file out/.config --set-str CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
+        ./scripts/config --file out/.config --set-str
+        CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
+
+        # ФИКС СТАРТА ПОДСИСТЕМЫ БЕЗОПАСНОСТИ ANDROID
+        ./scripts/config --file out/.config --set-str CONFIG_LSM "lockdown,yama,loadpin,safesetid,integrity,selinux,bpf"
+        ./scripts/config --file out/.config --disable CONFIG_SECURITY_SELINUX_DISABLE
 
         # 3. ЖЕЛЕЗНЫЙ МОНОЛИТ (=y) ДЛЯ ВСЕЙ ПЕРИФЕРИИ (ИГНОРИРУЕМ МОДУЛИ)
         ./scripts/config --file out/.config --set-val CONFIG_ARCH_JLQ y
