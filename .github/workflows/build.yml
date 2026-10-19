@@ -57,8 +57,7 @@ jobs:
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID y
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID_BINDER_IPC y
         ./scripts/config --file out/.config --set-val CONFIG_ANDROID_BINDERFS y
-        ./scripts/config --file out/.config --set-str
-        CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
+        ./scripts/config --file out/.config --set-str CONFIG_ANDROID_BINDER_DEVICES "binder,hwbinder,vndbinder"
 
         # ФИКС СТАРТА ПОДСИСТЕМЫ БЕЗОПАСНОСТИ ANDROID
         ./scripts/config --file out/.config --set-str CONFIG_LSM "lockdown,yama,loadpin,safesetid,integrity,selinux,bpf"
